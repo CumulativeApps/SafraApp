@@ -1,0 +1,1 @@
+CREATE TABLE response_table(response_id INTEGER PRIMARY KEY AUTOINCREMENT, response_online_id INTEGER DEFAULT 0, response_form_id INTEGER, response_user_id INTEGER, response_date TEXT, response_user_name TEXT, response_user_data TEXT, response_file_data TEXT, is_synced INTEGER DEFAULT 0, is_delete INTEGER DEFAULT 0);

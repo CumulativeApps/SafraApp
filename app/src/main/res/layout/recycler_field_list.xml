@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="16dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?selectableItemBackground">
+
+    <ImageView
+        android:id="@+id/ivField"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        tools:src="@drawable/ic_preview"
+        app:tint="@color/caption_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvField"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        tools:text="Field Name"
+        android:textColor="@color/text_color"
+        app:layout_constraintBottom_toBottomOf="@id/ivField"
+        app:layout_constraintStart_toEndOf="@id/ivField"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/ivField" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

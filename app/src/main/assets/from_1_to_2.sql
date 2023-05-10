@@ -1,0 +1,1 @@
+CREATE TABLE template_table(template_id INTEGER PRIMARY KEY, template_unique_id TEXT, template_language_id INTEGER, template_name TEXT, template_type INTEGER, template_status INTEGER, template_json TEXT, template_image TEXT, is_delete INTEGER, created_at TEXT, updated_at TEXT);

@@ -1,0 +1,139 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.Safra" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryVariant">@color/color_primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/color_secondary</item>
+        <item name="colorSecondaryVariant">@color/color_secondary</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="fontFamily">@font/montserrat</item>
+    </style>
+
+    <style name="Theme.Safra.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
+
+    <style name="Theme.Safra.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
+
+    <style name="Theme.Safra.NoActionBar" parent="Theme.Safra">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <!--Dialog Theme-->
+    <style name="FullDialogStyle" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimaryDark">@color/color_primary</item>
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorSecondary">@color/color_secondary</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <!-- Set this to true if you want Full Screen without status bar -->
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">?colorSurface</item>
+
+    </style>
+
+    <style name="DialogStyle" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <item name="colorPrimaryDark">@color/color_primary</item>
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorSecondary">@color/color_secondary</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="FilledTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="boxBackgroundColor">@android:color/transparent</item>
+        <item name="boxBackgroundMode">filled</item>
+        <item name="boxStrokeWidthFocused">1dp</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeErrorColor">@color/error_color</item>
+        <item name="errorTextColor">@color/error_color</item>
+        <item name="colorError">@color/error_color</item>
+        <item name="errorIconTint">@color/error_color</item>
+    </style>
+
+    <style name="FieldTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="boxBackgroundColor">@android:color/transparent</item>
+        <item name="boxBackgroundMode">filled</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeErrorColor">@color/error_color</item>
+        <item name="errorTextColor">@color/error_color</item>
+        <item name="colorError">@color/error_color</item>
+        <item name="errorIconTint">@color/error_color</item>
+    </style>
+
+    <style name="RegularButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:paddingStart">30dp</item>
+        <item name="android:paddingEnd">30dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+    </style>
+
+    <style name="OutlinedButtonStyle" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="strokeColor">?colorPrimary</item>
+        <item name="rippleColor">?colorPrimary</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="android:paddingStart">30dp</item>
+        <item name="android:paddingEnd">30dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+    </style>
+
+    <style name="TextButtonStyle" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="cornerRadius">10dp</item>
+    </style>
+
+    <style name="SignInCardStyle" parent="Widget.MaterialComponents.CardView">
+        <item name="shapeAppearance">@style/SignInCardShape</item>
+    </style>
+
+    <style name="SignInCardShape">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">15dp</item>
+        <item name="cornerSizeTopRight">15dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <style name="NavigationShape">
+        <item name="background">?colorOnPrimary</item>
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeBottomRight">10dp</item>
+        <item name="cornerSizeTopRight">10dp</item>
+        <item name="cornerSizeBottomLeft">10dp</item>
+        <item name="cornerSizeTopLeft">10dp</item>
+    </style>
+
+    <style name="NavigationDrawerMenuFontStyle" parent="Widget.MaterialComponents.TextView">
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="SwitchTheme" parent="Theme.MaterialComponents.DayNight">
+        <!-- active thumb & track color (30% transparency) -->
+        <item name="colorControlActivated">@color/color_primary</item>
+        <!-- inactive thumb color -->
+        <item name="colorSwitchThumbNormal">#f1f1f1</item>
+        <!-- inactive track color (30% transparency) -->
+        <item name="android:colorForeground">#42221f1f</item>
+    </style>
+
+    <!--    <style name="PopupMenuStyle" parent="@android:style/Widget.PopupMenu">-->
+    <!--        <item name="itemTextAppearance">@style/TextAppearance.MaterialComponents.Caption</item>-->
+    <!--        <item name="itemIconSize">15dp</item>-->
+    <!--    </style>-->
+
+</resources>

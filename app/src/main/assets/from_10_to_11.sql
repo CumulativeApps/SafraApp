@@ -1,0 +1,1 @@
+ALTER TABLE form_type_table ADD COLUMN pt_form_type_name TEXT;

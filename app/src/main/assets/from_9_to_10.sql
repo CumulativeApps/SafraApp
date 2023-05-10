@@ -1,0 +1,1 @@
+CREATE TABLE form_type_table(form_type_id INTEGER PRIMARY KEY, form_type_name TEXT);

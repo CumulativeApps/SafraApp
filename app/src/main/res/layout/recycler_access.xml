@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.checkbox.MaterialCheckBox xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cbAccess"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    tools:text="Access"
+    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+    android:buttonTint="@color/checkbox_image_tint"
+    android:textColor="@color/text_color"
+    app:layout_constraintTop_toTopOf="parent" />

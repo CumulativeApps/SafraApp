@@ -1,0 +1,2 @@
+ALTER TABLE form_table ADD COLUMN form_type INTEGER DEFAULT 0;
+ALTER TABLE form_table ADD COLUMN total_marks INTEGER DEFAULT 0;

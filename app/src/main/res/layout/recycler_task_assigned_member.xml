@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
+
+    <TextView
+        android:id="@+id/tvMemberName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        tools:text="John Doe"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+        android:textStyle="bold"
+        android:textColor="@color/text_color"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tvMemberStatus"/>
+
+    <TextView
+        android:id="@+id/tvMemberStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="-"
+        android:textAllCaps="true"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+        android:textColor="@color/text_color"
+        app:layout_constraintTop_toTopOf="@id/tvMemberName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/tvMemberName"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

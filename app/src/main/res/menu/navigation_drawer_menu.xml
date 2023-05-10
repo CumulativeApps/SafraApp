@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_dashboard"
+            android:icon="@drawable/ic_dashboard"
+            android:title="@string/dashboard" />
+        <item
+            android:id="@+id/nav_account"
+            android:icon="@drawable/ic_account"
+            android:title="@string/account" />
+        <item
+            android:id="@+id/nav_users"
+            android:icon="@drawable/ic_users"
+            android:title="@string/users" />
+        <item
+            android:id="@+id/nav_user_groups"
+            android:icon="@drawable/ic_manage_groups"
+            android:title="@string/user_groups" />
+        <item
+            android:id="@+id/nav_forms"
+            android:icon="@drawable/ic_forms"
+            android:title="@string/forms" />
+        <item
+            android:id="@+id/nav_tasks"
+            android:icon="@drawable/ic_tasks"
+            android:title="@string/tasks" />
+        <item
+            android:id="@+id/nav_planner"
+            android:icon="@drawable/ic_tasks"
+            android:title="@string/planner" />
+        <item
+            android:id="@+id/nav_health_record"
+            android:icon="@drawable/ic_tasks"
+            android:title="@string/health_record" />
+        <item
+            android:id="@+id/nav_reports"
+            android:icon="@drawable/ic_reports"
+            android:title="@string/reports" />
+
+<!--Planner-->
+        <item
+            android:id="@+id/nav_project"
+            android:icon="@drawable/ic_reports"
+            android:title="@string/project"
+            android:visible="false"/>
+        <item
+            android:id="@+id/nav_action_plan"
+            android:icon="@drawable/ic_reports"
+            android:visible="false"
+            android:title="@string/action_plan" />
+        <item
+            android:id="@+id/nav_schedule"
+            android:icon="@drawable/ic_reports"
+            android:visible="false"
+            android:title="@string/schedule" />
+        <item
+            android:id="@+id/nav_budget"
+            android:icon="@drawable/ic_reports"
+            android:visible="false"
+            android:title="@string/budget" />
+
+<!--Health Record-->
+        <item
+            android:id="@+id/nav_patient"
+            android:icon="@drawable/ic_reports"
+            android:title="@string/patient"
+            android:visible="false"/>
+        <item
+            android:id="@+id/nav_active_visit"
+            android:icon="@drawable/ic_reports"
+            android:visible="false"
+            android:title="@string/action_visit" />
+        <item
+            android:id="@+id/nav_appointment_schedule"
+            android:icon="@drawable/ic_reports"
+            android:visible="false"
+            android:title="@string/appointment_schedule" />
+        <item
+            android:id="@+id/nav_reg_patient"
+            android:icon="@drawable/ic_reports"
+            android:visible="false"
+            android:title="@string/allergies" />
+        <item
+            android:id="@+id/nav_capture_vitals"
+            android:icon="@drawable/ic_reports"
+            android:title="@string/capture_vitals"
+            android:visible="false"/>
+        <item
+            android:id="@+id/nav_health_reports"
+            android:icon="@drawable/ic_reports"
+            android:visible="false"
+            android:title="@string/reports" />
+        <item
+            android:id="@+id/nav_medicine"
+            android:icon="@drawable/ic_reports"
+            android:visible="false"
+            android:title="@string/medicine" />
+        <item
+            android:id="@+id/nav_diagnostics"
+            android:icon="@drawable/ic_reports"
+            android:visible="false"
+            android:title="@string/diagnostics" />
+    </group>
+
+    <item
+        android:id="@+id/nav_update_app"
+        android:icon="@drawable/ic_icon"
+        android:visible="false"
+        android:title="Update App" />
+
+    <item
+        android:id="@+id/nav_logout"
+        android:icon="@drawable/ic_logout"
+        android:title="@string/logout" />
+
+
+</menu>
