@@ -87,7 +87,8 @@ public class Common {
     public static final String REQUEST_DELETE_AIM = "request_delete_aim";
     public static final String REQUEST_DELETE_GOAL = "request_delete_goal";
     public static final String REQUEST_DELETE_ACTION_TASK = "request_delete_task";
-    public static final String REQUEST_DELETE_ACTION_RESOURCE = "request_delete_task";
+    public static final String REQUEST_DELETE_ACTION_RESOURCE = "request_delete_resource";
+    public static final String REQUEST_DELETE_HEALTH_PATIENT_LIST = "request_delete_patient";
 
 //            public static final String BASE_URL = "https://safra.co.mz/api/";
     public static final String BASE_URL = "https://staging.safra.co.mz/api/";
@@ -168,9 +169,24 @@ public class Common {
     public static final String PLANNER_EDIT_GOAL = "edit-planner-goal";
     public static final String PLANNER_TASK_LIST = "goal-task-list";
     public static final String PLANNER_SAVE_TASK = "goal-task-add";
+    public static final String PLANNER_SAVE_TASK_EDIT = "goal-task-update";
     public static final String PLANNER_TASK_DELETE = "goal-task-delete";
     public static final String PLANNER_TASK_RESOURCE = "goal-task-resource-add";
+    public static final String PLANNER_TASK_RESOURCE_UPDATE = "goal-task-resource-update";
     public static final String PLANNER_TASK_DELETE_RESOURCE = "goal-task-resource-delete";
+    public static final String PLANNER_GET_TASK_DATA = "goal-task-edit";
+    public static final String PLANNER_PROJECT_SPINNER_LIST = "project";
+    public static final String PLANNER_AIM_SPINNER_LIST = "planner-aims";
+    public static final String PLANNER_GOAL_SPINNER_LIST = "planner-goals";
+    public static final String PLANNER_TASK_SPINNER_LIST = "planner-tasks";
+    public static final String PLANNER_BUDGET_LIST = "planner-resources";
+
+
+    public static final String HEALTH_RECORD_PATIENT_LIST = "get-patients";
+    public static final String HEALTH_RECORD_PATIENT_REGISTER = "add-patients";
+    public static final String HEALTH_RECORD_PATIENT_LIST_UPDATE = "update-patients";
+    public static final String HEALTH_RECORD_DELETE_PATIENT = "delete-patients";
+
 
 
 

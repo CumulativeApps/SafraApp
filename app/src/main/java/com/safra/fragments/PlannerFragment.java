@@ -193,7 +193,7 @@ public class PlannerFragment extends Fragment {
                                 JSONArray users = response.getJSONArray("data");
                                 System.out.println("users"+ users.length());
 
-                                binding.tvTotalProject.setText(String.valueOf(users.length()));
+//                                binding.tvTotalProject.setText(String.valueOf(users.length()));
 
                             } else {
                                 Toast.makeText(mActivity, message, Toast.LENGTH_SHORT).show();

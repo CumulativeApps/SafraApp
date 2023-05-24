@@ -214,6 +214,9 @@
     <string name="high">High</string>
     <string name="medium">Medium</string>
     <string name="low">Low</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="other">Other</string>
     <string name="metical_mzn">Metical(MZN)</string>
     <string name="dolar_usd">Dolar(USD)</string>
     <string name="euro_eur">Euro(EUR)</string>
@@ -425,5 +428,8 @@
     <string name="select_supervisor">Select Supervisor</string>
     <string name="select_responsible">Select Responsible</string>
     <string name="add_resource">Add Resource</string>
+    <string name="quantity">Quantity</string>
+    <string name="subtotal">SubTotal</string>
+    <string name="total">Total</string>
 
 </resources>

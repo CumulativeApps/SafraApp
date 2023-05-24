@@ -102,6 +102,7 @@ public class ActionPlanTaskListFragment extends DialogFragment {
     //    private final List<UserItem> userList = new ArrayList<>();
     private final List<ActionTaskListModel.Data.Goal.Task> userList = new ArrayList<>();
     private final List<ActionTaskListModel.Data.User> userList1 = new ArrayList<>();
+//    private final List<ActionTaskListModel.Data.User> userList1 = new ArrayList<>();
     //    private final List<ProjectListResponseModel.Goal> goalList = new ArrayList<>();
     private ActionPlanTaskListAdapter adapter;
 
@@ -152,7 +153,7 @@ public class ActionPlanTaskListFragment extends DialogFragment {
         binding.rvActionPlanTaskList.setLayoutManager(new LinearLayoutManager(mActivity, RecyclerView.VERTICAL, false));
         binding.rvActionPlanTaskList.addItemDecoration(new SpaceItemDecoration(mActivity, RecyclerView.VERTICAL,
                 1, R.dimen.recycler_vertical_offset, R.dimen.recycler_horizontal_offset, true));
-        adapter = new ActionPlanTaskListAdapter(this,getChildFragmentManager(),mActivity, new ActionPlanTaskListAdapter.OnItemClickListener() {
+        adapter = new ActionPlanTaskListAdapter(this,getChildFragmentManager(),mActivity,userList1, new ActionPlanTaskListAdapter.OnItemClickListener() {
             @Override
             public void onDelete(ActionTaskListModel.Data.Goal.Task item, int position) {
                 DeleteDialog dialogD = new DeleteDialog();
@@ -173,6 +174,7 @@ public class ActionPlanTaskListFragment extends DialogFragment {
                 long ID = projectId;
 
                 Intent i = new Intent(mActivity, AddActionPlanTask.class);
+                i.putExtra("action_task_id", item.getId());
                 i.putExtra("planner_project_id", ID);
 
                 i.putExtra("heading", LanguageExtension.setText("edit_task", getString(R.string.edit_task)));
@@ -189,7 +191,7 @@ public class ActionPlanTaskListFragment extends DialogFragment {
                 System.out.println("user_id");
                 Intent i = new Intent(mActivity, AddResourceActivity.class);
                 i.putExtra("heading", LanguageExtension.setText("add_goal", getString(R.string.add_goal)));
-                i.putExtra("is_new", false);
+                i.putExtra("is_new", true);
                 i.putExtra("task_id",  taskId);
                 i.putExtra("task_name",  taskName);
 //                System.out.println("item.getId()"+ aimName);
@@ -211,7 +213,7 @@ public class ActionPlanTaskListFragment extends DialogFragment {
         checkForEmptyState();
         if (ConnectivityReceiver.isConnected()) {
 //            getUsersFromDB();
-            getProjects(pPosition);
+            getTaskList(pPosition);
             isLoadedOnline = true;
         } else {
             isLoadedOnline = false;
@@ -224,7 +226,9 @@ public class ActionPlanTaskListFragment extends DialogFragment {
                 currentPage = PAGE_START;
 //                getUsersFromDB();
 
-                getProjects(pPosition);
+//                getTaskList(pPosition);
+                                        if (binding.srlManageProject.isRefreshing())
+                            binding.srlManageProject.setRefreshing(false);
             } else {
                 isLoadedOnline = false;
 //                getUsersFromDB();
@@ -278,7 +282,7 @@ public class ActionPlanTaskListFragment extends DialogFragment {
                 searchText = s.toString();
                 if (isLoadedOnline) {
                     currentPage = PAGE_START;
-                    getProjects(pPosition);
+                    getTaskList(pPosition);
                 } else {
                     adapter.searchUser(searchText);
 
@@ -368,17 +372,17 @@ public class ActionPlanTaskListFragment extends DialogFragment {
         currentPage++;
 //        progressLoading.setVisibility(View.VISIBLE);
         Log.e(TAG, "loadMoreItems: " + currentPage);
-        getProjects(p);
+        getTaskList(p);
     }
 
 //    private void addLoadingAnimation() {
-//        userList.add(null);
-//        pPosition = userList.size() - 1;
+//        taskList.add(null);
+//        pPosition = taskList.size() - 1;
 //        Log.e(TAG, "onLoadMore: " + pPosition);
 //
 //    }
 
-    private void getProjects(int pPosition) {
+    private void getTaskList(int pPosition) {
         binding.srlManageProject.setRefreshing(currentPage == PAGE_START);
         String ID = String.valueOf(projectId);
         isNextPageCalled = true;
@@ -393,21 +397,28 @@ public class ActionPlanTaskListFragment extends DialogFragment {
                         try {
                             int success = response.getInt("success");
                             String message = response.getString("message");
+
+                            ActionTaskListModel actionTaskListModel = new Gson().fromJson(response.toString(), ActionTaskListModel.class);
+
+
                             if (success == 1) {
-                                JSONObject data = response.getJSONObject("data").getJSONObject("goal");
-                                System.out.println("DATA"+data);
+//                                JSONObject data = response.getJSONObject("data").getJSONObject("goal");
+                                JSONObject data = response.getJSONObject("data");
+                                JSONObject goal = data.getJSONObject("goal");
+                                JSONArray tasks = goal.getJSONArray("tasks");
+                                JSONArray users = data.getJSONArray("users");
                                 if (currentPage == PAGE_START) {
                                     userList.clear();
                                     adapter.clearLists();
-
+//                                    pPosition = -1;
                                 }
-                                ActionTaskListModel actionTaskListModel = new Gson().fromJson(response.toString(), ActionTaskListModel.class);
-                                userList1.addAll(actionTaskListModel.getData().getUsers());
 
                                 if (response.length() > 0) {
                                     userList.addAll(actionTaskListModel.getData().getGoal().getTasks());
+                                    userList1.addAll(actionTaskListModel.getData().getUsers());
 
                                     adapter.addUserList(userList);
+                                    adapter.addUserList1(userList1);
 
                                 }
 
@@ -416,7 +427,6 @@ public class ActionPlanTaskListFragment extends DialogFragment {
                                     adapter.removeUser(pPosition);
                                     adapter.notifyItemChanged(pPosition - 1);
                                 }
-
 
                                 if (currentPage == PAGE_START) {
                                     adapter.notifyDataSetChanged();
@@ -453,12 +463,106 @@ public class ActionPlanTaskListFragment extends DialogFragment {
     }
 
 
+//    private void getProjects(int pPosition) {
+//        binding.srlManageProject.setRefreshing(currentPage == PAGE_START);
+//        String ID = String.valueOf(projectId);
+//        isNextPageCalled = true;
+//        AndroidNetworking
+//                .post(BASE_URL + PLANNER_TASK_LIST)
+//                .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
+//                .addBodyParameter("goal_id", ID)
+//                .build()
+//                .getAsJSONObject(new JSONObjectRequestListener() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        try {
+//                            int success = response.getInt("success");
+//                            String message = response.getString("message");
+//                            if (success == 1) {
+//                                JSONObject data = response.getJSONObject("data");
+//                                System.out.println("DATA"+data);
+//                                if (currentPage == PAGE_START) {
+//                                    taskList.clear();
+//                                    adapter.clearLists();
+//
+//                                }
+//
+//
+//
+//                                if (response.length() > 0) {
+//
+//                                    JSONObject goal = data.getJSONObject("goal");
+//                                    JSONArray tasks = goal.getJSONArray("tasks");
+//                                    JSONArray users = data.getJSONArray("users");
+//                                    ActionTaskListModel actionTaskListModel = new Gson().fromJson(response.toString(), ActionTaskListModel.class);
+//                                    taskList.addAll(actionTaskListModel.getData().getGoal().getTasks());
+//
+//
+//                                    ArrayList<ActionTaskListModel.Data.User> userList = new ArrayList<>();
+//                                    for (int i = 0; i < users.length(); i++) {
+//                                        JSONObject userObj = users.getJSONObject(i);
+//                                        int id = userObj.getInt("id");
+//                                        String name = userObj.getString("name");
+//                                        String phoneNumber = userObj.getString("phone_number");
+//                                        // Extract other properties as needed
+//                                        ActionTaskListModel.Data.User user = new ActionTaskListModel.Data.User();
+//                                        userList.add(user);
+//                                    }
+//
+//                                    adapter.addUserList(taskList);
+//
+//                                }
+//
+//
+//
+//                                if (pPosition > 1 && pPosition <= taskList.size() - 1) {
+//                                    taskList.remove(pPosition);
+//                                    adapter.removeUser(pPosition);
+//                                    adapter.notifyItemChanged(pPosition - 1);
+//                                }
+//
+//
+//                                if (currentPage == PAGE_START) {
+//                                    adapter.notifyDataSetChanged();
+//                                } else
+//                                    adapter.notifyItemRangeInserted(pPosition, response.length());
+//
+//                                checkForEmptyState();
+//
+//                            } else {
+//                                Toast.makeText(mActivity, message, Toast.LENGTH_SHORT).show();
+//                            }
+//                        } catch (JSONException e) {
+//                            Log.e(TAG, "onResponse Error: " + e.getLocalizedMessage());
+//                        }
+//
+//                        isNextPageCalled = false;
+//
+//                        if (binding.srlManageProject.isRefreshing())
+//                            binding.srlManageProject.setRefreshing(false);
+//                    }
+//
+//                    @Override
+//                    public void onError(ANError anError) {
+//                        Log.e(TAG, "onError: " + anError.getErrorCode());
+//                        Log.e(TAG, "onError: " + anError.getErrorDetail());
+//                        Log.e(TAG, "onError: " + anError.getErrorBody());
+//
+//                        isNextPageCalled = false;
+//
+//                        if (binding.srlManageProject.isRefreshing())
+//                            binding.srlManageProject.setRefreshing(false);
+//                    }
+//                });
+//    }
+
+
 
 //    public void deleteUserOffline(long userId, int position) {
 //        int i = dbHandler.deleteUserOffline(userId);
 //
 //        if (i > 0) {
-//            userList.remove(position);
+//            taskList.remove(position);
 //            adapter.removeUser(position);
 //            checkForEmptyState();
 //        }
@@ -482,7 +586,7 @@ public class ActionPlanTaskListFragment extends DialogFragment {
 //                            Toast.makeText(mActivity, message, Toast.LENGTH_SHORT).show();
 ////                            dialogL.dismiss();
 ////                            if (success == 1) {
-//                            userList.remove(position);
+//                            taskList.remove(position);
 //                            adapter.removeUser(position);
 //                            checkForEmptyState();
 ////                            }
@@ -538,7 +642,7 @@ public class ActionPlanTaskListFragment extends DialogFragment {
         if (ConnectivityReceiver.isConnected()) {
             isLoadedOnline = true;
             currentPage = PAGE_START;
-            getProjects(pPosition);
+            getTaskList(pPosition);
         } else {
             isLoadedOnline = false;
 //            getUsersFromDB();

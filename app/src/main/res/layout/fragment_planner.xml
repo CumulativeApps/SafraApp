@@ -64,21 +64,20 @@
                                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                                 android:textColor="?colorPrimary"
                                 android:textSize="12sp"
-                                app:layout_constraintBottom_toTopOf="@id/tvTotalProject"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:id="@+id/tvTotalProject"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/_0"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                                android:textColor="?colorPrimary"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/tvTotalProjects" />
+<!--                            <TextView-->
+<!--                                android:id="@+id/tvTotalProject"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="@string/_0"-->
+<!--                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
+<!--                                android:textColor="?colorPrimary"-->
+<!--                                android:textStyle="bold"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintStart_toStartOf="parent"-->
+<!--                                app:layout_constraintTop_toBottomOf="@id/tvTotalProjects" />-->
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </LinearLayout>
@@ -127,21 +126,20 @@
                                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                                 android:textColor="?colorPrimary"
                                 android:textSize="12sp"
-                                app:layout_constraintBottom_toTopOf="@id/tvTotalAction"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:id="@+id/tvTotalAction"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/_0"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                                android:textColor="?colorPrimary"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/tvTotalActionPlan" />
+<!--                            <TextView-->
+<!--                                android:id="@+id/tvTotalAction"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="@string/_0"-->
+<!--                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
+<!--                                android:textColor="?colorPrimary"-->
+<!--                                android:textStyle="bold"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintStart_toStartOf="parent"-->
+<!--                                app:layout_constraintTop_toBottomOf="@id/tvTotalActionPlan" />-->
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </LinearLayout>
@@ -194,21 +192,20 @@
                                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                                 android:textColor="?colorPrimary"
                                 android:textSize="12sp"
-                                app:layout_constraintBottom_toTopOf="@id/tvTotalSchedule"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:id="@+id/tvTotalSchedule"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/_0"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                                android:textColor="?colorPrimary"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/tvTotalSchedules" />
+<!--                            <TextView-->
+<!--                                android:id="@+id/tvTotalSchedule"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="@string/_0"-->
+<!--                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
+<!--                                android:textColor="?colorPrimary"-->
+<!--                                android:textStyle="bold"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintStart_toStartOf="parent"-->
+<!--                                app:layout_constraintTop_toBottomOf="@id/tvTotalSchedules" />-->
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </LinearLayout>
@@ -257,21 +254,20 @@
                                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                                 android:textColor="?colorPrimary"
                                 android:textSize="12sp"
-                                app:layout_constraintBottom_toTopOf="@id/tvTotalBudget"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:id="@+id/tvTotalBudget"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/_0"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                                android:textColor="?colorPrimary"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/tvTotalBudgets" />
+<!--                            <TextView-->
+<!--                                android:id="@+id/tvTotalBudget"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="@string/_0"-->
+<!--                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
+<!--                                android:textColor="?colorPrimary"-->
+<!--                                android:textStyle="bold"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintStart_toStartOf="parent"-->
+<!--                                app:layout_constraintTop_toBottomOf="@id/tvTotalBudgets" />-->
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </LinearLayout>

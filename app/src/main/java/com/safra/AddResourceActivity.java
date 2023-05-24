@@ -3,6 +3,7 @@ package com.safra;
 import static com.safra.utilities.Common.ADD_PLANNER_GOAL;
 import static com.safra.utilities.Common.BASE_URL;
 import static com.safra.utilities.Common.PLANNER_TASK_RESOURCE;
+import static com.safra.utilities.Common.PLANNER_TASK_RESOURCE_UPDATE;
 import static com.safra.utilities.UserSessionManager.userSessionManager;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,6 +40,9 @@ public class AddResourceActivity extends AppCompatActivity {
     Button closeButton;
     Button saveButton;
     TextView aimTitle;
+    private boolean isNew;
+    private long updateResourceId = -1;
+    private long updateTaskId = -1;
 
     String passName,passQuantity,passUnitPrice;
     private boolean isRemembered;
@@ -56,6 +60,25 @@ public class AddResourceActivity extends AppCompatActivity {
         saveButton  = findViewById(R.id.save_Aim_button);
         aimTitle =  findViewById(R.id.aimTitle);
 //        editText.setText(userList.get(0).getAim());
+
+
+        String TaskName = getIntent().getStringExtra("name");
+        System.out.println("TaskName"+TaskName);
+        name.setText(TaskName);
+
+        String Quantity = getIntent().getStringExtra("quantity");
+        System.out.println("TaskName"+Quantity);
+        quantity.setText(Quantity);
+
+        String UnitPrice = getIntent().getStringExtra("price");
+        System.out.println("TaskName"+UnitPrice);
+        unitPrice.setText(UnitPrice);
+
+        String SubTotal = getIntent().getStringExtra("subtotal");
+        System.out.println("TaskName"+SubTotal);
+//        name.setText(SubTotal);
+
+
 
         isRemembered = userSessionManager.isRemembered();
         aimId = getIntent().getLongExtra("task_id", -1);
@@ -80,6 +103,15 @@ public class AddResourceActivity extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isNew = getIntent().getBooleanExtra("is_new", false);
+
+                if (isNew) {
+                    saveResource();
+                } else {
+
+
+                    UpdateResource();
+                }
                 saveResource();
 //                        String text = editText.getText().toString();
                 // Do something with the text
@@ -95,6 +127,8 @@ public class AddResourceActivity extends AppCompatActivity {
         passName = name.getText().toString();
         passQuantity = quantity.getText().toString();
         passUnitPrice = unitPrice.getText().toString();
+        int subTotal = Integer.parseInt(passQuantity) * Integer.parseInt(passUnitPrice);
+
         JSONArray jsonArray = new JSONArray(data);
 //        System.out.println("saveActionPlan ID"+ ID);
 
@@ -107,12 +141,69 @@ public class AddResourceActivity extends AppCompatActivity {
             requestBody.put("name", passName);
             requestBody.put("quantity", passQuantity);
             requestBody.put("price", passUnitPrice);
-            requestBody.put("subtotal", "100");
+            requestBody.put("subtotal", subTotal);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         AndroidNetworking.post(BASE_URL + PLANNER_TASK_RESOURCE)
+                .addJSONObjectBody(requestBody)
+
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.e(TAG, "response: " + response);
+                        LoadingDialogExtension.hideLoading();
+                        try {
+                            String message = response.getString("message");
+                            Toast.makeText(AddResourceActivity.this, message, Toast.LENGTH_SHORT).show();
+                            EventBus.getDefault().post(new TaskAddedEvent());
+                            finish();
+                        } catch (JSONException e) {
+                            Log.e(TAG, "onResponseError: " + e.getLocalizedMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e(TAG, "onError: code -> " + anError.getErrorCode());
+                        Log.e(TAG, "onError: detail -> " + anError.getErrorDetail());
+                        Log.e(TAG, "onError: body -> " + anError.getErrorBody());
+                        LoadingDialogExtension.hideLoading();
+                    }
+                });
+    }
+    private void UpdateResource() {
+        LoadingDialogExtension.showLoading(this, LanguageExtension.setText("saving_task_progress", getString(R.string.saving_task_progress)));
+        passName = name.getText().toString();
+        passQuantity = quantity.getText().toString();
+        passUnitPrice = unitPrice.getText().toString();
+        int subTotal = Integer.parseInt(passQuantity) * Integer.parseInt(passUnitPrice);
+        updateResourceId = getIntent().getIntExtra("goal_task_resource_id", -1);
+        updateTaskId = getIntent().getIntExtra("planner_task_id", -1);
+        System.out.println("goal_task_resource_id:-"+ updateResourceId);
+        System.out.println("planner_task_id:-"+ updateTaskId);
+
+
+        JSONArray jsonArray = new JSONArray(data);
+
+//        tvAim = edAim.getText().toString();
+//        System.out.println("tvAim"+tvAim);
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken);
+            requestBody.put("planner_task_id", updateTaskId);
+            requestBody.put("goal_task_resource_id", updateResourceId);
+            requestBody.put("name", passName);
+            requestBody.put("quantity", passQuantity);
+            requestBody.put("price", passUnitPrice);
+            requestBody.put("subtotal", subTotal);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        AndroidNetworking.post(BASE_URL + PLANNER_TASK_RESOURCE_UPDATE)
                 .addJSONObjectBody(requestBody)
 
                 .build()

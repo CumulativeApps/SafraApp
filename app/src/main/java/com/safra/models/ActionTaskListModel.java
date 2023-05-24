@@ -74,7 +74,7 @@ public class ActionTaskListModel {
         return this;
     }
 
-    public class Data {
+    public static class Data {
 
         @SerializedName("title")
         @Expose
@@ -703,13 +703,13 @@ public class ActionTaskListModel {
                     private String name;
                     @SerializedName("quantity")
                     @Expose
-                    private Integer quantity;
+                    private String quantity;
                     @SerializedName("price")
                     @Expose
-                    private Double price;
+                    private String price;
                     @SerializedName("subtotal")
                     @Expose
-                    private Double subtotal;
+                    private String subtotal;
                     @SerializedName("created_at")
                     @Expose
                     private String createdAt;
@@ -733,7 +733,7 @@ public class ActionTaskListModel {
                      * @param id
                      * @param updatedAt
                      */
-                    public Resource(Integer id, Integer plannerTaskId, String name, Integer quantity, Double price, Double subtotal, String createdAt, String updatedAt) {
+                    public Resource(Integer id, Integer plannerTaskId, String name, String quantity, String price, String subtotal, String createdAt, String updatedAt) {
                         super();
                         this.id = id;
                         this.plannerTaskId = plannerTaskId;
@@ -784,41 +784,41 @@ public class ActionTaskListModel {
                         return this;
                     }
 
-                    public Integer getQuantity() {
+                    public String getQuantity() {
                         return quantity;
                     }
 
-                    public void setQuantity(Integer quantity) {
+                    public void setQuantity(String quantity) {
                         this.quantity = quantity;
                     }
 
-                    public Resource withQuantity(Integer quantity) {
+                    public Resource withQuantity(String quantity) {
                         this.quantity = quantity;
                         return this;
                     }
 
-                    public Double getPrice() {
+                    public String getPrice() {
                         return price;
                     }
 
-                    public void setPrice(Double price) {
+                    public void setPrice(String price) {
                         this.price = price;
                     }
 
-                    public Resource withPrice(Double price) {
+                    public Resource withPrice(String price) {
                         this.price = price;
                         return this;
                     }
 
-                    public Double getSubtotal() {
+                    public String getSubtotal() {
                         return subtotal;
                     }
 
-                    public void setSubtotal(Double subtotal) {
+                    public void setSubtotal(String subtotal) {
                         this.subtotal = subtotal;
                     }
 
-                    public Resource withSubtotal(Double subtotal) {
+                    public Resource withSubtotal(String subtotal) {
                         this.subtotal = subtotal;
                         return this;
                     }
@@ -1231,7 +1231,7 @@ public class ActionTaskListModel {
 
         }
 
-        public class User {
+        public static class User {
 
             @SerializedName("user_id")
             @Expose

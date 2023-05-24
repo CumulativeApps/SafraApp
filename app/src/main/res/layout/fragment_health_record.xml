@@ -64,21 +64,20 @@
                                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                                 android:textColor="?colorPrimary"
                                 android:textSize="12sp"
-                                app:layout_constraintBottom_toTopOf="@id/tvTotalPatient"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:id="@+id/tvTotalPatient"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/_0"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                                android:textColor="?colorPrimary"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/tvTotalPatients" />
+<!--                            <TextView-->
+<!--                                android:id="@+id/tvTotalPatient"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="@string/_0"-->
+<!--                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
+<!--                                android:textColor="?colorPrimary"-->
+<!--                                android:textStyle="bold"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintStart_toStartOf="parent"-->
+<!--                                app:layout_constraintTop_toBottomOf="@id/tvTotalPatients" />-->
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </LinearLayout>
@@ -127,21 +126,20 @@
                                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                                 android:textColor="?colorPrimary"
                                 android:textSize="12sp"
-                                app:layout_constraintBottom_toTopOf="@id/tvTotalActiveVisit"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:id="@+id/tvTotalActiveVisit"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/_0"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                                android:textColor="?colorPrimary"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/tvTotalActiveVisits" />
+<!--                            <TextView-->
+<!--                                android:id="@+id/tvTotalActiveVisit"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="@string/_0"-->
+<!--                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
+<!--                                android:textColor="?colorPrimary"-->
+<!--                                android:textStyle="bold"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintStart_toStartOf="parent"-->
+<!--                                app:layout_constraintTop_toBottomOf="@id/tvTotalActiveVisits" />-->
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </LinearLayout>
@@ -194,21 +192,20 @@
                                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                                 android:textColor="?colorPrimary"
                                 android:textSize="12sp"
-                                app:layout_constraintBottom_toTopOf="@id/tvTotalAppointmentSchedule"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:id="@+id/tvTotalAppointmentSchedule"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/_0"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                                android:textColor="?colorPrimary"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/tvTotalAppointmentSchedules" />
+<!--                            <TextView-->
+<!--                                android:id="@+id/tvTotalAppointmentSchedule"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="@string/_0"-->
+<!--                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
+<!--                                android:textColor="?colorPrimary"-->
+<!--                                android:textStyle="bold"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintStart_toStartOf="parent"-->
+<!--                                app:layout_constraintTop_toBottomOf="@id/tvTotalAppointmentSchedules" />-->
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </LinearLayout>
@@ -257,21 +254,20 @@
                                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                                 android:textColor="?colorPrimary"
                                 android:textSize="12sp"
-                                app:layout_constraintBottom_toTopOf="@id/tvTotalRegPatient"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:id="@+id/tvTotalRegPatient"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/_0"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                                android:textColor="?colorPrimary"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/tvTotalRegPatients" />
+<!--                            <TextView-->
+<!--                                android:id="@+id/tvTotalRegPatient"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="@string/_0"-->
+<!--                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
+<!--                                android:textColor="?colorPrimary"-->
+<!--                                android:textStyle="bold"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintStart_toStartOf="parent"-->
+<!--                                app:layout_constraintTop_toBottomOf="@id/tvTotalRegPatients" />-->
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </LinearLayout>
@@ -324,21 +320,20 @@
                                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                                 android:textColor="?colorPrimary"
                                 android:textSize="12sp"
-                                app:layout_constraintBottom_toTopOf="@id/tvTotalCaptureVital"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:id="@+id/tvTotalCaptureVital"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/_0"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                                android:textColor="?colorPrimary"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/tvTotalCaptureVitals" />
+<!--                            <TextView-->
+<!--                                android:id="@+id/tvTotalCaptureVital"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="@string/_0"-->
+<!--                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
+<!--                                android:textColor="?colorPrimary"-->
+<!--                                android:textStyle="bold"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintStart_toStartOf="parent"-->
+<!--                                app:layout_constraintTop_toBottomOf="@id/tvTotalCaptureVitals" />-->
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </LinearLayout>
@@ -387,21 +382,20 @@
                                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                                 android:textColor="?colorPrimary"
                                 android:textSize="12sp"
-                                app:layout_constraintBottom_toTopOf="@id/tvTotalReport"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:id="@+id/tvTotalReport"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/_0"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                                android:textColor="?colorPrimary"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/tvTotalReports" />
+<!--                            <TextView-->
+<!--                                android:id="@+id/tvTotalReport"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="@string/_0"-->
+<!--                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
+<!--                                android:textColor="?colorPrimary"-->
+<!--                                android:textStyle="bold"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintStart_toStartOf="parent"-->
+<!--                                app:layout_constraintTop_toBottomOf="@id/tvTotalReports" />-->
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </LinearLayout>
@@ -454,21 +448,20 @@
                                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                                 android:textColor="?colorPrimary"
                                 android:textSize="12sp"
-                                app:layout_constraintBottom_toTopOf="@id/tvTotalMedicine"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:id="@+id/tvTotalMedicine"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/_0"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                                android:textColor="?colorPrimary"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/tvTotalMedicines" />
+<!--                            <TextView-->
+<!--                                android:id="@+id/tvTotalMedicine"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="@string/_0"-->
+<!--                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
+<!--                                android:textColor="?colorPrimary"-->
+<!--                                android:textStyle="bold"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintStart_toStartOf="parent"-->
+<!--                                app:layout_constraintTop_toBottomOf="@id/tvTotalMedicines" />-->
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </LinearLayout>
@@ -517,21 +510,20 @@
                                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                                 android:textColor="?colorPrimary"
                                 android:textSize="12sp"
-                                app:layout_constraintBottom_toTopOf="@id/tvTotalDiagnostic"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:id="@+id/tvTotalDiagnostic"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/_0"
-                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                                android:textColor="?colorPrimary"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/tvTotalDiagnostics" />
+<!--                            <TextView-->
+<!--                                android:id="@+id/tvTotalDiagnostic"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="@string/_0"-->
+<!--                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
+<!--                                android:textColor="?colorPrimary"-->
+<!--                                android:textStyle="bold"-->
+<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                                app:layout_constraintStart_toStartOf="parent"-->
+<!--                                app:layout_constraintTop_toBottomOf="@id/tvTotalDiagnostics" />-->
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </LinearLayout>

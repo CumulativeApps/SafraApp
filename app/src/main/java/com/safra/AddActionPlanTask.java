@@ -3,21 +3,14 @@ package com.safra;
 import static com.safra.db.DBHandler.dbHandler;
 import static com.safra.utilities.Common.BASE_URL;
 import static com.safra.utilities.Common.DATE_FORMAT;
-import static com.safra.utilities.Common.GROUP_LIST_API;
 import static com.safra.utilities.Common.PAGE_START;
-import static com.safra.utilities.Common.PLANNER_PROJECT_LIST;
+import static com.safra.utilities.Common.PLANNER_GET_TASK_DATA;
 import static com.safra.utilities.Common.PLANNER_SAVE_TASK;
+import static com.safra.utilities.Common.PLANNER_SAVE_TASK_EDIT;
 import static com.safra.utilities.Common.SERVER_DATE_FORMAT;
-import static com.safra.utilities.Common.TASK_SAVE_API;
-import static com.safra.utilities.Common.TASK_VIEW_API;
 import static com.safra.utilities.Common.USER_LIST_API;
 import static com.safra.utilities.UserPermissions.TASK_ASSIGN;
 import static com.safra.utilities.UserSessionManager.userSessionManager;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -31,27 +24,28 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.google.android.material.chip.Chip;
 import com.google.gson.Gson;
 import com.safra.adapters.ActionPlanUserSpinnerAdapter;
-import com.safra.adapters.GroupCustomSpinnerAdapter;
 import com.safra.adapters.PrioritySpinnerAdapter;
 import com.safra.adapters.UserCustomSpinnerAdapter;
 import com.safra.databinding.ActivityAddActionPlanTaskBinding;
-import com.safra.databinding.ActivityAddActionPlanTaskBinding;
-import com.safra.databinding.ActivityAddTaskBinding;
 import com.safra.events.TaskAddedEvent;
 import com.safra.extensions.GeneralExtension;
 import com.safra.extensions.LanguageExtension;
 import com.safra.extensions.LoadingDialogExtension;
 import com.safra.extensions.PermissionExtension;
-import com.safra.models.ActionTaskListModel;
+import com.safra.models.GetEditTaskData;
 import com.safra.models.PlannerDashBoardModel;
 import com.safra.models.PriorityItem;
-import com.safra.models.RoleItem;
 import com.safra.models.TaskItem;
 import com.safra.models.UserItem;
 import com.safra.utilities.ConnectivityReceiver;
@@ -77,6 +71,8 @@ public class AddActionPlanTask extends AppCompatActivity {
 
     private final List<UserItem> userList = new ArrayList<>();
     private final List<UserItem> userList1 = new ArrayList<>();
+//    private final List<GetEditTaskData.Data.User> userList12 = new ArrayList<>();
+
     private UserCustomSpinnerAdapter adapterU;
     private ActionPlanUserSpinnerAdapter adapterG;
 
@@ -95,10 +91,11 @@ public class AddActionPlanTask extends AppCompatActivity {
     private long taskId = -1, onlineId = -1;
     private long projectId = -1;
     private TaskItem taskItem = null;
+    private int actionTaskId = 1;
     private List<Long> currentUsers = new ArrayList<>();
     private List<Long> currentUsers1 = new ArrayList<>();
 
-    private boolean isUserDataReceived = false ,isGroupDataReceived = false;
+    private boolean isUserDataReceived = false, isGroupDataReceived = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +116,9 @@ public class AddActionPlanTask extends AppCompatActivity {
         binding.etStartDate.setFocusableInTouchMode(false);
         binding.etEndDate.setFocusableInTouchMode(false);
         projectId = getIntent().getLongExtra("planner_project_id", -1);
-        System.out.println("GOAL ID:-" + projectId);
+        actionTaskId = getIntent().getIntExtra("action_task_id", -1);
+        System.out.println("Project ID:-" + projectId);
+        System.out.println("TASK ID:-" + actionTaskId);
         calendarStart = Calendar.getInstance();
         calendarEnd = Calendar.getInstance();
 
@@ -145,10 +144,12 @@ public class AddActionPlanTask extends AppCompatActivity {
             } else {
                 taskId = getIntent().getLongExtra("task_id", -1);
                 onlineId = getIntent().getLongExtra("online_id", -1);
-                System.out.println("onlineId" +onlineId);
+                System.out.println("onlineId" + onlineId);
                 Log.e(TAG, "onCreate: " + taskId);
                 if (ConnectivityReceiver.isConnected())
-                    getEditData();
+                    getUsers(PAGE_START);
+                getUsers1(PAGE_START);
+                getEditData();
 //                getEditDataFromDB();
 //                else
 //                    getEditDataFromDB();
@@ -209,43 +210,63 @@ public class AddActionPlanTask extends AppCompatActivity {
         binding.tvEmptyGroup.setText(LanguageExtension.setText("select_supervisor", getString(R.string.select_supervisor)));
         binding.btnSave.setText(LanguageExtension.setText("save", getString(R.string.save)));
     }
-
-
-
     private void getEditData() {
         LoadingDialogExtension.showLoading(this, LanguageExtension.setText("getting_data_progress", getString(R.string.getting_data_progress)));
-
-
         AndroidNetworking
-                .post(BASE_URL + PLANNER_PROJECT_LIST)
+                .post(BASE_URL + PLANNER_GET_TASK_DATA)
                 .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
+                .addBodyParameter("planner_task_id", String.valueOf(actionTaskId))
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        Log.d("add_action_task", "response " + response);
                         LoadingDialogExtension.hideLoading();
                         try {
                             int success = response.getInt("success");
                             String message = response.getString("message");
                             if (success == 1) {
-                                PlannerDashBoardModel plannerDashBoardModel = new Gson().fromJson(response.toString(), PlannerDashBoardModel.class);
-                                taskList.addAll(plannerDashBoardModel.getData().getProjects().get(0).getAims().get(0).getGoals().get(0).getTasks());
-//
-//                                for (PlannerDashBoardModel.Data.Project.Aim.Goal.Task task : taskList) {
-//                                    System.out.println("Task Name: " + task.getId());
-//                                    System.out.println("Task Description: " + task.getUserId());
-//                                    System.out.println("Task Deadline: " + task.getPlannerGoalId());
-//                                    // Add more properties if needed
-//                                }
+                                JSONObject data = response.getJSONObject("data");
+                                JSONObject goal = data.getJSONObject("goal");
+                                JSONArray users = data.getJSONArray("users");
 
+                                // Parse the goal object
+                                GetEditTaskData.Goal parsedGoal = new Gson().fromJson(goal.toString(), GetEditTaskData.Goal.class);
+                                binding.etTaskName.setText(parsedGoal.getTitle());
+                                binding.etTaskDetail.setText(parsedGoal.getObservation());
+                                binding.etStartDate.setText(parsedGoal.getStart_date());
+                                binding.etEndDate.setText(parsedGoal.getEnd_date());
+                                binding.etMetrics.setText(parsedGoal.getMetrics());
+
+                                // Parse the users array
+                                List<GetEditTaskData.User> userList = new ArrayList<>();
+                                for (int i = 0; i < users.length(); i++) {
+                                    JSONObject userObj = users.getJSONObject(i);
+                                    GetEditTaskData.User user = new Gson().fromJson(userObj.toString(), GetEditTaskData.User.class);
+                                    userList.add(user);
+
+                                    // Check if responsible value matches user_id
+                                    if (parsedGoal.getResponsible().equals(String.valueOf(user.getUser_id()))) {
+                                        binding.tvEmptyUser.setText(user.getUser_name());
+                                    }else if(parsedGoal.getResponsible().equals(String.valueOf(parsedGoal.getUser_id()))) {
+                                        binding.tvEmptyUser.setText("Assign To Self");
+                                    }
+                                    if (parsedGoal.getSupervisor().equals(String.valueOf(user.getUser_id()))) {
+                                        binding.tvEmptyGroup.setText(user.getUser_name());
+                                    }else if(parsedGoal.getSupervisor().equals(String.valueOf(parsedGoal.getUser_id()))) {
+                                        binding.tvEmptyGroup.setText("Assign To Self");
+                                    }
+                                }
+
+//                                binding.tvEmptyGroup.setText(parsedGoal.getResponsible());
+
+                                // Use the userList as needed, e.g., display it in a RecyclerView or ListView
                             } else {
                                 Toast.makeText(AddActionPlanTask.this, message, Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
                         }
-
-//                        dialogL.dismiss();
                     }
 
                     @Override
@@ -254,10 +275,60 @@ public class AddActionPlanTask extends AppCompatActivity {
                         Log.e(TAG, "onError: " + anError.getErrorDetail());
                         Log.e(TAG, "onError: " + anError.getErrorBody());
                         LoadingDialogExtension.hideLoading();
-//                        dialogL.dismiss();
                     }
                 });
     }
+
+
+//    private void getEditData() {
+//        LoadingDialogExtension.showLoading(this, LanguageExtension.setText("getting_data_progress", getString(R.string.getting_data_progress)));
+//        AndroidNetworking
+//                .post(BASE_URL + PLANNER_GET_TASK_DATA)
+//                .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
+//                .addBodyParameter("planner_task_id", String.valueOf(actionTaskId))
+//                .build()
+//                .getAsJSONObject(new JSONObjectRequestListener() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        Log.d("add_action_task", "response " + response);
+//                        LoadingDialogExtension.hideLoading();
+//                        try {
+//                            int success = response.getInt("success");
+//                            String message = response.getString("message");
+//                            if (success == 1) {
+//                                JSONObject data = response.getJSONObject("data");
+//                                JSONObject goal = data.getJSONObject("goal");
+//                                JSONArray user = data.getJSONArray("users");
+//                                GetEditTaskData.Data.Goal getEditTaskData = new Gson().fromJson(goal.toString(), GetEditTaskData.Data.Goal.class);
+//                                binding.etTaskName.setText(getEditTaskData.title);
+//                                binding.etTaskDetail.setText(getEditTaskData.observation);
+//                                binding.etStartDate.setText(getEditTaskData.startDate);
+//                                binding.etEndDate.setText(getEditTaskData.endDate);
+//                                binding.etMetrics.setText(getEditTaskData.metrics);
+//                                binding.tvEmptyUser.setText(getEditTaskData.responsible);
+//                                binding.tvEmptyGroup.setText(getEditTaskData.responsible);
+//                            } else {
+//                                Toast.makeText(AddActionPlanTask.this, message, Toast.LENGTH_SHORT).show();
+//                            }
+//                        } catch (JSONException e) {
+//                            Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
+//                        }
+//
+////                        dialogL.dismiss();
+//                    }
+//
+//
+//
+//                    @Override
+//                    public void onError(ANError anError) {
+//                        Log.e(TAG, "onError: " + anError.getErrorCode());
+//                        Log.e(TAG, "onError: " + anError.getErrorDetail());
+//                        Log.e(TAG, "onError: " + anError.getErrorBody());
+//                        LoadingDialogExtension.hideLoading();
+////                        dialogL.dismiss();
+//                    }
+//                });
+//    }
 
 
     private void setTaskDetails() {
@@ -283,8 +354,9 @@ public class AddActionPlanTask extends AppCompatActivity {
         String sDate = binding.etStartDate.getText() != null ? binding.etStartDate.getText().toString() : "";
         String eDate = binding.etEndDate.getText() != null ? binding.etEndDate.getText().toString() : "";
 
-        String cUser = GeneralExtension.toString(currentUsers);
-        String cGroup = GeneralExtension.toString(currentUsers1);
+        String cUser = GeneralExtension.toString(currentUsers) != null ? GeneralExtension.toString(currentUsers).toString() : "";
+        String cGroup = GeneralExtension.toString(currentUsers1) != null ? GeneralExtension.toString(currentUsers1).toString() : "";
+        ;
 
         if (tName.isEmpty() || sDate.isEmpty() || eDate.isEmpty()) {
             if (eDate.isEmpty()) {
@@ -312,14 +384,14 @@ public class AddActionPlanTask extends AppCompatActivity {
                 parameters.put("priority", String.valueOf(selectedPriority));
                 parameters.put("start_date", sdfForServer.format(new Date(calendarStart.getTimeInMillis())));
                 parameters.put("end_date", sdfForServer.format(new Date(calendarEnd.getTimeInMillis())));
-                if (!cUser.isEmpty())
-                    parameters.put("responsible", cUser);
-                if (!cGroup.isEmpty())
-                    parameters.put("supervisor", cGroup);
+//                if (!cUser.isEmpty())
+                parameters.put("responsible", cUser);
+//                if (!cGroup.isEmpty())
+                parameters.put("supervisor", cGroup);
                 if (isNew) {
                     saveTask(parameters);
                 } else {
-                    parameters.put("task_id", String.valueOf(taskId));
+                    parameters.put("goal_task_id", String.valueOf(actionTaskId));
 
                     editTask(parameters);
                 }
@@ -454,19 +526,19 @@ public class AddActionPlanTask extends AppCompatActivity {
                                 } else {
                                     isUserDataReceived = true;
 //                                    if (isGroupDataReceived)
-                                        LoadingDialogExtension.hideLoading();
+                                    LoadingDialogExtension.hideLoading();
                                 }
                             } else {
                                 Toast.makeText(AddActionPlanTask.this, message, Toast.LENGTH_SHORT).show();
                                 isUserDataReceived = true;
 //                                if (isGroupDataReceived)
-                                    LoadingDialogExtension.hideLoading();
+                                LoadingDialogExtension.hideLoading();
                             }
                         } catch (JSONException e) {
                             Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
                             isUserDataReceived = true;
 //                            if (isGroupDataReceived)
-                                LoadingDialogExtension.hideLoading();
+                            LoadingDialogExtension.hideLoading();
                         }
 
 //                        dialogL.dismiss();
@@ -479,11 +551,12 @@ public class AddActionPlanTask extends AppCompatActivity {
                         Log.e(TAG, "onError: body -> " + anError.getErrorBody());
                         isUserDataReceived = true;
 //                        if (isGroupDataReceived)
-                            LoadingDialogExtension.hideLoading();
+                        LoadingDialogExtension.hideLoading();
 //                        dialogL.dismiss();
                     }
                 });
     }
+
     private void getUsers1(int pageNo) {
         if (pageNo == PAGE_START) {
             LoadingDialogExtension.showLoading(this, LanguageExtension.setText("getting_data_progress", getString(R.string.getting_data_progress)));
@@ -572,19 +645,19 @@ public class AddActionPlanTask extends AppCompatActivity {
                                 } else {
                                     isUserDataReceived = true;
 //                                    if (isGroupDataReceived)
-                                        LoadingDialogExtension.hideLoading();
+                                    LoadingDialogExtension.hideLoading();
                                 }
                             } else {
                                 Toast.makeText(AddActionPlanTask.this, message, Toast.LENGTH_SHORT).show();
                                 isUserDataReceived = true;
 //                                if (isGroupDataReceived)
-                                    LoadingDialogExtension.hideLoading();
+                                LoadingDialogExtension.hideLoading();
                             }
                         } catch (JSONException e) {
                             Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
                             isUserDataReceived = true;
 //                            if (isGroupDataReceived)
-                                LoadingDialogExtension.hideLoading();
+                            LoadingDialogExtension.hideLoading();
                         }
 
 //                        dialogL.dismiss();
@@ -597,7 +670,7 @@ public class AddActionPlanTask extends AppCompatActivity {
                         Log.e(TAG, "onError: body -> " + anError.getErrorBody());
                         isUserDataReceived = true;
 //                        if (isGroupDataReceived)
-                            LoadingDialogExtension.hideLoading();
+                        LoadingDialogExtension.hideLoading();
 //                        dialogL.dismiss();
                     }
                 });
@@ -643,6 +716,7 @@ public class AddActionPlanTask extends AppCompatActivity {
 
         optionRecycler.setAdapter(adapterU);
     }
+
     private void openGroupDialog(Context context, List<UserItem> options) {
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_spinner, null, false);
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
@@ -695,7 +769,7 @@ public class AddActionPlanTask extends AppCompatActivity {
     }
 
     private void saveTask(HashMap<String, String> parameters) {
-        System.out.println("String.valueOf(projectId)"+ String.valueOf(projectId));
+        System.out.println("String.valueOf(projectId)" + String.valueOf(projectId));
         LoadingDialogExtension.showLoading(this, LanguageExtension.setText("saving_task_progress", getString(R.string.saving_task_progress)));
 //        LoadingDialog dialogL = new LoadingDialog();
 //        dialogL.setCancelable(false);
@@ -713,7 +787,7 @@ public class AddActionPlanTask extends AppCompatActivity {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.d("RESPONSE","Response of ADDTASK"+ response);
+                        Log.d("RESPONSE", "Response of ADDTASK" + response);
 
                         LoadingDialogExtension.hideLoading();
                         try {
@@ -743,6 +817,7 @@ public class AddActionPlanTask extends AppCompatActivity {
     }
 
     private void editTask(HashMap<String, String> parameters) {
+        System.out.println("parameters:-" + parameters);
         LoadingDialogExtension.showLoading(this, LanguageExtension.setText("updating_task_progress", getString(R.string.updating_task_progress)));
 //        LoadingDialog dialogL = new LoadingDialog();
 //        dialogL.setCancelable(false);
@@ -752,14 +827,17 @@ public class AddActionPlanTask extends AppCompatActivity {
 //        dialogL.show(getSupportFragmentManager(), LoadingDialog.TAG);
 
         AndroidNetworking
-                .post(BASE_URL + TASK_SAVE_API)
+                .post(BASE_URL + PLANNER_SAVE_TASK_EDIT)
                 .addBodyParameter(parameters)
+
                 .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .setTag("edit-task-api")
+//                .setTag("save-task-api")
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        Log.d("RESPONSE", "Response of ADDTASK" + response);
+
                         LoadingDialogExtension.hideLoading();
                         try {
                             int success = response.getInt("success");

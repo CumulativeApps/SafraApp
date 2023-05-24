@@ -171,6 +171,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="2000-10-10" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clPhoneNo"
             android:layout_width="match_parent"
@@ -203,6 +204,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="9977338844" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clAddress"
             android:layout_width="match_parent"
@@ -275,21 +277,30 @@
                 app:layout_constraintStart_toEndOf="@id/ivDelete"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tvViewDetails"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:background="?selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="@string/view_details"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                android:textColor="?colorPrimary"
-                app:layout_constraintBottom_toBottomOf="@id/ivDelete"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/ivDelete" />
+<!--            <Spinner-->
+<!--                android:id="@+id/spinner"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:spinnerMode="dropdown"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/ivDelete"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="@id/ivDelete" />-->
+
+            <!--                    <TextView&ndash;&gt;-->
+            <!--                android:id="@+id/tvViewDetails"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="0dp"-->
+            <!--                android:background="?selectableItemBackground"-->
+            <!--                android:clickable="true"-->
+            <!--                android:focusable="true"-->
+            <!--                android:gravity="center"-->
+            <!--                android:padding="4dp"-->
+            <!--                android:text="@string/view_details"-->
+            <!--                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"-->
+            <!--                android:textColor="?colorPrimary"-->
+            <!--                app:layout_constraintBottom_toBottomOf="@id/ivDelete"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintTop_toTopOf="@id/ivDelete" />-->
 
 
             <!--            <TextView-->

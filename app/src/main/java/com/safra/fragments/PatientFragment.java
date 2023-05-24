@@ -2,16 +2,12 @@ package com.safra.fragments;
 
 import static com.safra.db.DBHandler.dbHandler;
 import static com.safra.utilities.Common.BASE_URL;
+import static com.safra.utilities.Common.HEALTH_RECORD_DELETE_PATIENT;
+import static com.safra.utilities.Common.HEALTH_RECORD_PATIENT_LIST;
 import static com.safra.utilities.Common.PAGE_START;
-import static com.safra.utilities.Common.REQUEST_DELETE_USER;
-import static com.safra.utilities.Common.USER_DELETE_API;
-import static com.safra.utilities.Common.USER_LIST_API;
+import static com.safra.utilities.Common.REQUEST_DELETE_HEALTH_PATIENT_LIST;
 import static com.safra.utilities.Common.USER_STATUS_API;
 import static com.safra.utilities.UserPermissions.USER_ADD;
-import static com.safra.utilities.UserPermissions.USER_DELETE;
-import static com.safra.utilities.UserPermissions.USER_STATUS;
-import static com.safra.utilities.UserPermissions.USER_UPDATE;
-import static com.safra.utilities.UserPermissions.USER_VIEW;
 import static com.safra.utilities.UserSessionManager.userSessionManager;
 
 import android.content.Context;
@@ -19,14 +15,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -37,25 +25,29 @@ import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
-
 import com.safra.AddPatient;
 import com.safra.R;
 import com.safra.Safra;
 import com.safra.adapters.PatientRecyclerAdapter;
-import com.safra.adapters.UsersRecyclerAdapter;
 import com.safra.databinding.FragmentPatientBinding;
 import com.safra.databinding.PopupChangeUserStatusBinding;
 import com.safra.dialogs.DeleteDialog;
-import com.safra.events.UserAddedEvent;
-import com.safra.extensions.GeneralExtension;
+import com.safra.events.TaskAddedEvent;
 import com.safra.extensions.LanguageExtension;
 import com.safra.extensions.LoadingDialogExtension;
 import com.safra.extensions.PermissionExtension;
 import com.safra.extensions.ViewExtension;
-import com.safra.models.UserItem;
+import com.safra.models.PatientListModel;
 import com.safra.utilities.ConnectivityReceiver;
 import com.safra.utilities.SpaceItemDecoration;
 
@@ -77,7 +69,8 @@ public class PatientFragment extends Fragment {
 
     private FragmentPatientBinding binding;
 
-    private final List<UserItem> userList = new ArrayList<>();
+    //    private final List<UserItem> userList = new ArrayList<>();
+    private final List<PatientListModel.Data.Patient> userList = new ArrayList<>();
     private PatientRecyclerAdapter adapter;
 
     private String searchText = "";
@@ -90,8 +83,6 @@ public class PatientFragment extends Fragment {
     private boolean isLoadedOnline = false;
 
     private PopupWindow popupWindow;
-
-
 
 
     @Override
@@ -114,13 +105,13 @@ public class PatientFragment extends Fragment {
                 1, R.dimen.recycler_vertical_offset, R.dimen.recycler_horizontal_offset, true));
         adapter = new PatientRecyclerAdapter(mActivity, new PatientRecyclerAdapter.OnItemClickListener() {
             @Override
-            public void onDelete(UserItem item, int position) {
+            public void onDelete(PatientListModel.Data.Patient item, int position) {
                 DeleteDialog dialogD = new DeleteDialog();
                 Bundle bundle = new Bundle();
-                bundle.putString("request_key", REQUEST_DELETE_USER);
+                bundle.putString("request_key", REQUEST_DELETE_HEALTH_PATIENT_LIST);
                 bundle.putString("message", LanguageExtension.setText("do_you_want_to_delete_this_user", getString(R.string.do_you_want_to_delete_this_user)));
-                bundle.putLong("id", item.getUserId());
-                bundle.putLong("online_id", item.getUserOnlineId());
+                bundle.putLong("id", item.getId());
+//                bundle.putLong("online_id", item.getUserOnlineId());
                 bundle.putInt("position", position);
                 bundle.putString("type", "user");
                 dialogD.setArguments(bundle);
@@ -128,40 +119,47 @@ public class PatientFragment extends Fragment {
             }
 
             @Override
-            public void onEdit(UserItem item, int position) {
+            public void onEdit(PatientListModel.Data.Patient item, int position) {
                 Intent i = new Intent(mActivity, AddPatient.class);
                 i.putExtra("heading", LanguageExtension.setText("edit_patient", getString(R.string.edit_patient)));
                 i.putExtra("is_new", false);
-                i.putExtra("user_id", item.getUserId());
-                i.putExtra("online_id", item.getUserOnlineId());
+                i.putExtra("patient_Id", item.getId());
+                i.putExtra("f_name", item.getFirst_name());
+                i.putExtra("m_name", item.getMiddle_name());
+                i.putExtra("l_name", item.getLast_name());
+                i.putExtra("b_date", item.getBirthdate());
+                i.putExtra("phone1", item.getMobile());
+                i.putExtra("phone2", item.getPhone());
+                i.putExtra("address", item.getAddress());
+//                i.putExtra("online_id", item.getUserOnlineId());
                 startActivity(i);
             }
 
             @Override
-            public void onView(UserItem item, int position) {
+            public void onView(PatientListModel.Data.Patient item, int position) {
                 UserDetailFragment dialogD = new UserDetailFragment();
                 Bundle bundle = new Bundle();
-                bundle.putLong("user_id", item.getUserId());
-                bundle.putLong("online_id", item.getUserOnlineId());
+                bundle.putLong("user_id", item.getId());
+//                bundle.putLong("online_id", item.getUserOnlineId());
                 dialogD.setArguments(bundle);
                 dialogD.show(mActivity.getSupportFragmentManager(), UserDetailFragment.TAG);
             }
 
             @Override
-            public void changeStatus(View view, UserItem item, int position) {
-                setPopUpWindowForChangeStatus(view, item.getUserId(), item.getUserOnlineId(), item.getUserStatus());
+            public void changeStatus(View view, PatientListModel.Data.Patient item, int position) {
+//                setPopUpWindowForChangeStatus(view, item.getUserId(), item.getUserOnlineId(), item.getUserStatus());
             }
         });
         binding.rvPatient.setAdapter(adapter);
 
         checkForEmptyState();
         if (ConnectivityReceiver.isConnected()) {
-            getUsersFromDB();
-//            getUsers(pPosition);
+//            getUsersFromDB();
+            getPatients(pPosition);
 //            isLoadedOnline = true;
         } else {
             isLoadedOnline = false;
-            getUsersFromDB();
+//            getUsersFromDB();
         }
 
         binding.srlManageProject.setOnRefreshListener(() -> {
@@ -169,11 +167,11 @@ public class PatientFragment extends Fragment {
                 isLoadedOnline = true;
                 currentPage = PAGE_START;
 //                getUsersFromDB();
-                getUsersFromDB();
-                getUsers(pPosition);
+//                getUsersFromDB();
+                getPatients(pPosition);
             } else {
                 isLoadedOnline = false;
-                getUsersFromDB();
+//                getUsersFromDB();
             }
 
         });
@@ -214,7 +212,7 @@ public class PatientFragment extends Fragment {
                 searchText = s.toString();
                 if (isLoadedOnline) {
                     currentPage = PAGE_START;
-                    getUsers(pPosition);
+                    getPatients(pPosition);
                 } else {
                     adapter.searchUser(searchText);
                     checkForEmptyState();
@@ -229,20 +227,20 @@ public class PatientFragment extends Fragment {
             startActivity(i);
         });
 
-        getChildFragmentManager().setFragmentResultListener(REQUEST_DELETE_USER, this,
+        getChildFragmentManager().setFragmentResultListener(REQUEST_DELETE_HEALTH_PATIENT_LIST, this,
                 (requestKey, result) -> {
                     long userId = result.getLong("id");
-                    long onlineId = result.getLong("online_id");
+//                    long onlineId = result.getLong("online_id");
                     int position = result.getInt("position");
                     if (ConnectivityReceiver.isConnected()) {
 
 //                        deleteUserOffline(userId,onlineId, position);
-                        deleteUser(onlineId, position);
-                        deleteUserOffline(userId, position);
+                        deletePatient(userId, position);
+//                        deleteUserOffline(userId, position);
                     } else
-                        deleteUser(onlineId, position);
+                        deletePatient(userId, position);
 
-                    deleteUserOffline(userId, position);
+//                    deleteUserOffline(userId, position);
                 });
 
         return binding.getRoot();
@@ -253,41 +251,41 @@ public class PatientFragment extends Fragment {
         binding.tvEmptyState.setText(LanguageExtension.setText("no_user_found", getString(R.string.no_user_found)));
     }
 
-    private void getUsersFromDB() {
-        userList.clear();
-
-        userList.addAll(dbHandler.getUsers(isRemembered ? userSessionManager.getUserId() : Safra.userId));
-
-        for (UserItem userItem : userList) {
-            if (PermissionExtension.checkForPermission(USER_VIEW))
-                userItem.setViewable(true);
-
-            if (PermissionExtension.checkForPermission(USER_DELETE))
-                userItem.setDeletable(true);
-
-            if (PermissionExtension.checkForPermission(USER_UPDATE))
-                userItem.setEditable(true);
-
-            if (PermissionExtension.checkForPermission(USER_STATUS))
-                userItem.setChangeable(true);
-        }
-
-        adapter.clearLists();
-        adapter.addUserList(userList);
-        Log.e(TAG, "getUsersFromDB: " + adapter.getItemCount());
-
-        checkForEmptyState();
-
-        if (binding.srlManageProject.isRefreshing())
-            binding.srlManageProject.setRefreshing(false);
-    }
+//    private void getUsersFromDB() {
+//        userList.clear();
+//
+//        userList.addAll(dbHandler.getUsers(isRemembered ? userSessionManager.getUserId() : Safra.userId));
+//
+//        for (UserItem userItem : userList) {
+//            if (PermissionExtension.checkForPermission(USER_VIEW))
+//                userItem.setViewable(true);
+//
+//            if (PermissionExtension.checkForPermission(USER_DELETE))
+//                userItem.setDeletable(true);
+//
+//            if (PermissionExtension.checkForPermission(USER_UPDATE))
+//                userItem.setEditable(true);
+//
+//            if (PermissionExtension.checkForPermission(USER_STATUS))
+//                userItem.setChangeable(true);
+//        }
+//
+//        adapter.clearLists();
+//        adapter.addUserList(userList);
+//        Log.e(TAG, "getUsersFromDB: " + adapter.getItemCount());
+//
+//        checkForEmptyState();
+//
+//        if (binding.srlManageProject.isRefreshing())
+//            binding.srlManageProject.setRefreshing(false);
+//    }
 
     private void loadMoreItems() {
         int p = ViewExtension.addLoadingAnimation(userList, adapter);
         currentPage++;
 //        progressLoading.setVisibility(View.VISIBLE);
         Log.e(TAG, "loadMoreItems: " + currentPage);
-        getUsers(p);
+//        getPatients(p);
     }
 
 //    private void addLoadingAnimation() {
@@ -297,16 +295,17 @@ public class PatientFragment extends Fragment {
 //        adapter.notifyItemInserted(pPosition);
 //    }
 
-    private void getUsers(int pPosition) {
+    private void getPatients(int pPosition) {
+        Log.e(TAG, "API CALL " + pPosition);
         binding.srlManageProject.setRefreshing(currentPage == PAGE_START);
 
         isNextPageCalled = true;
         AndroidNetworking
-                .post(BASE_URL + USER_LIST_API)
+                .post(BASE_URL + HEALTH_RECORD_PATIENT_LIST)
                 .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .addBodyParameter("page_no", String.valueOf(currentPage))
-                .addBodyParameter("search_text", searchText)
-                .setTag("user-list-api")
+//                .addBodyParameter("page_no", String.valueOf(currentPage))
+//                .addBodyParameter("search_text", searchText)
+//                .setTag("user-list-api")
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -317,9 +316,9 @@ public class PatientFragment extends Fragment {
                             String message = response.getString("message");
                             if (success == 1) {
                                 JSONObject data = response.getJSONObject("data");
-                                JSONArray users = data.getJSONArray("user_list");
-                                int totalPage = data.getInt("total_page");
-                                currentPage = data.getInt("current_page");
+                                JSONArray users = data.getJSONArray("patients");
+                                Log.e(TAG, "onResponse Success: " + users);
+
 
                                 if (currentPage == PAGE_START) {
                                     userList.clear();
@@ -328,62 +327,27 @@ public class PatientFragment extends Fragment {
                                 }
 
                                 if (users.length() > 0) {
-                                    List<UserItem> uList = new ArrayList<>();
+//                                    List<UserItem> uList = new ArrayList<>();
+                                    List<PatientListModel.Data.Patient> uList = new ArrayList<>();
                                     for (int i = 0; i < users.length(); i++) {
                                         JSONObject user = users.getJSONObject(i);
-                                        UserItem userItem = new UserItem();
-                                        userItem.setUserOnlineId(user.getInt("user_id"));
-                                        userItem.setUserName(user.getString("user_name"));
-                                        userItem.setUserStatus(user.getInt("user_status"));
-                                        userItem.setUserAddedBy(user.getLong("user_master_id"));
+//                                        UserItem userItem = new UserItem();
+                                        PatientListModel.Data.Patient userItem = new PatientListModel.Data.Patient();
+                                        userItem.setId(user.getInt("id"));
+                                        userItem.setUser_id(user.getInt("user_id"));
+                                        userItem.setFirst_name(user.getString("first_name"));
+                                        userItem.setMiddle_name(user.getString("middle_name"));
+                                        userItem.setLast_name(user.getString("last_name"));
+                                        userItem.setGender(user.getString("gender"));
+                                        userItem.setBirthdate(user.getString("birthdate"));
+//                                        userItem.setPhone(user.getInt("phone"));
+                                        userItem.setAddress(user.getString("address"));
 
-                                        if (user.has("user_email") && !user.isNull("user_email")) {
-                                            userItem.setUserEmail(user.getString("user_email"));
-                                        }
 
-                                        if (user.has("user_phone_no") && !user.isNull("user_phone_no")) {
-                                            userItem.setUserPhone(user.getString("user_phone_no"));
-                                        }
-
-                                        if (user.has("user_password") && !user.isNull("user_password")) {
-                                            userItem.setUserPassword(user.getString("user_password"));
-                                        } else {
-                                            userItem.setUserPassword("");
-                                        }
-
-                                        if (user.has("role_id") && !user.isNull("role_id")) {
-                                            userItem.setRoleId(user.getInt("role_id"));
-                                        }
-
-                                        if (user.has("role_name") && !user.isNull("role_name")) {
-                                            userItem.setRoleName(user.getString("role_name"));
-                                        }
-
-                                        if (user.has("user_image_url") && !user.isNull("user_image_url")) {
-                                            userItem.setUserProfile(user.getString("user_image_url"));
-                                        }
-
-                                        if (user.has("user_module_ids") && !user.isNull("user_module_ids")) {
-                                            userItem.setModuleIds(GeneralExtension
-                                                    .toLongArray(user.getString("user_module_ids"), ","));
-                                        }
-
-                                        if (user.has("user_permission_ids") && !user.isNull("user_permission_ids")) {
-                                            userItem.setPermissionIds(GeneralExtension
-                                                    .toLongArray(user.getString("user_permission_ids"), ","));
-                                        }
-
-                                        if (PermissionExtension.checkForPermission(USER_VIEW))
-                                            userItem.setViewable(true);
-
-                                        if (PermissionExtension.checkForPermission(USER_DELETE))
-                                            userItem.setDeletable(true);
-
-                                        if (PermissionExtension.checkForPermission(USER_UPDATE))
-                                            userItem.setEditable(true);
-
-                                        if (PermissionExtension.checkForPermission(USER_STATUS))
-                                            userItem.setChangeable(true);
+                                        if (user.has("phone") && !user.isNull("phone"))
+                                            userItem.setPhone(user.getString("phone"));
+                                        if (user.has("mobile") && !user.isNull("mobile"))
+                                            userItem.setMobile(user.getString("mobile"));
 
                                         uList.add(userItem);
 //                                        dbHandler.AddPatient(userItem);
@@ -406,12 +370,12 @@ public class PatientFragment extends Fragment {
 
                                 checkForEmptyState();
 
-                                isLastPage = totalPage <= currentPage;
+//                                isLastPage = totalPage <= currentPage;
                             } else {
                                 Toast.makeText(mActivity, message, Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
-                            Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
+                            Log.e(TAG, "onResponse Error: " + e.getLocalizedMessage());
                         }
 
                         isNextPageCalled = false;
@@ -451,7 +415,7 @@ public class PatientFragment extends Fragment {
         }
     }
 
-    public void deleteUser(long userId, int position) {
+    public void deletePatient(long userId, int position) {
         LoadingDialogExtension.showLoading(mActivity, LanguageExtension.setText("deleting_progress", getString(R.string.deleting_progress)));
 //        LoadingDialog dialogL = new LoadingDialog();
 //        dialogL.setCancelable(false);
@@ -461,10 +425,10 @@ public class PatientFragment extends Fragment {
 //        dialogL.show(getChildFragmentManager(), LoadingDialog.TAG);
 
         AndroidNetworking
-                .post(BASE_URL + USER_DELETE_API)
+                .post(BASE_URL + HEALTH_RECORD_DELETE_PATIENT)
                 .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .addBodyParameter("user_id", String.valueOf(userId))
-                .setTag("delete-user-api")
+                .addBodyParameter("patientId", String.valueOf(userId))
+//                .setTag("delete-user-api")
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -503,11 +467,11 @@ public class PatientFragment extends Fragment {
             if (ConnectivityReceiver.isConnected()) {
                 isLoadedOnline = true;
                 currentPage = PAGE_START;
-//                getUsers(pPosition);
-                getUsersFromDB();
+//                getPatients(pPosition);
+//                getUsersFromDB();
             } else {
                 isLoadedOnline = false;
-                getUsersFromDB();
+//                getUsersFromDB();
             }
         }
     }
@@ -541,10 +505,10 @@ public class PatientFragment extends Fragment {
                                 if (ConnectivityReceiver.isConnected()) {
                                     isLoadedOnline = true;
                                     currentPage = PAGE_START;
-                                    getUsers(pPosition);
+                                    getPatients(pPosition);
                                 } else {
                                     isLoadedOnline = false;
-                                    getUsersFromDB();
+//                                    getUsersFromDB();
                                 }
                             }
                         } catch (JSONException e) {
@@ -622,14 +586,14 @@ public class PatientFragment extends Fragment {
 //            if (ConnectivityReceiver.isConnected()) {
 //                isLoadedOnline = true;
 //                currentPage = PAGE_START;
-//                getUsers(pPosition);
+//                getPatients(pPosition);
 //            } else {
 //                isLoadedOnline = false;
 //                getUsersFromDB();
 //            }
 //        }
 
-//        if (requestCode == REQUEST_DELETE_USER && resultCode == RESULT_SUCCESS_DELETE_USER) {
+//        if (requestCode == REQUEST_DELETE_HEALTH_PATIENT_LIST && resultCode == RESULT_SUCCESS_DELETE_USER) {
 //            if (data != null) {
 //                Bundle bundle = data.getExtras();
 //                long userId = bundle.getLong("id");
@@ -644,14 +608,14 @@ public class PatientFragment extends Fragment {
 //    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUserAdded(UserAddedEvent event) {
+    public void onUserAdded(TaskAddedEvent event) {
         if (ConnectivityReceiver.isConnected()) {
             isLoadedOnline = true;
             currentPage = PAGE_START;
-            getUsers(pPosition);
+            getPatients(pPosition);
         } else {
             isLoadedOnline = false;
-            getUsersFromDB();
+//            getUsersFromDB();
         }
     }
 

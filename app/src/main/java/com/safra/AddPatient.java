@@ -4,6 +4,8 @@ import static com.safra.db.DBHandler.dbHandler;
 import static com.safra.utilities.Common.BASE_URL;
 import static com.safra.utilities.Common.DATE_FORMAT;
 import static com.safra.utilities.Common.GROUP_LIST_API;
+import static com.safra.utilities.Common.HEALTH_RECORD_PATIENT_LIST_UPDATE;
+import static com.safra.utilities.Common.HEALTH_RECORD_PATIENT_REGISTER;
 import static com.safra.utilities.Common.PAGE_START;
 import static com.safra.utilities.Common.SERVER_DATE_FORMAT;
 import static com.safra.utilities.Common.TASK_SAVE_API;
@@ -13,6 +15,7 @@ import static com.safra.utilities.UserSessionManager.userSessionManager;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,7 +27,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +38,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.google.android.material.chip.Chip;
+import com.safra.adapters.GenderListAdapter;
 import com.safra.adapters.GroupCustomSpinnerAdapter;
 import com.safra.adapters.PrioritySpinnerAdapter;
 import com.safra.adapters.UserCustomSpinnerAdapter;
@@ -65,13 +72,6 @@ public class AddPatient extends AppCompatActivity {
     public static final String TAG = "add_patient_fragment";
 
     private ActivityAddPatientBinding binding;
-
-    private final List<UserItem> userList = new ArrayList<>();
-    private UserCustomSpinnerAdapter adapterU;
-
-    private final List<RoleItem> groupList = new ArrayList<>();
-    private GroupCustomSpinnerAdapter adapterG;
-
     private boolean isRemembered;
 
     private Calendar calendarStart, calendarEnd;
@@ -79,12 +79,16 @@ public class AddPatient extends AppCompatActivity {
     private final SimpleDateFormat sdfForServer = new SimpleDateFormat(SERVER_DATE_FORMAT, Locale.getDefault());
 
     private int selectedPriority = 1;
-
+    String spinnerStatusName;
     private boolean isNew;
-    private long taskId = -1, onlineId = -1;
+    private long patientId = -1, onlineId = -1;
     private TaskItem taskItem = null;
+    String fName,mName,lName,b_Date,phone1,phone2,address;
     private List<Long> currentUsers = new ArrayList<>();
     private List<Long> currentGroups = new ArrayList<>();
+    ArrayList<ShipmentStatus> shipmentStatusList = new ArrayList<>();
+    Spinner shipmentStatusSpinner;
+    int undefinedValue;
 
     private boolean isUserDataReceived = false, isGroupDataReceived = false;
 
@@ -106,6 +110,32 @@ public class AddPatient extends AppCompatActivity {
 
         binding.etBirthDate.setFocusableInTouchMode(false);
 
+        CheckBox checkboxUnidentified = findViewById(R.id.checkbox_unidentified);
+        ConstraintLayout clPatientFName = findViewById(R.id.clPatientFName);
+        ConstraintLayout clPatientMName = findViewById(R.id.clPatientMName);
+        ConstraintLayout clPatientLName = findViewById(R.id.clPatientLName);
+
+        checkboxUnidentified.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                undefinedValue = isChecked ? 1 : 0;
+
+                if (isChecked) {
+                    // Checkbox is selected, hide the constraint layouts
+                    clPatientFName.setVisibility(View.GONE);
+                    clPatientMName.setVisibility(View.GONE);
+                    clPatientLName.setVisibility(View.GONE);
+                } else {
+                    // Checkbox is not selected, unhide the constraint layouts
+                    clPatientFName.setVisibility(View.VISIBLE);
+                    clPatientMName.setVisibility(View.VISIBLE);
+                    clPatientLName.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+
+
 
         calendarStart = Calendar.getInstance();
         calendarEnd = Calendar.getInstance();
@@ -114,41 +144,79 @@ public class AddPatient extends AppCompatActivity {
             binding.tvAddProjectHeading.setText(getIntent().getStringExtra("heading"));
             isNew = getIntent().getBooleanExtra("is_new", false);
             if (isNew) {
+                System.out.println("NEW");
                 if (ConnectivityReceiver.isConnected()) {
 //                    getUserListFromDB();
 //                    getGroupListFromDB();
-                    getUsers(PAGE_START);
-                    getGroups(PAGE_START);
+
                 } else {
-                    getUserListFromDB();
-                    getGroupListFromDB();
+//                    getUserListFromDB();
+//                    getGroupListFromDB();
                 }
             } else {
-                taskId = getIntent().getLongExtra("task_id", -1);
+
+                System.out.println("EDIT");
+                patientId = getIntent().getIntExtra("patient_Id", -1);
                 onlineId = getIntent().getLongExtra("online_id", -1);
-                Log.e(TAG, "onCreate: " + taskId);
-                if (ConnectivityReceiver.isConnected())
-                    getEditData();
+                fName = getIntent().getStringExtra("f_name");
+                mName = getIntent().getStringExtra("m_name");
+                lName = getIntent().getStringExtra("l_name");
+                b_Date = getIntent().getStringExtra("b_date");
+                phone1 = getIntent().getStringExtra("phone1");
+                phone2 = getIntent().getStringExtra("phone2");
+                address = getIntent().getStringExtra("address");
+                binding.etPatientFName.setText(fName);
+                binding.etPatientMName.setText(mName);
+                binding.etPatientLName.setText(lName);
+                binding.etBirthDate.setText(b_Date);
+                binding.etPhoneNo.setText(phone1);
+                binding.etPhoneNo1.setText(phone2);
+                binding.etAddress.setText(address);
+                Log.e(TAG, "onCreate: " + patientId);
+//                if (ConnectivityReceiver.isConnected())
+//                    getEditData();
 //                getEditDataFromDB();
-                else
-                    getEditDataFromDB();
+//                else
+//                    getEditDataFromDB();
+//            }
             }
         }
 
-        PrioritySpinnerAdapter adapterP = new PrioritySpinnerAdapter(this, getPriorityList());
-        binding.spnGender.setAdapter(adapterP);
+        shipmentStatusList.add(new ShipmentStatus("M"));
+        shipmentStatusList.add(new ShipmentStatus("F"));
+        shipmentStatusList.add(new ShipmentStatus("Other"));
 
-        binding.spnGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+        shipmentStatusSpinner = findViewById(R.id.spnGender);
+        GenderListAdapter adapter = new GenderListAdapter(this, shipmentStatusList);
+        shipmentStatusSpinner.setAdapter(adapter);
+
+        shipmentStatusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedPriority = ((PriorityItem) parent.getSelectedItem()).getPriorityStatus();
+                ShipmentStatus selectedStatus = (ShipmentStatus) parent.getItemAtPosition(position);
+                spinnerStatusName = selectedStatus.getStatusName();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                // Do nothing
             }
         });
+//        PrioritySpinnerAdapter adapterP = new PrioritySpinnerAdapter(this, getPriorityList());
+//        binding.spnGender.setAdapter(adapterP);
+//
+//        binding.spnGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                selectedPriority = ((PriorityItem) parent.getSelectedItem()).getPriorityStatus();
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
 
 
         binding.etBirthDate.setOnClickListener(v -> {
@@ -178,148 +246,22 @@ public class AddPatient extends AppCompatActivity {
     }
 
     private void getEditDataFromDB() {
-        taskItem = dbHandler.getTaskDetails(taskId);
+        taskItem = dbHandler.getTaskDetails(patientId);
         setTaskDetails();
 
         currentUsers = GeneralExtension.toLongList(taskItem.getUserIds());
         currentGroups = GeneralExtension.toLongList(taskItem.getGroupIds());
 
-        getUserListFromDB();
-        getGroupListFromDB();
+//        getUserListFromDB();
+//        getGroupListFromDB();
     }
 
-    private void getUserListFromDB() {
-        userList.clear();
-
-        UserItem selfItem = new UserItem();
-        selfItem.setUserOnlineId(isRemembered ? userSessionManager.getUserId() : Safra.userId);
-        selfItem.setUserName("Assign To Self");
-        userList.add(selfItem);
-        userList.addAll(dbHandler.getUsers(isRemembered ? userSessionManager.getUserId() : Safra.userId));
-
-        if (currentUsers.size() > 0) {
-            for (UserItem ui : userList) {
-                Log.e(TAG, "getUserListFromDB: " + ui.getUserOnlineId());
-                ui.setSelected(currentUsers.contains(ui.getUserOnlineId()));
-            }
-
-            for (UserItem ui : userList) {
-                if (currentUsers.contains(ui.getUserOnlineId())) {
-                    Chip chip = new Chip(AddPatient.this);
-                    chip.setText(ui.getUserName());
 
 
-                }
-            }
-
-
-        }
-    }
-
-    private void getGroupListFromDB() {
-        groupList.clear();
-        groupList.addAll(dbHandler.getGroups(isRemembered ? userSessionManager.getUserId() : Safra.userId));
-
-        if (currentGroups.size() > 0) {
-            for (RoleItem ri : groupList) {
-                ri.setSelected(currentGroups.contains(ri.getRoleOnlineId()));
-            }
-
-
-            for (RoleItem ri : groupList) {
-                if (currentGroups.contains(ri.getRoleOnlineId())) {
-                    Chip chip = new Chip(AddPatient.this);
-                    chip.setText(ri.getRoleName());
-
-
-                }
-            }
-
-
-        }
-    }
-
-    private void getEditData() {
-        LoadingDialogExtension.showLoading(this, LanguageExtension.setText("getting_data_progress", getString(R.string.getting_data_progress)));
-//        LoadingDialog dialogL = new LoadingDialog();
-//        dialogL.setCancelable(false);
-//        Bundle bundle = new Bundle();
-//        bundle.putString("loading_message", LanguageExtension.setText("getting_data_progress", getString(R.string.getting_data_progress)));
-//        dialogL.setArguments(bundle);
-//        dialogL.show(getSupportFragmentManager(), LoadingDialog.TAG);
-
-        AndroidNetworking
-                .post(BASE_URL + TASK_VIEW_API)
-                .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .addBodyParameter("task_id", String.valueOf(onlineId))
-                .setTag("task-detail-api")
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        LoadingDialogExtension.hideLoading();
-                        try {
-                            int success = response.getInt("success");
-                            String message = response.getString("message");
-                            if (success == 1) {
-                                JSONObject taskData = response.getJSONObject("data").getJSONObject("task_data");
-                                taskItem = new TaskItem();
-                                taskItem.setTaskOnlineId(taskData.getLong("task_id"));
-                                taskItem.setTaskName(taskData.getString("task_title"));
-
-                                if (!taskData.isNull("task_details"))
-                                    taskItem.setTaskDetail(taskData.getString("task_details"));
-
-                                if (!taskData.isNull("task_priority"))
-                                    taskItem.setPriority(taskData.getInt("task_priority"));
-
-                                if (!taskData.isNull("task_start_date"))
-                                    taskItem.setStartDate(taskData.getLong("task_start_date") * 1000);
-
-                                if (!taskData.isNull("task_end_date"))
-                                    taskItem.setEndDate(taskData.getLong("task_end_date") * 1000);
-
-                                taskItem.setAddedBy(taskData.getLong("added_by"));
-
-                                if (!taskData.isNull("task_group_ids")) {
-                                    Long[] groups = GeneralExtension.toLongArray(taskData.getString("task_group_ids"), ",");
-                                    currentGroups = GeneralExtension.toLongList(groups);
-                                }
-
-                                if (!taskData.isNull("task_user_ids")) {
-                                    Long[] users = GeneralExtension.toLongArray(taskData.getString("task_user_ids"), ",");
-                                    currentUsers = GeneralExtension.toLongList(users);
-                                }
-
-                                setTaskDetails();
-
-                                getUsers(PAGE_START);
-                                getGroups(PAGE_START);
-
-                            } else {
-                                Toast.makeText(AddPatient.this, message, Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (JSONException e) {
-                            Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
-                        }
-
-//                        dialogL.dismiss();
-                    }
-
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.e(TAG, "onError: " + anError.getErrorCode());
-                        Log.e(TAG, "onError: " + anError.getErrorDetail());
-                        Log.e(TAG, "onError: " + anError.getErrorBody());
-                        LoadingDialogExtension.hideLoading();
-//                        dialogL.dismiss();
-                    }
-                });
-    }
 
 
     private void setTaskDetails() {
-        taskId = taskItem.getTaskId();
+        patientId = taskItem.getTaskId();
         onlineId = taskItem.getTaskOnlineId();
         binding.etPatientFName.setText(taskItem.getTaskName());
         binding.etPatientMName.setText(taskItem.getTaskName());
@@ -349,22 +291,10 @@ public class AddPatient extends AppCompatActivity {
         String sDate = binding.etBirthDate.getText() != null ? binding.etBirthDate.getText().toString() : "";
         String eAddress = binding.etAddress.getText() != null ? binding.etAddress.getText().toString() : "";
 
-        String cUser = GeneralExtension.toString(currentUsers);
-        String cGroup = GeneralExtension.toString(currentGroups);
 
-        if (fName.isEmpty() || mName.isEmpty() || lName.isEmpty() || sDate.isEmpty() || tPhone.isEmpty()|| tPhone2.isEmpty()|| eAddress.isEmpty()) {
-            if (fName.isEmpty()) {
-                binding.etPatientFName.setError(LanguageExtension.setText("enter_first_name", getString(R.string.enter_first_name)));
-                binding.etPatientFName.requestFocus();
-            }
-            if (mName.isEmpty()) {
-                binding.etPatientMName.setError(LanguageExtension.setText("enter_middle_name", getString(R.string.enter_middle_name)));
-                binding.etPatientMName.requestFocus();
-            }
-            if (lName.isEmpty()) {
-                binding.etPatientLName.setError(LanguageExtension.setText("enter_last_name", getString(R.string.enter_last_name)));
-                binding.etPatientLName.requestFocus();
-            }
+
+        if (sDate.isEmpty() || tPhone.isEmpty()) {
+
             if (sDate.isEmpty()) {
                 binding.etBirthDate.setError(LanguageExtension.setText("enter_end_date", getString(R.string.enter_end_date)));
                 binding.etBirthDate.requestFocus();
@@ -384,22 +314,31 @@ public class AddPatient extends AppCompatActivity {
         } else {
             if (ConnectivityReceiver.isConnected()) {
                 HashMap<String, String> parameters = new HashMap<>();
-                parameters.put("task_title", fName);
-                if (!mName.isEmpty())
-                    parameters.put("task_details", mName);
-                parameters.put("task_priority", String.valueOf(selectedPriority));
-                parameters.put("task_start_date", sdfForServer.format(new Date(calendarStart.getTimeInMillis())));
-                parameters.put("task_end_date", sdfForServer.format(new Date(calendarEnd.getTimeInMillis())));
-                if (!cUser.isEmpty())
-                    parameters.put("task_user_ids", cUser);
-                if (!cGroup.isEmpty())
-                    parameters.put("task_group_ids", cGroup);
-                if (isNew) {
-                    saveTask(parameters);
-                } else {
-                    parameters.put("task_id", String.valueOf(taskId));
 
-                    editTask(parameters);
+                parameters.put("address", eAddress);
+                parameters.put("mobile", tPhone);
+                parameters.put("phone", tPhone2);
+                parameters.put("gender", String.valueOf(spinnerStatusName));
+                parameters.put("birthdate", sdfForServer.format(new Date(calendarStart.getTimeInMillis())));
+                parameters.put("undefined", String.valueOf(undefinedValue));
+
+                if(undefinedValue == 1){
+                    System.out.println("PASS NULL");
+
+                }else if(undefinedValue == 0){
+                    System.out.println("PASS VALUE");
+                    parameters.put("first_name", fName);
+                    parameters.put("middle_name", mName);
+                    parameters.put("last_name", lName);
+                }
+
+                if (isNew) {
+                    savePatient(parameters);
+                } else {
+
+                    parameters.put("patientId", String.valueOf(patientId));
+
+                    editPatient(parameters);
                 }
             } else {
                 if (taskItem == null)
@@ -412,10 +351,7 @@ public class AddPatient extends AppCompatActivity {
                 taskItem.setEndDate(calendarEnd.getTimeInMillis());
                 taskItem.setAddedBy(isRemembered ? userSessionManager.getUserId() : Safra.userId);
                 taskItem.setAddedByName(isRemembered ? userSessionManager.getUserName() : Safra.userName);
-                if (!cUser.isEmpty())
-                    taskItem.setUserIds(GeneralExtension.toLongArray(cUser, ","));
-                if (!cGroup.isEmpty())
-                    taskItem.setGroupIds(GeneralExtension.toLongArray(cGroup, ","));
+
                 if (isRemembered ? userSessionManager.isAgency() : Safra.isAgency)
                     taskItem.setMasterId(isRemembered ? userSessionManager.getUserId() : Safra.userId);
 
@@ -432,7 +368,7 @@ public class AddPatient extends AppCompatActivity {
                         finish();
                     }
                 } else {
-                    taskItem.setTaskId(taskId);
+                    taskItem.setTaskId(patientId);
                     taskItem.setTaskOnlineId(onlineId);
                     long i = dbHandler.updateTaskOffline(taskItem);
                     if (i > 0) {
@@ -444,315 +380,18 @@ public class AddPatient extends AppCompatActivity {
         }
     }
 
-    private void getUsers(int pageNo) {
-        if (pageNo == PAGE_START) {
-            LoadingDialogExtension.showLoading(this, LanguageExtension.setText("getting_data_progress", getString(R.string.getting_data_progress)));
-            isUserDataReceived = false;
-        }
-//        LoadingDialog dialogL = new LoadingDialog();
-//        dialogL.setCancelable(false);
-//        Bundle bundle = new Bundle();
-//        bundle.putString("loading_message", LanguageExtension.setText("getting_data_progress", getString(R.string.getting_data_progress)));
-//        dialogL.setArguments(bundle);
-//        dialogL.show(getSupportFragmentManager(), LoadingDialog.TAG);
-
-        AndroidNetworking
-                .post(BASE_URL + USER_LIST_API)
-                .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .addBodyParameter("page_no", String.valueOf(pageNo))
-                .setTag("user-list-api")
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            int success = response.getInt("success");
-                            String message = response.getString("message");
-                            if (success == 1) {
-                                JSONObject data = response.getJSONObject("data");
-                                JSONArray users = data.getJSONArray("user_list");
-                                int totalPage = data.getInt("total_page");
-                                int currentPage = data.getInt("current_page");
-
-                                if (currentPage == PAGE_START) {
-                                    userList.clear();
-
-                                    UserItem selfItem = new UserItem();
-                                    selfItem.setUserId(isRemembered ? userSessionManager.getUserId() : Safra.userId);
-                                    selfItem.setUserName(LanguageExtension.setText("assign_to_self", getString(R.string.assign_to_self)));
-                                    userList.add(selfItem);
-                                }
-
-                                if (users.length() > 0) {
-                                    for (int i = 0; i < users.length(); i++) {
-                                        JSONObject user = users.getJSONObject(i);
-                                        UserItem userItem = new UserItem();
-                                        userItem.setUserOnlineId(user.getInt("user_id"));
-                                        userItem.setUserName(user.getString("user_name"));
-                                        userItem.setUserStatus(user.getInt("user_status"));
-
-                                        if (user.has("user_email") && !user.isNull("user_email"))
-                                            userItem.setUserEmail(user.getString("user_email"));
-
-                                        if (user.has("user_phone_no") && !user.isNull("user_phone_no"))
-                                            userItem.setUserPhone(user.getString("user_phone_no"));
-
-                                        if (user.has("role_id") && !user.isNull("role_id"))
-                                            userItem.setRoleId(user.getInt("role_id"));
-
-                                        if (user.has("role_name") && !user.isNull("role_name"))
-                                            userItem.setRoleName(user.getString("role_name"));
-
-                                        if (currentUsers.size() > 0)
-                                            userItem.setSelected(currentUsers.contains(userItem.getUserOnlineId()));
-
-                                        userList.add(userItem);
-                                    }
-                                }
-
-                                if (currentUsers.size() > 0) {
-
-                                    for (UserItem ui : userList) {
-                                        if (currentUsers.contains(ui.getUserOnlineId())) {
-                                            Chip chip = new Chip(AddPatient.this);
-                                            chip.setText(ui.getUserName());
 
 
-                                        }
-                                    }
+//    private List<PriorityItem> getPriorityList() {
+//        List<PriorityItem> priorityList = new ArrayList<>();
+//        priorityList.add(new PriorityItem(1, LanguageExtension.setText("male", getString(R.string.male))));
+//        priorityList.add(new PriorityItem(2, LanguageExtension.setText("female", getString(R.string.female))));
+//        priorityList.add(new PriorityItem(3, LanguageExtension.setText("other", getString(R.string.other))));
+//
+//        return priorityList;
+//    }
 
-
-                                }
-
-                                if (currentPage < totalPage) {
-                                    getUsers(++currentPage);
-                                } else {
-                                    isUserDataReceived = true;
-                                    if (isGroupDataReceived)
-                                        LoadingDialogExtension.hideLoading();
-                                }
-                            } else {
-                                Toast.makeText(AddPatient.this, message, Toast.LENGTH_SHORT).show();
-                                isUserDataReceived = true;
-                                if (isGroupDataReceived)
-                                    LoadingDialogExtension.hideLoading();
-                            }
-                        } catch (JSONException e) {
-                            Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
-                            isUserDataReceived = true;
-                            if (isGroupDataReceived)
-                                LoadingDialogExtension.hideLoading();
-                        }
-
-//                        dialogL.dismiss();
-                    }
-
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.e(TAG, "onError: code -> " + anError.getErrorCode());
-                        Log.e(TAG, "onError: detail -> " + anError.getErrorDetail());
-                        Log.e(TAG, "onError: body -> " + anError.getErrorBody());
-                        isUserDataReceived = true;
-                        if (isGroupDataReceived)
-                            LoadingDialogExtension.hideLoading();
-//                        dialogL.dismiss();
-                    }
-                });
-    }
-
-    public void getGroups(int pageNo) {
-        if (pageNo == PAGE_START) {
-            LoadingDialogExtension.showLoading(this, LanguageExtension.setText("getting_data_progress", getString(R.string.getting_data_progress)));
-            isGroupDataReceived = false;
-        }
-//        LoadingDialog dialogL = new LoadingDialog();
-//        dialogL.setCancelable(false);
-//        Bundle bundle = new Bundle();
-//        bundle.putString("loading_message", LanguageExtension.setText("getting_data_progress", getString(R.string.getting_data_progress)));
-//        dialogL.setArguments(bundle);
-//        dialogL.show(getSupportFragmentManager(), LoadingDialog.TAG);
-
-        AndroidNetworking
-                .post(BASE_URL + GROUP_LIST_API)
-                .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .addBodyParameter("page_no", String.valueOf(pageNo))
-                .setTag("group-list-api")
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            int success = response.getInt("success");
-                            String message = response.getString("message");
-                            if (success == 1) {
-                                JSONObject data = response.getJSONObject("data");
-                                JSONArray roles = data.getJSONArray("role_list");
-                                int totalPage = data.getInt("total_page");
-                                int currentPage = data.getInt("current_page");
-
-                                if (currentPage == PAGE_START) {
-                                    groupList.clear();
-                                }
-
-                                if (roles.length() > 0) {
-                                    for (int i = 0; i < roles.length(); i++) {
-                                        JSONObject role = roles.getJSONObject(i);
-                                        RoleItem roleItem = new RoleItem();
-                                        roleItem.setRoleOnlineId(role.getInt("role_id"));
-                                        roleItem.setRoleName(role.getString("role_name"));
-
-                                        if (role.has("role_module_ids") && !role.isNull("role_module_ids"))
-                                            roleItem.setModuleIds(GeneralExtension
-                                                    .toLongArray(role.getString("role_module_ids"), ","));
-
-                                        if (role.has("role_permission_ids") && !role.isNull("role_permission_ids"))
-                                            roleItem.setPermissionIds(GeneralExtension
-                                                    .toLongArray(role.getString("role_permission_ids"), ","));
-
-                                        if (role.has("added_by") && !role.isNull("added_by"))
-                                            roleItem.setAddedBy(role.getLong("added_by"));
-
-                                        if (currentGroups.size() > 0)
-                                            roleItem.setSelected(currentGroups.contains(roleItem.getRoleOnlineId()));
-
-                                        groupList.add(roleItem);
-                                    }
-                                }
-
-                                if (currentGroups.size() > 0) {
-
-                                    for (RoleItem ri : groupList) {
-                                        if (currentGroups.contains(ri.getRoleOnlineId())) {
-                                            Chip chip = new Chip(AddPatient.this);
-                                            chip.setText(ri.getRoleName());
-
-
-                                        }
-                                    }
-
-
-                                }
-
-                                if (currentPage < totalPage) {
-                                    getGroups(++currentPage);
-                                } else {
-                                    isGroupDataReceived = true;
-                                    if(isUserDataReceived)
-                                        LoadingDialogExtension.hideLoading();
-                                }
-                            } else {
-                                Toast.makeText(AddPatient.this, message, Toast.LENGTH_SHORT).show();
-                                isGroupDataReceived = true;
-                                if(isUserDataReceived)
-                                    LoadingDialogExtension.hideLoading();
-                            }
-                        } catch (JSONException e) {
-                            Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
-                            isGroupDataReceived = true;
-                            if(isUserDataReceived)
-                                LoadingDialogExtension.hideLoading();
-                        }
-
-//                        dialogL.dismiss();
-                    }
-
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.e(TAG, "onError: code -> " + anError.getErrorCode());
-                        Log.e(TAG, "onError: detail -> " + anError.getErrorDetail());
-                        Log.e(TAG, "onError: body -> " + anError.getErrorBody());
-                        isGroupDataReceived = true;
-                        if(isUserDataReceived)
-                            LoadingDialogExtension.hideLoading();
-//                        dialogL.dismiss();
-                    }
-                });
-    }
-
-    private void openUserDialog(Context context, List<UserItem> options) {
-        View view = LayoutInflater.from(context).inflate(R.layout.dialog_spinner, null, false);
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        alertDialogBuilder.setView(view);
-
-        final RecyclerView optionRecycler = view.findViewById(R.id.rvOptions);
-        optionRecycler.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
-//        optionRecycler.addItemDecoration(new LineHorizontalItemDecoration(this, R.dimen.recycler_bottom_offset, false));
-        final AlertDialog alertDialog = alertDialogBuilder.create();
-
-        TextView dialogTitle = view.findViewById(R.id.tvDialogTitle);
-        dialogTitle.setText(LanguageExtension.setText("select_user", getString(R.string.select_user)));
-        ImageView close = view.findViewById(R.id.ivClose);
-
-        alertDialog.show();
-        alertDialog.getWindow().setLayout(context.getResources().getDimensionPixelSize(R.dimen.dialog_width), ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        close.setOnClickListener(v -> alertDialog.dismiss());
-
-        adapterU = new UserCustomSpinnerAdapter(context, options, (item, position) -> {
-
-            currentUsers.clear();
-            if (adapterU.getSelected().size() > 0) {
-                for (UserItem ui : adapterU.getSelected()) {
-                    currentUsers.add(ui.getUserOnlineId());
-                    Chip chip = new Chip(this);
-                    chip.setText(ui.getUserName());
-
-
-                }
-            }
-
-
-        });
-        optionRecycler.setAdapter(adapterU);
-    }
-
-    private void openGroupDialog(Context context, List<RoleItem> options) {
-        View view = LayoutInflater.from(context).inflate(R.layout.dialog_spinner, null, false);
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        alertDialogBuilder.setView(view);
-
-        final RecyclerView optionRecycler = view.findViewById(R.id.rvOptions);
-        optionRecycler.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
-//        optionRecycler.addItemDecoration(new LineHorizontalItemDecoration(this, R.dimen.recycler_bottom_offset, false));
-        final AlertDialog alertDialog = alertDialogBuilder.create();
-
-        TextView dialogTitle = view.findViewById(R.id.tvDialogTitle);
-        dialogTitle.setText(LanguageExtension.setText("select_group", getString(R.string.select_group)));
-        ImageView close = view.findViewById(R.id.ivClose);
-
-        alertDialog.show();
-        alertDialog.getWindow().setLayout(context.getResources().getDimensionPixelSize(R.dimen.dialog_width), ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        close.setOnClickListener(v -> alertDialog.dismiss());
-
-        adapterG = new GroupCustomSpinnerAdapter(context, options, (item, position) -> {
-
-            currentGroups.clear();
-            if (adapterG.getSelected().size() > 0) {
-                for (RoleItem ri : adapterG.getSelected()) {
-                    currentGroups.add(ri.getRoleOnlineId());
-                    Chip chip = new Chip(this);
-                    chip.setText(ri.getRoleName());
-
-
-                }
-            }
-
-
-        });
-        optionRecycler.setAdapter(adapterG);
-    }
-
-    private List<PriorityItem> getPriorityList() {
-        List<PriorityItem> priorityList = new ArrayList<>();
-        priorityList.add(new PriorityItem(1, LanguageExtension.setText("high", getString(R.string.high))));
-        priorityList.add(new PriorityItem(2, LanguageExtension.setText("medium", getString(R.string.medium))));
-        priorityList.add(new PriorityItem(3, LanguageExtension.setText("low", getString(R.string.low))));
-
-        return priorityList;
-    }
-
-    private void saveTask(HashMap<String, String> parameters) {
+    private void savePatient(HashMap<String, String> parameters) {
         LoadingDialogExtension.showLoading(this, LanguageExtension.setText("saving_task_progress", getString(R.string.saving_task_progress)));
 //        LoadingDialog dialogL = new LoadingDialog();
 //        dialogL.setCancelable(false);
@@ -762,10 +401,10 @@ public class AddPatient extends AppCompatActivity {
 //        dialogL.show(getSupportFragmentManager(), LoadingDialog.TAG);
 
         AndroidNetworking
-                .post(BASE_URL + TASK_SAVE_API)
+                .post(BASE_URL + HEALTH_RECORD_PATIENT_REGISTER)
                 .addBodyParameter(parameters)
                 .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .setTag("save-task-api")
+//                .setTag("save-task-api")
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -797,7 +436,8 @@ public class AddPatient extends AppCompatActivity {
                 });
     }
 
-    private void editTask(HashMap<String, String> parameters) {
+    private void editPatient(HashMap<String, String> parameters) {
+        System.out.println("EDIT API CALL:- "+parameters);
         LoadingDialogExtension.showLoading(this, LanguageExtension.setText("updating_task_progress", getString(R.string.updating_task_progress)));
 //        LoadingDialog dialogL = new LoadingDialog();
 //        dialogL.setCancelable(false);
@@ -807,10 +447,10 @@ public class AddPatient extends AppCompatActivity {
 //        dialogL.show(getSupportFragmentManager(), LoadingDialog.TAG);
 
         AndroidNetworking
-                .post(BASE_URL + TASK_SAVE_API)
+                .post(BASE_URL + HEALTH_RECORD_PATIENT_LIST_UPDATE)
                 .addBodyParameter(parameters)
                 .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .setTag("edit-task-api")
+//                .setTag("edit-task-api")
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -841,4 +481,68 @@ public class AddPatient extends AppCompatActivity {
                     }
                 });
     }
+    public class ShipmentStatus {
+        private String statusName;
+
+        public ShipmentStatus(String statusName) {
+            this.statusName = statusName;
+        }
+
+        public String getStatusName() {
+            return statusName;
+        }
+    }
 }
+
+
+
+//    private void getUserListFromDB() {
+//        userList.clear();
+//
+//        UserItem selfItem = new UserItem();
+//        selfItem.setUserOnlineId(isRemembered ? userSessionManager.getUserId() : Safra.userId);
+//        selfItem.setUserName("Assign To Self");
+//        userList.add(selfItem);
+//        userList.addAll(dbHandler.getUsers(isRemembered ? userSessionManager.getUserId() : Safra.userId));
+//
+//        if (currentUsers.size() > 0) {
+//            for (UserItem ui : userList) {
+//                Log.e(TAG, "getUserListFromDB: " + ui.getUserOnlineId());
+//                ui.setSelected(currentUsers.contains(ui.getUserOnlineId()));
+//            }
+//
+//            for (UserItem ui : userList) {
+//                if (currentUsers.contains(ui.getUserOnlineId())) {
+//                    Chip chip = new Chip(AddPatient.this);
+//                    chip.setText(ui.getUserName());
+//
+//
+//                }
+//            }
+//
+//
+//        }
+//    }
+//
+//    private void getGroupListFromDB() {
+//        groupList.clear();
+//        groupList.addAll(dbHandler.getGroups(isRemembered ? userSessionManager.getUserId() : Safra.userId));
+//
+//        if (currentGroups.size() > 0) {
+//            for (RoleItem ri : groupList) {
+//                ri.setSelected(currentGroups.contains(ri.getRoleOnlineId()));
+//            }
+//
+//
+//            for (RoleItem ri : groupList) {
+//                if (currentGroups.contains(ri.getRoleOnlineId())) {
+//                    Chip chip = new Chip(AddPatient.this);
+//                    chip.setText(ri.getRoleName());
+//
+//
+//                }
+//            }
+//
+//
+//        }
+//    }
