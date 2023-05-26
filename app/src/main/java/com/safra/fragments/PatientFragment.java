@@ -68,11 +68,8 @@ public class PatientFragment extends Fragment {
     private FragmentActivity mActivity = null;
 
     private FragmentPatientBinding binding;
-
-    //    private final List<UserItem> userList = new ArrayList<>();
     private final List<PatientListModel.Data.Patient> userList = new ArrayList<>();
     private PatientRecyclerAdapter adapter;
-
     private String searchText = "";
     private int currentPage = PAGE_START;
     private boolean isLastPage = false;
@@ -93,12 +90,6 @@ public class PatientFragment extends Fragment {
         isRemembered = userSessionManager.isRemembered();
 
         setText();
-
-        if (PermissionExtension.checkForPermission(USER_ADD)) {
-            binding.fabAdd.setVisibility(View.VISIBLE);
-        } else {
-            binding.fabAdd.setVisibility(View.VISIBLE);
-        }
 
         binding.rvPatient.setLayoutManager(new LinearLayoutManager(mActivity, RecyclerView.VERTICAL, false));
         binding.rvPatient.addItemDecoration(new SpaceItemDecoration(mActivity, RecyclerView.VERTICAL,
@@ -137,12 +128,12 @@ public class PatientFragment extends Fragment {
 
             @Override
             public void onView(PatientListModel.Data.Patient item, int position) {
-                UserDetailFragment dialogD = new UserDetailFragment();
-                Bundle bundle = new Bundle();
-                bundle.putLong("user_id", item.getId());
-//                bundle.putLong("online_id", item.getUserOnlineId());
-                dialogD.setArguments(bundle);
-                dialogD.show(mActivity.getSupportFragmentManager(), UserDetailFragment.TAG);
+//                UserDetailFragment dialogD = new UserDetailFragment();
+//                Bundle bundle = new Bundle();
+//                bundle.putLong("user_id", item.getId());
+////                bundle.putLong("online_id", item.getUserOnlineId());
+//                dialogD.setArguments(bundle);
+//                dialogD.show(mActivity.getSupportFragmentManager(), UserDetailFragment.TAG);
             }
 
             @Override
@@ -251,34 +242,6 @@ public class PatientFragment extends Fragment {
         binding.tvEmptyState.setText(LanguageExtension.setText("no_user_found", getString(R.string.no_user_found)));
     }
 
-//    private void getUsersFromDB() {
-//        userList.clear();
-//
-//        userList.addAll(dbHandler.getUsers(isRemembered ? userSessionManager.getUserId() : Safra.userId));
-//
-//        for (UserItem userItem : userList) {
-//            if (PermissionExtension.checkForPermission(USER_VIEW))
-//                userItem.setViewable(true);
-//
-//            if (PermissionExtension.checkForPermission(USER_DELETE))
-//                userItem.setDeletable(true);
-//
-//            if (PermissionExtension.checkForPermission(USER_UPDATE))
-//                userItem.setEditable(true);
-//
-//            if (PermissionExtension.checkForPermission(USER_STATUS))
-//                userItem.setChangeable(true);
-//        }
-//
-//        adapter.clearLists();
-//        adapter.addUserList(userList);
-//        Log.e(TAG, "getUsersFromDB: " + adapter.getItemCount());
-//
-//        checkForEmptyState();
-//
-//        if (binding.srlManageProject.isRefreshing())
-//            binding.srlManageProject.setRefreshing(false);
-//    }
 
     private void loadMoreItems() {
         int p = ViewExtension.addLoadingAnimation(userList, adapter);
@@ -287,13 +250,6 @@ public class PatientFragment extends Fragment {
         Log.e(TAG, "loadMoreItems: " + currentPage);
 //        getPatients(p);
     }
-
-//    private void addLoadingAnimation() {
-//        userList.add(null);
-//        pPosition = userList.size() - 1;
-//        Log.e(TAG, "onLoadMore: " + pPosition);
-//        adapter.notifyItemInserted(pPosition);
-//    }
 
     private void getPatients(int pPosition) {
         Log.e(TAG, "API CALL " + pPosition);
@@ -316,8 +272,8 @@ public class PatientFragment extends Fragment {
                             String message = response.getString("message");
                             if (success == 1) {
                                 JSONObject data = response.getJSONObject("data");
-                                JSONArray users = data.getJSONArray("patients");
-                                Log.e(TAG, "onResponse Success: " + users);
+                                JSONArray patients = data.getJSONArray("patients");
+                                Log.e(TAG, "onResponse Success: " + patients);
 
 
                                 if (currentPage == PAGE_START) {
@@ -326,11 +282,11 @@ public class PatientFragment extends Fragment {
 //                                    pPosition = -1;
                                 }
 
-                                if (users.length() > 0) {
+                                if (patients.length() > 0) {
 //                                    List<UserItem> uList = new ArrayList<>();
                                     List<PatientListModel.Data.Patient> uList = new ArrayList<>();
-                                    for (int i = 0; i < users.length(); i++) {
-                                        JSONObject user = users.getJSONObject(i);
+                                    for (int i = 0; i < patients.length(); i++) {
+                                        JSONObject user = patients.getJSONObject(i);
 //                                        UserItem userItem = new UserItem();
                                         PatientListModel.Data.Patient userItem = new PatientListModel.Data.Patient();
                                         userItem.setId(user.getInt("id"));
@@ -397,12 +353,6 @@ public class PatientFragment extends Fragment {
                     }
                 });
 
-//        userList.clear();
-//        userList.add(new UserItem(1, "John Doe", "02/10/2021, 11:52 AM", "John.doe@safra.cloud", "Moderator", 10, 10));
-//        userList.add(new UserItem(2, "Jane Doe", "02/10/2021, 11:52 AM", "John.doe@safra.cloud", "Moderator", 10, 10));
-//
-//        adapter.notifyDataSetChanged();
-//        checkForEmptyState();
     }
 
     public void deleteUserOffline(long userId, int position) {
@@ -460,110 +410,6 @@ public class PatientFragment extends Fragment {
                     }
                 });
     }
-
-    public void changeUserStatusOffline(long userId, int userStatus) {
-        long i = dbHandler.updateUserStatusOffline(userId, userStatus);
-        if (i > 0) {
-            if (ConnectivityReceiver.isConnected()) {
-                isLoadedOnline = true;
-                currentPage = PAGE_START;
-//                getPatients(pPosition);
-//                getUsersFromDB();
-            } else {
-                isLoadedOnline = false;
-//                getUsersFromDB();
-            }
-        }
-    }
-
-    public void changeUserStatus(long userId, int userStatus) {
-        LoadingDialogExtension.showLoading(mActivity, LanguageExtension.setText("updating_progress", getString(R.string.updating_progress)));
-//        LoadingDialog dialogL = new LoadingDialog();
-//        dialogL.setCancelable(false);
-//        Bundle bundle = new Bundle();
-//        bundle.putString("loading_message", LanguageExtension.setText("updating_progress", getString(R.string.updating_progress)));
-//        dialogL.setArguments(bundle);
-//        dialogL.show(getChildFragmentManager(), LoadingDialog.TAG);
-
-        AndroidNetworking
-                .post(BASE_URL + USER_STATUS_API)
-                .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .addBodyParameter("user_id", String.valueOf(userId))
-                .addBodyParameter("user_status", String.valueOf(userStatus))
-                .setTag("change-user-status-api")
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        LoadingDialogExtension.hideLoading();
-                        try {
-                            int success = response.getInt("success");
-                            String message = response.getString("message");
-                            Toast.makeText(mActivity, message, Toast.LENGTH_SHORT).show();
-//                            dialogL.dismiss();
-                            if (success == 1) {
-                                if (ConnectivityReceiver.isConnected()) {
-                                    isLoadedOnline = true;
-                                    currentPage = PAGE_START;
-                                    getPatients(pPosition);
-                                } else {
-                                    isLoadedOnline = false;
-//                                    getUsersFromDB();
-                                }
-                            }
-                        } catch (JSONException e) {
-                            Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
-//                            dialogL.dismiss();
-                        }
-                    }
-
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.e(TAG, "onError: " + anError.getErrorCode());
-                        Log.e(TAG, "onError: " + anError.getErrorDetail());
-                        Log.e(TAG, "onError: " + anError.getErrorBody());
-                        LoadingDialogExtension.hideLoading();
-//                        dialogL.dismiss();
-                    }
-                });
-    }
-
-    private void setPopUpWindowForChangeStatus(View parentView, long userId, long onlineId, int currentStatus) {
-        PopupChangeUserStatusBinding popupBinding = PopupChangeUserStatusBinding.inflate(getLayoutInflater());
-
-        if (currentStatus == 1)
-            popupBinding.tvActivate.setVisibility(View.GONE);
-        else if (currentStatus == 0)
-            popupBinding.tvBlock.setVisibility(View.GONE);
-
-        popupBinding.tvActivate.setOnClickListener(v -> {
-            if (ConnectivityReceiver.isConnected())
-//                changeUserStatusOffline(userId, 1);
-                changeUserStatus(onlineId, 1);
-            else
-                changeUserStatusOffline(userId, 1);
-            popupWindow.dismiss();
-        });
-        popupBinding.tvBlock.setOnClickListener(v -> {
-            if (ConnectivityReceiver.isConnected())
-                changeUserStatus(onlineId, 0);
-//                changeUserStatusOffline(userId, 0);}
-            else
-                changeUserStatusOffline(userId, 0);
-            popupWindow.dismiss();
-        });
-
-        popupWindow = new PopupWindow(popupBinding.getRoot(), getResources().getDimensionPixelSize(R.dimen.group_edit_popup_width), ConstraintLayout.LayoutParams.WRAP_CONTENT, true);
-
-        popupWindow.setOutsideTouchable(true);
-        // Removes default background.
-        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-        popupWindow.setElevation(10f);
-
-        popupWindow.showAsDropDown(parentView, getResources().getDimensionPixelOffset(R.dimen._0dp), getResources().getDimensionPixelOffset(R.dimen._0dp), Gravity.TOP | Gravity.END);
-    }
-
     private void checkForEmptyState() {
         if (adapter != null) {
             if (adapter.getItemCount() > 0) {
@@ -578,34 +424,6 @@ public class PatientFragment extends Fragment {
             binding.clEmptyState.setVisibility(View.VISIBLE);
         }
     }
-
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == REQUEST_EDIT_USER && resultCode == RESULT_SUCCESS_EDIT_USER) {
-//            if (ConnectivityReceiver.isConnected()) {
-//                isLoadedOnline = true;
-//                currentPage = PAGE_START;
-//                getPatients(pPosition);
-//            } else {
-//                isLoadedOnline = false;
-//                getUsersFromDB();
-//            }
-//        }
-
-//        if (requestCode == REQUEST_DELETE_HEALTH_PATIENT_LIST && resultCode == RESULT_SUCCESS_DELETE_USER) {
-//            if (data != null) {
-//                Bundle bundle = data.getExtras();
-//                long userId = bundle.getLong("id");
-//                long onlineId = bundle.getLong("online_id");
-//                int position = bundle.getInt("position");
-//                if (ConnectivityReceiver.isConnected())
-//                    deleteUser(onlineId, position);
-//                else
-//                    deleteUserOffline(userId, position);
-//            }
-//        }
-//    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUserAdded(TaskAddedEvent event) {

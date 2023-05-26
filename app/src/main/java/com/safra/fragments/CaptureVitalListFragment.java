@@ -2,8 +2,10 @@ package com.safra.fragments;
 
 import static com.safra.db.DBHandler.dbHandler;
 import static com.safra.utilities.Common.BASE_URL;
+import static com.safra.utilities.Common.HEALTH_RECORD_CAPTURE_VITAL_DELETE;
+import static com.safra.utilities.Common.HEALTH_RECORD_CAPTURE_VITAL_LIST;
 import static com.safra.utilities.Common.PAGE_START;
-import static com.safra.utilities.Common.REQUEST_DELETE_USER;
+import static com.safra.utilities.Common.REQUEST_DELETE_HEALTH_PATIENT_CAPTURE_VITAL_LIST;
 import static com.safra.utilities.Common.USER_DELETE_API;
 import static com.safra.utilities.Common.USER_LIST_API;
 import static com.safra.utilities.Common.USER_STATUS_API;
@@ -41,21 +43,26 @@ import android.widget.Toast;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.google.gson.Gson;
 import com.safra.AddAllergies;
 import com.safra.AddCaptureVitals;
 import com.safra.R;
 import com.safra.Safra;
 import com.safra.adapters.AllergiesListRecyclerAdapter;
+import com.safra.adapters.CaptureVitalListRecyclerAdapter;
 import com.safra.databinding.FragmentAllergiesListBinding;
 import com.safra.databinding.FragmentCaptureVitalListBinding;
 import com.safra.databinding.PopupChangeUserStatusBinding;
 import com.safra.dialogs.DeleteDialog;
+import com.safra.events.TaskAddedEvent;
 import com.safra.events.UserAddedEvent;
 import com.safra.extensions.GeneralExtension;
 import com.safra.extensions.LanguageExtension;
 import com.safra.extensions.LoadingDialogExtension;
 import com.safra.extensions.PermissionExtension;
 import com.safra.extensions.ViewExtension;
+import com.safra.models.AppointmentListModel;
+import com.safra.models.CaptureVitalListModel;
 import com.safra.models.UserItem;
 import com.safra.utilities.ConnectivityReceiver;
 import com.safra.utilities.SpaceItemDecoration;
@@ -77,12 +84,14 @@ public class CaptureVitalListFragment extends DialogFragment {
 
     private FragmentCaptureVitalListBinding binding;
 
-    private AllergiesListRecyclerAdapter adapter;
+    private CaptureVitalListRecyclerAdapter adapter;
 
     private boolean isRemembered;
 
-
-    private final List<UserItem> userList = new ArrayList<>();
+    String fname, mname, lname;
+    String fullName = "";
+    private final List<CaptureVitalListModel.Data.Vital> userList = new ArrayList<>();
+    private long patientId;
 
     private String searchText = "";
     private int currentPage = PAGE_START;
@@ -110,25 +119,24 @@ public class CaptureVitalListFragment extends DialogFragment {
         binding.ivBack.setOnClickListener(v -> dismiss());
 
         setText();
+        patientId = getArguments().getLong("capture_patient_id");
+        fname = getArguments().getString("f_name", "");
+        mname = getArguments().getString("m_name", "");
+        lname = getArguments().getString("l_name", "");
+        fullName = " " + fname + " " + mname + " " + lname;
 
-        if (PermissionExtension.checkForPermission(USER_ADD)) {
-            binding.fabAdd.setVisibility(View.VISIBLE);
-        } else {
-            binding.fabAdd.setVisibility(View.VISIBLE);
-        }
 
         binding.rvCaptureVitalsList.setLayoutManager(new LinearLayoutManager(mActivity, RecyclerView.VERTICAL, false));
         binding.rvCaptureVitalsList.addItemDecoration(new SpaceItemDecoration(mActivity, RecyclerView.VERTICAL,
                 1, R.dimen.recycler_vertical_offset, R.dimen.recycler_horizontal_offset, true));
-        adapter = new AllergiesListRecyclerAdapter(mActivity, new AllergiesListRecyclerAdapter.OnItemClickListener() {
+        adapter = new CaptureVitalListRecyclerAdapter(mActivity, new CaptureVitalListRecyclerAdapter.OnItemClickListener() {
             @Override
-            public void onDelete(UserItem item, int position) {
+            public void onDelete(CaptureVitalListModel.Data.Vital item, int position) {
                 DeleteDialog dialogD = new DeleteDialog();
                 Bundle bundle = new Bundle();
-                bundle.putString("request_key", REQUEST_DELETE_USER);
+                bundle.putString("request_key", REQUEST_DELETE_HEALTH_PATIENT_CAPTURE_VITAL_LIST);
                 bundle.putString("message", LanguageExtension.setText("do_you_want_to_delete_this_user", getString(R.string.do_you_want_to_delete_this_user)));
-                bundle.putLong("id", item.getUserId());
-                bundle.putLong("online_id", item.getUserOnlineId());
+                bundle.putLong("id", item.getId());
                 bundle.putInt("position", position);
                 bundle.putString("type", "user");
                 dialogD.setArguments(bundle);
@@ -136,28 +144,17 @@ public class CaptureVitalListFragment extends DialogFragment {
             }
 
             @Override
-            public void onEdit(UserItem item, int position) {
-                Intent i = new Intent(mActivity, AddCaptureVitals.class);
-                i.putExtra("heading", LanguageExtension.setText("edit_patient", getString(R.string.edit_patient)));
-                i.putExtra("is_new", false);
-                i.putExtra("user_id", item.getUserId());
-                i.putExtra("online_id", item.getUserOnlineId());
-                startActivity(i);
+            public void onEdit(CaptureVitalListModel.Data.Vital item, int position) {
+
             }
 
             @Override
-            public void onView(UserItem item, int position) {
-                UserDetailFragment dialogD = new UserDetailFragment();
-                Bundle bundle = new Bundle();
-                bundle.putLong("user_id", item.getUserId());
-                bundle.putLong("online_id", item.getUserOnlineId());
-                dialogD.setArguments(bundle);
-                dialogD.show(mActivity.getSupportFragmentManager(), UserDetailFragment.TAG);
+            public void onView(CaptureVitalListModel.Data.Vital item, int position) {
+
             }
 
             @Override
-            public void changeStatus(View view, UserItem item, int position) {
-                setPopUpWindowForChangeStatus(view, item.getUserId(), item.getUserOnlineId(), item.getUserStatus());
+            public void changeStatus(View view, CaptureVitalListModel.Data.Vital item, int position) {
             }
         });
         binding.rvCaptureVitalsList.setAdapter(adapter);
@@ -165,7 +162,7 @@ public class CaptureVitalListFragment extends DialogFragment {
         checkForEmptyState();
         if (ConnectivityReceiver.isConnected()) {
             getUsersFromDB();
-//            getUsers(pPosition);
+            getCaptureVitalDetail(pPosition);
 //            isLoadedOnline = true;
         } else {
             isLoadedOnline = false;
@@ -178,7 +175,7 @@ public class CaptureVitalListFragment extends DialogFragment {
                 currentPage = PAGE_START;
 //                getUsersFromDB();
                 getUsersFromDB();
-                getUsers(pPosition);
+                getCaptureVitalDetail(pPosition);
             } else {
                 isLoadedOnline = false;
                 getUsersFromDB();
@@ -222,7 +219,7 @@ public class CaptureVitalListFragment extends DialogFragment {
                 searchText = s.toString();
                 if (isLoadedOnline) {
                     currentPage = PAGE_START;
-                    getUsers(pPosition);
+                    getCaptureVitalDetail(pPosition);
                 } else {
                     adapter.searchUser(searchText);
                     checkForEmptyState();
@@ -234,23 +231,24 @@ public class CaptureVitalListFragment extends DialogFragment {
             Intent i = new Intent(mActivity, AddCaptureVitals.class);
             i.putExtra("heading", LanguageExtension.setText("add_capture_vitals", getString(R.string.add_capture_vitals)));
             i.putExtra("is_new", true);
+            i.putExtra("patientId", patientId);
             startActivity(i);
         });
 
-        getChildFragmentManager().setFragmentResultListener(REQUEST_DELETE_USER, this,
+        getChildFragmentManager().setFragmentResultListener(REQUEST_DELETE_HEALTH_PATIENT_CAPTURE_VITAL_LIST, this,
                 (requestKey, result) -> {
-                    long userId = result.getLong("id");
-                    long onlineId = result.getLong("online_id");
+                    long vitalId = result.getLong("id");
+//                    long onlineId = result.getLong("online_id");
                     int position = result.getInt("position");
                     if (ConnectivityReceiver.isConnected()) {
 
 //                        deleteUserOffline(userId,onlineId, position);
-                        deleteUser(onlineId, position);
-                        deleteUserOffline(userId, position);
+                        deleteCaptureVital(vitalId, position);
+//                        deleteUserOffline(userId, position);
                     } else
-                        deleteUser(onlineId, position);
+                        deleteCaptureVital(vitalId, position);
 
-                    deleteUserOffline(userId, position);
+//                    deleteUserOffline(userId, position);
                 });
 
         return binding.getRoot();
@@ -264,24 +262,24 @@ public class CaptureVitalListFragment extends DialogFragment {
     private void getUsersFromDB() {
         userList.clear();
 
-        userList.addAll(dbHandler.getUsers(isRemembered ? userSessionManager.getUserId() : Safra.userId));
-
-        for (UserItem userItem : userList) {
-            if (PermissionExtension.checkForPermission(USER_VIEW))
-                userItem.setViewable(true);
-
-            if (PermissionExtension.checkForPermission(USER_DELETE))
-                userItem.setDeletable(true);
-
-            if (PermissionExtension.checkForPermission(USER_UPDATE))
-                userItem.setEditable(true);
-
-            if (PermissionExtension.checkForPermission(USER_STATUS))
-                userItem.setChangeable(true);
-        }
-
-        adapter.clearLists();
-        adapter.addUserList(userList);
+//        userList.addAll(dbHandler.getUsers(isRemembered ? userSessionManager.getUserId() : Safra.userId));
+//
+//        for (UserItem userItem : userList) {
+//            if (PermissionExtension.checkForPermission(USER_VIEW))
+//                userItem.setViewable(true);
+//
+//            if (PermissionExtension.checkForPermission(USER_DELETE))
+//                userItem.setDeletable(true);
+//
+//            if (PermissionExtension.checkForPermission(USER_UPDATE))
+//                userItem.setEditable(true);
+//
+//            if (PermissionExtension.checkForPermission(USER_STATUS))
+//                userItem.setChangeable(true);
+//        }
+//
+//        adapter.clearLists();
+//        adapter.addUserList(userList);
         Log.e(TAG, "getUsersFromDB: " + adapter.getItemCount());
 
         checkForEmptyState();
@@ -295,26 +293,18 @@ public class CaptureVitalListFragment extends DialogFragment {
         currentPage++;
 //        progressLoading.setVisibility(View.VISIBLE);
         Log.e(TAG, "loadMoreItems: " + currentPage);
-        getUsers(p);
+        getCaptureVitalDetail(p);
     }
 
-//    private void addLoadingAnimation() {
-//        userList.add(null);
-//        pPosition = userList.size() - 1;
-//        Log.e(TAG, "onLoadMore: " + pPosition);
-//        adapter.notifyItemInserted(pPosition);
-//    }
 
-    private void getUsers(int pPosition) {
+    private void getCaptureVitalDetail(int pPosition) {
         binding.srlManageProject.setRefreshing(currentPage == PAGE_START);
 
         isNextPageCalled = true;
         AndroidNetworking
-                .post(BASE_URL + USER_LIST_API)
+                .post(BASE_URL + HEALTH_RECORD_CAPTURE_VITAL_LIST)
                 .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .addBodyParameter("page_no", String.valueOf(currentPage))
-                .addBodyParameter("search_text", searchText)
-                .setTag("user-list-api")
+                .addBodyParameter("patient_id", String.valueOf(patientId))
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -325,9 +315,9 @@ public class CaptureVitalListFragment extends DialogFragment {
                             String message = response.getString("message");
                             if (success == 1) {
                                 JSONObject data = response.getJSONObject("data");
-                                JSONArray users = data.getJSONArray("user_list");
-                                int totalPage = data.getInt("total_page");
-                                currentPage = data.getInt("current_page");
+                                JSONArray users = data.getJSONArray("vitals");
+//                                int totalPage = data.getInt("total_page");
+//                                currentPage = data.getInt("current_page");
 
                                 if (currentPage == PAGE_START) {
                                     userList.clear();
@@ -336,63 +326,13 @@ public class CaptureVitalListFragment extends DialogFragment {
                                 }
 
                                 if (users.length() > 0) {
-                                    List<UserItem> uList = new ArrayList<>();
+                                    List<CaptureVitalListModel.Data.Vital> uList = new ArrayList<>();
                                     for (int i = 0; i < users.length(); i++) {
                                         JSONObject user = users.getJSONObject(i);
-                                        UserItem userItem = new UserItem();
-                                        userItem.setUserOnlineId(user.getInt("user_id"));
-                                        userItem.setUserName(user.getString("user_name"));
-                                        userItem.setUserStatus(user.getInt("user_status"));
-                                        userItem.setUserAddedBy(user.getLong("user_master_id"));
+//                                        CaptureVitalListModel.Data.Vital userItem = new CaptureVitalListModel.Data.Vital();
+                                        CaptureVitalListModel.Data.Vital userItem = new Gson().fromJson(user.toString(), CaptureVitalListModel.Data.Vital.class);
 
-                                        if (user.has("user_email") && !user.isNull("user_email")) {
-                                            userItem.setUserEmail(user.getString("user_email"));
-                                        }
-
-                                        if (user.has("user_phone_no") && !user.isNull("user_phone_no")) {
-                                            userItem.setUserPhone(user.getString("user_phone_no"));
-                                        }
-
-                                        if (user.has("user_password") && !user.isNull("user_password")) {
-                                            userItem.setUserPassword(user.getString("user_password"));
-                                        } else {
-                                            userItem.setUserPassword("");
-                                        }
-
-                                        if (user.has("role_id") && !user.isNull("role_id")) {
-                                            userItem.setRoleId(user.getInt("role_id"));
-                                        }
-
-                                        if (user.has("role_name") && !user.isNull("role_name")) {
-                                            userItem.setRoleName(user.getString("role_name"));
-                                        }
-
-                                        if (user.has("user_image_url") && !user.isNull("user_image_url")) {
-                                            userItem.setUserProfile(user.getString("user_image_url"));
-                                        }
-
-                                        if (user.has("user_module_ids") && !user.isNull("user_module_ids")) {
-                                            userItem.setModuleIds(GeneralExtension
-                                                    .toLongArray(user.getString("user_module_ids"), ","));
-                                        }
-
-                                        if (user.has("user_permission_ids") && !user.isNull("user_permission_ids")) {
-                                            userItem.setPermissionIds(GeneralExtension
-                                                    .toLongArray(user.getString("user_permission_ids"), ","));
-                                        }
-
-                                        if (PermissionExtension.checkForPermission(USER_VIEW))
-                                            userItem.setViewable(true);
-
-                                        if (PermissionExtension.checkForPermission(USER_DELETE))
-                                            userItem.setDeletable(true);
-
-                                        if (PermissionExtension.checkForPermission(USER_UPDATE))
-                                            userItem.setEditable(true);
-
-                                        if (PermissionExtension.checkForPermission(USER_STATUS))
-                                            userItem.setChangeable(true);
-
+                                        userItem.setFullName(fullName);
                                         uList.add(userItem);
 //                                        dbHandler.AddCaptureVitals(userItem);
                                     }
@@ -414,7 +354,7 @@ public class CaptureVitalListFragment extends DialogFragment {
 
                                 checkForEmptyState();
 
-                                isLastPage = totalPage <= currentPage;
+//                                isLastPage = totalPage <= currentPage;
                             } else {
                                 Toast.makeText(mActivity, message, Toast.LENGTH_SHORT).show();
                             }
@@ -441,12 +381,6 @@ public class CaptureVitalListFragment extends DialogFragment {
                     }
                 });
 
-//        userList.clear();
-//        userList.add(new UserItem(1, "John Doe", "02/10/2021, 11:52 AM", "John.doe@safra.cloud", "Moderator", 10, 10));
-//        userList.add(new UserItem(2, "Jane Doe", "02/10/2021, 11:52 AM", "John.doe@safra.cloud", "Moderator", 10, 10));
-//
-//        adapter.notifyDataSetChanged();
-//        checkForEmptyState();
     }
 
     public void deleteUserOffline(long userId, int position) {
@@ -459,7 +393,7 @@ public class CaptureVitalListFragment extends DialogFragment {
         }
     }
 
-    public void deleteUser(long userId, int position) {
+    public void deleteCaptureVital(long vitalId, int position) {
         LoadingDialogExtension.showLoading(mActivity, LanguageExtension.setText("deleting_progress", getString(R.string.deleting_progress)));
 //        LoadingDialog dialogL = new LoadingDialog();
 //        dialogL.setCancelable(false);
@@ -469,10 +403,10 @@ public class CaptureVitalListFragment extends DialogFragment {
 //        dialogL.show(getChildFragmentManager(), LoadingDialog.TAG);
 
         AndroidNetworking
-                .post(BASE_URL + USER_DELETE_API)
+                .post(BASE_URL + HEALTH_RECORD_CAPTURE_VITAL_DELETE)
                 .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .addBodyParameter("user_id", String.valueOf(userId))
-                .setTag("delete-user-api")
+                .addBodyParameter("vital_id", String.valueOf(vitalId))
+                .addBodyParameter("patient_id", String.valueOf(patientId))
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -505,109 +439,6 @@ public class CaptureVitalListFragment extends DialogFragment {
                 });
     }
 
-    public void changeUserStatusOffline(long userId, int userStatus) {
-        long i = dbHandler.updateUserStatusOffline(userId, userStatus);
-        if (i > 0) {
-            if (ConnectivityReceiver.isConnected()) {
-                isLoadedOnline = true;
-                currentPage = PAGE_START;
-//                getUsers(pPosition);
-                getUsersFromDB();
-            } else {
-                isLoadedOnline = false;
-                getUsersFromDB();
-            }
-        }
-    }
-
-    public void changeUserStatus(long userId, int userStatus) {
-        LoadingDialogExtension.showLoading(mActivity, LanguageExtension.setText("updating_progress", getString(R.string.updating_progress)));
-//        LoadingDialog dialogL = new LoadingDialog();
-//        dialogL.setCancelable(false);
-//        Bundle bundle = new Bundle();
-//        bundle.putString("loading_message", LanguageExtension.setText("updating_progress", getString(R.string.updating_progress)));
-//        dialogL.setArguments(bundle);
-//        dialogL.show(getChildFragmentManager(), LoadingDialog.TAG);
-
-        AndroidNetworking
-                .post(BASE_URL + USER_STATUS_API)
-                .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .addBodyParameter("user_id", String.valueOf(userId))
-                .addBodyParameter("user_status", String.valueOf(userStatus))
-                .setTag("change-user-status-api")
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        LoadingDialogExtension.hideLoading();
-                        try {
-                            int success = response.getInt("success");
-                            String message = response.getString("message");
-                            Toast.makeText(mActivity, message, Toast.LENGTH_SHORT).show();
-//                            dialogL.dismiss();
-                            if (success == 1) {
-                                if (ConnectivityReceiver.isConnected()) {
-                                    isLoadedOnline = true;
-                                    currentPage = PAGE_START;
-                                    getUsers(pPosition);
-                                } else {
-                                    isLoadedOnline = false;
-                                    getUsersFromDB();
-                                }
-                            }
-                        } catch (JSONException e) {
-                            Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
-//                            dialogL.dismiss();
-                        }
-                    }
-
-                    @Override
-                    public void onError(ANError anError) {
-                        Log.e(TAG, "onError: " + anError.getErrorCode());
-                        Log.e(TAG, "onError: " + anError.getErrorDetail());
-                        Log.e(TAG, "onError: " + anError.getErrorBody());
-                        LoadingDialogExtension.hideLoading();
-//                        dialogL.dismiss();
-                    }
-                });
-    }
-
-    private void setPopUpWindowForChangeStatus(View parentView, long userId, long onlineId, int currentStatus) {
-        PopupChangeUserStatusBinding popupBinding = PopupChangeUserStatusBinding.inflate(getLayoutInflater());
-
-        if (currentStatus == 1)
-            popupBinding.tvActivate.setVisibility(View.GONE);
-        else if (currentStatus == 0)
-            popupBinding.tvBlock.setVisibility(View.GONE);
-
-        popupBinding.tvActivate.setOnClickListener(v -> {
-            if (ConnectivityReceiver.isConnected())
-//                changeUserStatusOffline(userId, 1);
-                changeUserStatus(onlineId, 1);
-            else
-                changeUserStatusOffline(userId, 1);
-            popupWindow.dismiss();
-        });
-        popupBinding.tvBlock.setOnClickListener(v -> {
-            if (ConnectivityReceiver.isConnected())
-                changeUserStatus(onlineId, 0);
-//                changeUserStatusOffline(userId, 0);}
-            else
-                changeUserStatusOffline(userId, 0);
-            popupWindow.dismiss();
-        });
-
-        popupWindow = new PopupWindow(popupBinding.getRoot(), getResources().getDimensionPixelSize(R.dimen.group_edit_popup_width), ConstraintLayout.LayoutParams.WRAP_CONTENT, true);
-
-        popupWindow.setOutsideTouchable(true);
-        // Removes default background.
-        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-        popupWindow.setElevation(10f);
-
-        popupWindow.showAsDropDown(parentView, getResources().getDimensionPixelOffset(R.dimen._0dp), getResources().getDimensionPixelOffset(R.dimen._0dp), Gravity.TOP | Gravity.END);
-    }
-
     private void checkForEmptyState() {
         if (adapter != null) {
             if (adapter.getItemCount() > 0) {
@@ -623,40 +454,13 @@ public class CaptureVitalListFragment extends DialogFragment {
         }
     }
 
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == REQUEST_EDIT_USER && resultCode == RESULT_SUCCESS_EDIT_USER) {
-//            if (ConnectivityReceiver.isConnected()) {
-//                isLoadedOnline = true;
-//                currentPage = PAGE_START;
-//                getUsers(pPosition);
-//            } else {
-//                isLoadedOnline = false;
-//                getUsersFromDB();
-//            }
-//        }
-
-//        if (requestCode == REQUEST_DELETE_USER && resultCode == RESULT_SUCCESS_DELETE_USER) {
-//            if (data != null) {
-//                Bundle bundle = data.getExtras();
-//                long userId = bundle.getLong("id");
-//                long onlineId = bundle.getLong("online_id");
-//                int position = bundle.getInt("position");
-//                if (ConnectivityReceiver.isConnected())
-//                    deleteUser(onlineId, position);
-//                else
-//                    deleteUserOffline(userId, position);
-//            }
-//        }
-//    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUserAdded(UserAddedEvent event) {
+    public void onUserAdded(TaskAddedEvent event) {
         if (ConnectivityReceiver.isConnected()) {
             isLoadedOnline = true;
             currentPage = PAGE_START;
-            getUsers(pPosition);
+            getCaptureVitalDetail(pPosition);
         } else {
             isLoadedOnline = false;
             getUsersFromDB();

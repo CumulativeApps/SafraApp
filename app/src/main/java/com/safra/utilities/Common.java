@@ -89,12 +89,14 @@ public class Common {
     public static final String REQUEST_DELETE_ACTION_TASK = "request_delete_task";
     public static final String REQUEST_DELETE_ACTION_RESOURCE = "request_delete_resource";
     public static final String REQUEST_DELETE_HEALTH_PATIENT_LIST = "request_delete_patient";
+    public static final String REQUEST_DELETE_HEALTH_PATIENT_CAPTURE_VITAL_LIST = "request_delete_patient_capture_vital_list";
+    public static final String REQUEST_DELETE_HEALTH_PATIENT_APPOINTMENT_DELETE = "request_delete_patient_appointment_delete";
 
-//            public static final String BASE_URL = "https://safra.co.mz/api/";
+    //            public static final String BASE_URL = "https://safra.co.mz/api/";
     public static final String BASE_URL = "https://staging.safra.co.mz/api/";
 //    public static final String BASE_URL = "http://127.0.0.1:8000/api/";
 
-//    public static final String REPORT_URL = "https://safra.co.mz/app-for-reports/";
+    //    public static final String REPORT_URL = "https://safra.co.mz/app-for-reports/";
     public static final String REPORT_URL = "https://staging.safra.co.mz/app-form-reports/";
 
     public static final String SIGN_IN_API = "app-user-login";
@@ -187,8 +189,15 @@ public class Common {
     public static final String HEALTH_RECORD_PATIENT_LIST_UPDATE = "update-patients";
     public static final String HEALTH_RECORD_DELETE_PATIENT = "delete-patients";
 
+    public static final String HEALTH_RECORD_APPOINTMENT_LIST = "get-appointments";
+    public static final String HEALTH_RECORD_APPOINTMENT_SAVE = "save-appointment";
+    public static final String HEALTH_RECORD_APPOINTMENT_ADD_NOTE = "add-note-appointment";
+    public static final String HEALTH_RECORD_APPOINTMENT_DELETE = "delete-appointment";
+    public static final String HEALTH_RECORD_APPOINTMENT_UPDATE_STATUS = "update-appointment-status";
 
 
-
+    public static final String HEALTH_RECORD_CAPTURE_VITAL_LIST = "get-vitals";
+    public static final String HEALTH_RECORD_CAPTURE_VITAL_SAVE = "add-vitals";
+    public static final String HEALTH_RECORD_CAPTURE_VITAL_DELETE = "delete-vitals";
 
 }

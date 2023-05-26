@@ -2,18 +2,19 @@ package com.safra.fragments;
 
 import static com.safra.db.DBHandler.dbHandler;
 import static com.safra.utilities.Common.BASE_URL;
+import static com.safra.utilities.Common.HEALTH_RECORD_APPOINTMENT_ADD_NOTE;
+import static com.safra.utilities.Common.HEALTH_RECORD_APPOINTMENT_DELETE;
+import static com.safra.utilities.Common.HEALTH_RECORD_APPOINTMENT_LIST;
+import static com.safra.utilities.Common.HEALTH_RECORD_APPOINTMENT_UPDATE_STATUS;
 import static com.safra.utilities.Common.PAGE_START;
-import static com.safra.utilities.Common.REQUEST_DELETE_USER;
+import static com.safra.utilities.Common.PLANNER_EDIT_AIM;
+import static com.safra.utilities.Common.REQUEST_DELETE_HEALTH_PATIENT_APPOINTMENT_DELETE;
 import static com.safra.utilities.Common.USER_DELETE_API;
-import static com.safra.utilities.Common.USER_LIST_API;
 import static com.safra.utilities.Common.USER_STATUS_API;
 import static com.safra.utilities.UserPermissions.USER_ADD;
-import static com.safra.utilities.UserPermissions.USER_DELETE;
-import static com.safra.utilities.UserPermissions.USER_STATUS;
-import static com.safra.utilities.UserPermissions.USER_UPDATE;
-import static com.safra.utilities.UserPermissions.USER_VIEW;
 import static com.safra.utilities.UserSessionManager.userSessionManager;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -26,6 +27,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
@@ -40,23 +43,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.google.gson.Gson;
 import com.safra.AddAppointment;
-import com.safra.AddPatient;
 import com.safra.R;
 import com.safra.Safra;
 import com.safra.adapters.AppointmentListRecyclerAdapter;
-import com.safra.adapters.PatientRecyclerAdapter;
-import com.safra.adapters.UsersRecyclerAdapter;
+import com.safra.adapters.ProjectPlanListModel;
 import com.safra.databinding.FragmentAppointmentListBinding;
 import com.safra.databinding.PopupChangeUserStatusBinding;
 import com.safra.dialogs.DeleteDialog;
-import com.safra.events.UserAddedEvent;
-import com.safra.extensions.GeneralExtension;
+import com.safra.events.TaskAddedEvent;
 import com.safra.extensions.LanguageExtension;
 import com.safra.extensions.LoadingDialogExtension;
 import com.safra.extensions.PermissionExtension;
 import com.safra.extensions.ViewExtension;
-import com.safra.models.UserItem;
+import com.safra.models.AppointmentListModel;
 import com.safra.utilities.ConnectivityReceiver;
 import com.safra.utilities.SpaceItemDecoration;
 
@@ -71,7 +72,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AppointmentListFragment  extends DialogFragment  {
+public class AppointmentListFragment extends DialogFragment {
 
     public static final String TAG = "appoint_list_fragment";
     private FragmentActivity mActivity = null;
@@ -83,14 +84,16 @@ public class AppointmentListFragment  extends DialogFragment  {
     private boolean isRemembered;
 
 
-    private final List<UserItem> userList = new ArrayList<>();
+    private final List<AppointmentListModel.Data.Patient.Appointment> userList = new ArrayList<>();
 
     private String searchText = "";
     private int currentPage = PAGE_START;
     private boolean isLastPage = false;
     private final int pPosition = -1;
     private boolean isNextPageCalled = false;
-
+    private long patientId = -1;
+    String fname, mname, lname;
+    String fullName = "";
 
     private boolean isLoadedOnline = false;
 
@@ -113,6 +116,13 @@ public class AppointmentListFragment  extends DialogFragment  {
 
         setText();
 
+        patientId = getArguments().getLong("appointment_patient_id", -1);
+        fname = getArguments().getString("f_name", "");
+        mname = getArguments().getString("m_name", "");
+        lname = getArguments().getString("l_name", "");
+        fullName = " " + fname + " " + mname + " " + lname;
+
+
         if (PermissionExtension.checkForPermission(USER_ADD)) {
             binding.fabAdd.setVisibility(View.VISIBLE);
         } else {
@@ -124,13 +134,12 @@ public class AppointmentListFragment  extends DialogFragment  {
                 1, R.dimen.recycler_vertical_offset, R.dimen.recycler_horizontal_offset, true));
         adapter = new AppointmentListRecyclerAdapter(mActivity, new AppointmentListRecyclerAdapter.OnItemClickListener() {
             @Override
-            public void onDelete(UserItem item, int position) {
+            public void onDelete(AppointmentListModel.Data.Patient.Appointment item, int position) {
                 DeleteDialog dialogD = new DeleteDialog();
                 Bundle bundle = new Bundle();
-                bundle.putString("request_key", REQUEST_DELETE_USER);
+                bundle.putString("request_key", REQUEST_DELETE_HEALTH_PATIENT_APPOINTMENT_DELETE);
                 bundle.putString("message", LanguageExtension.setText("do_you_want_to_delete_this_user", getString(R.string.do_you_want_to_delete_this_user)));
-                bundle.putLong("id", item.getUserId());
-                bundle.putLong("online_id", item.getUserOnlineId());
+                bundle.putLong("id", item.getId());
                 bundle.putInt("position", position);
                 bundle.putString("type", "user");
                 dialogD.setArguments(bundle);
@@ -138,28 +147,157 @@ public class AppointmentListFragment  extends DialogFragment  {
             }
 
             @Override
-            public void onEdit(UserItem item, int position) {
-                Intent i = new Intent(mActivity, AddAppointment.class);
-                i.putExtra("heading", LanguageExtension.setText("edit_patient", getString(R.string.edit_patient)));
-                i.putExtra("is_new", false);
-                i.putExtra("user_id", item.getUserId());
-                i.putExtra("online_id", item.getUserOnlineId());
-                startActivity(i);
+            public void onEdit(AppointmentListModel.Data.Patient.Appointment item, int position) {
+                System.out.println("ON EDIT EVENT");
+
+                AddNoteDialog(position);
+
+            }
+
+            public void AddNoteDialog(int position) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                View view = getLayoutInflater().inflate(R.layout.add_note_dialog, null);
+                builder.setView(view);
+
+                EditText editText = view.findViewById(R.id.edit_Aim_text);
+                Button closeButton = view.findViewById(R.id.close_Aim_button);
+                Button saveButton = view.findViewById(R.id.save_Aim_button);
+
+                AlertDialog dialog = builder.create();
+
+                ProjectPlanListModel.Data.AimGoals.Aim user = new ProjectPlanListModel.Data.AimGoals.Aim();
+
+
+                closeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                saveButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String text = editText.getText().toString();
+
+                        AddNoteAPI(text, position);
+
+
+                        // Do something with the text
+                        dialog.dismiss();
+                    }
+
+                    private void AddNoteAPI(String text, int position) {
+                        LoadingDialogExtension.showLoading(getContext(), LanguageExtension.setText("saving_task_progress", getString(R.string.saving_task_progress)));
+                        String id = String.valueOf(userList.get(position).getId());
+                        System.out.println("saveActionPlan ID" + position);
+
+                        JSONObject requestBody = new JSONObject();
+                        try {
+                            requestBody.put("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken);
+                            requestBody.put("appointment_id", id);
+                            requestBody.put("note", text);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        AndroidNetworking.post(BASE_URL + HEALTH_RECORD_APPOINTMENT_ADD_NOTE)
+                                .addJSONObjectBody(requestBody)
+
+                                .build()
+                                .getAsJSONObject(new JSONObjectRequestListener() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+                                        Log.e(TAG, "response: " + response);
+                                        LoadingDialogExtension.hideLoading();
+                                        try {
+                                            String message = response.getString("message");
+                                            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                                            EventBus.getDefault().post(new TaskAddedEvent());
+//                                    finish();
+                                        } catch (JSONException e) {
+                                            Log.e(TAG, "onResponseError: " + e.getLocalizedMessage());
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(ANError anError) {
+                                        Log.e(TAG, "onError: code -> " + anError.getErrorCode());
+                                        Log.e(TAG, "onError: detail -> " + anError.getErrorDetail());
+                                        Log.e(TAG, "onError: body -> " + anError.getErrorBody());
+                                        LoadingDialogExtension.hideLoading();
+                                    }
+                                });
+                    }
+                });
+
+                dialog.show();
             }
 
             @Override
-            public void onView(UserItem item, int position) {
-                UserDetailFragment dialogD = new UserDetailFragment();
+            public void onView(AppointmentListModel.Data.Patient.Appointment item, int position) {
+                AppointmentDetailFragment dialogD = new AppointmentDetailFragment();
                 Bundle bundle = new Bundle();
-                bundle.putLong("user_id", item.getUserId());
-                bundle.putLong("online_id", item.getUserOnlineId());
+                bundle.putLong("user_id", item.getId());
+                bundle.putInt("status", item.getStatus());
+                bundle.putString("appointmentDate", item.getStart_date());
+                bundle.putString("appointmentTime", item.getStart_time());
+                bundle.putLong("patientId", patientId);
+                bundle.putString("Note", item.getNote());
+
                 dialogD.setArguments(bundle);
-                dialogD.show(mActivity.getSupportFragmentManager(), UserDetailFragment.TAG);
+                dialogD.show(mActivity.getSupportFragmentManager(), AppointmentDetailFragment.TAG);
             }
 
             @Override
-            public void changeStatus(View view, UserItem item, int position) {
-                setPopUpWindowForChangeStatus(view, item.getUserId(), item.getUserOnlineId(), item.getUserStatus());
+            public void changeStatus(View view, AppointmentListModel.Data.Patient.Appointment item, int position) {
+
+                changeAppointmentStatus(item.getId(), position);
+//                setPopUpWindowForChangeStatus(view, item.getUserId(), item.getUserOnlineId(), item.getUserStatus());
+            }
+
+            private void changeAppointmentStatus(int appointmentId, int position) {
+                LoadingDialogExtension.showLoading(mActivity, LanguageExtension.setText("deleting_progress", getString(R.string.deleting_progress)));
+//        LoadingDialog dialogL = new LoadingDialog();
+//        dialogL.setCancelable(false);
+//        Bundle bundle = new Bundle();
+//        bundle.putString("loading_message", LanguageExtension.setText("deleting_progress", getString(R.string.deleting_progress)));
+//        dialogL.setArguments(bundle);
+//        dialogL.show(getChildFragmentManager(), LoadingDialog.TAG);
+
+                AndroidNetworking
+                        .post(BASE_URL + HEALTH_RECORD_APPOINTMENT_UPDATE_STATUS)
+                        .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
+                        .addBodyParameter("appointment_id", String.valueOf(appointmentId))
+//                .setTag("delete-user-api")
+                        .build()
+                        .getAsJSONObject(new JSONObjectRequestListener() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                LoadingDialogExtension.hideLoading();
+                                try {
+                                    int success = response.getInt("success");
+                                    String message = response.getString("message");
+                                    Toast.makeText(mActivity, message, Toast.LENGTH_SHORT).show();
+//                            dialogL.dismiss();
+                                    if (success == 1) {
+                                        getAppointment(pPosition);
+                                    }
+                                } catch (JSONException e) {
+                                    Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
+//                            dialogL.dismiss();
+                                }
+                            }
+
+                            @Override
+                            public void onError(ANError anError) {
+                                Log.e(TAG, "onError: " + anError.getErrorCode());
+                                Log.e(TAG, "onError: " + anError.getErrorDetail());
+                                Log.e(TAG, "onError: " + anError.getErrorBody());
+                                LoadingDialogExtension.hideLoading();
+//                        dialogL.dismiss();
+                            }
+                        });
             }
         });
         binding.rvAppointmentList.setAdapter(adapter);
@@ -167,7 +305,7 @@ public class AppointmentListFragment  extends DialogFragment  {
         checkForEmptyState();
         if (ConnectivityReceiver.isConnected()) {
             getUsersFromDB();
-//            getUsers(pPosition);
+            getAppointment(pPosition);
 //            isLoadedOnline = true;
         } else {
             isLoadedOnline = false;
@@ -180,7 +318,7 @@ public class AppointmentListFragment  extends DialogFragment  {
                 currentPage = PAGE_START;
 //                getUsersFromDB();
                 getUsersFromDB();
-                getUsers(pPosition);
+                getAppointment(pPosition);
             } else {
                 isLoadedOnline = false;
                 getUsersFromDB();
@@ -224,7 +362,7 @@ public class AppointmentListFragment  extends DialogFragment  {
                 searchText = s.toString();
                 if (isLoadedOnline) {
                     currentPage = PAGE_START;
-                    getUsers(pPosition);
+                    getAppointment(pPosition);
                 } else {
                     adapter.searchUser(searchText);
                     checkForEmptyState();
@@ -236,23 +374,24 @@ public class AppointmentListFragment  extends DialogFragment  {
             Intent i = new Intent(mActivity, AddAppointment.class);
             i.putExtra("heading", LanguageExtension.setText("add_appointment", getString(R.string.add_appointment)));
             i.putExtra("is_new", true);
+            i.putExtra("patientId", patientId);
             startActivity(i);
         });
 
-        getChildFragmentManager().setFragmentResultListener(REQUEST_DELETE_USER, this,
+        getChildFragmentManager().setFragmentResultListener(REQUEST_DELETE_HEALTH_PATIENT_APPOINTMENT_DELETE, this,
                 (requestKey, result) -> {
-                    long userId = result.getLong("id");
+                    long appointmentId = result.getLong("id");
                     long onlineId = result.getLong("online_id");
                     int position = result.getInt("position");
                     if (ConnectivityReceiver.isConnected()) {
 
 //                        deleteUserOffline(userId,onlineId, position);
-                        deleteUser(onlineId, position);
-                        deleteUserOffline(userId, position);
+                        deleteAppointment(appointmentId, position);
+//                        deleteUserOffline(userId, position);
                     } else
-                        deleteUser(onlineId, position);
+                        deleteAppointment(appointmentId, position);
 
-                    deleteUserOffline(userId, position);
+//                    deleteUserOffline(userId, position);
                 });
 
         return binding.getRoot();
@@ -266,21 +405,21 @@ public class AppointmentListFragment  extends DialogFragment  {
     private void getUsersFromDB() {
         userList.clear();
 
-        userList.addAll(dbHandler.getUsers(isRemembered ? userSessionManager.getUserId() : Safra.userId));
-
-        for (UserItem userItem : userList) {
-            if (PermissionExtension.checkForPermission(USER_VIEW))
-                userItem.setViewable(true);
-
-            if (PermissionExtension.checkForPermission(USER_DELETE))
-                userItem.setDeletable(true);
-
-            if (PermissionExtension.checkForPermission(USER_UPDATE))
-                userItem.setEditable(true);
-
-            if (PermissionExtension.checkForPermission(USER_STATUS))
-                userItem.setChangeable(true);
-        }
+//        userList.addAll(dbHandler.getUsers(isRemembered ? userSessionManager.getUserId() : Safra.userId));
+//
+//        for (UserItem userItem : userList) {
+//            if (PermissionExtension.checkForPermission(USER_VIEW))
+//                userItem.setViewable(true);
+//
+//            if (PermissionExtension.checkForPermission(USER_DELETE))
+//                userItem.setDeletable(true);
+//
+//            if (PermissionExtension.checkForPermission(USER_UPDATE))
+//                userItem.setEditable(true);
+//
+//            if (PermissionExtension.checkForPermission(USER_STATUS))
+//                userItem.setChangeable(true);
+//        }
 
         adapter.clearLists();
         adapter.addUserList(userList);
@@ -297,7 +436,7 @@ public class AppointmentListFragment  extends DialogFragment  {
         currentPage++;
 //        progressLoading.setVisibility(View.VISIBLE);
         Log.e(TAG, "loadMoreItems: " + currentPage);
-        getUsers(p);
+        getAppointment(p);
     }
 
 //    private void addLoadingAnimation() {
@@ -307,16 +446,17 @@ public class AppointmentListFragment  extends DialogFragment  {
 //        adapter.notifyItemInserted(pPosition);
 //    }
 
-    private void getUsers(int pPosition) {
+    private void getAppointment(int pPosition) {
         binding.srlManageProject.setRefreshing(currentPage == PAGE_START);
 
         isNextPageCalled = true;
         AndroidNetworking
-                .post(BASE_URL + USER_LIST_API)
+                .post(BASE_URL + HEALTH_RECORD_APPOINTMENT_LIST)
                 .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .addBodyParameter("page_no", String.valueOf(currentPage))
-                .addBodyParameter("search_text", searchText)
-                .setTag("user-list-api")
+                .addBodyParameter("patient_id", String.valueOf(patientId))
+//                .addBodyParameter("page_no", String.valueOf(currentPage))
+//                .addBodyParameter("search_text", searchText)
+//                .setTag("user-list-api")
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -326,10 +466,10 @@ public class AppointmentListFragment  extends DialogFragment  {
                             int success = response.getInt("success");
                             String message = response.getString("message");
                             if (success == 1) {
-                                JSONObject data = response.getJSONObject("data");
-                                JSONArray users = data.getJSONArray("user_list");
-                                int totalPage = data.getInt("total_page");
-                                currentPage = data.getInt("current_page");
+                                JSONObject data = response.getJSONObject("data").getJSONObject("patient");
+                                JSONArray appointments = data.getJSONArray("appointments");
+//                                int totalPage = data.getInt("total_page");
+//                                currentPage = data.getInt("current_page");
 
                                 if (currentPage == PAGE_START) {
                                     userList.clear();
@@ -337,63 +477,15 @@ public class AppointmentListFragment  extends DialogFragment  {
 //                                    pPosition = -1;
                                 }
 
-                                if (users.length() > 0) {
-                                    List<UserItem> uList = new ArrayList<>();
-                                    for (int i = 0; i < users.length(); i++) {
-                                        JSONObject user = users.getJSONObject(i);
-                                        UserItem userItem = new UserItem();
-                                        userItem.setUserOnlineId(user.getInt("user_id"));
-                                        userItem.setUserName(user.getString("user_name"));
-                                        userItem.setUserStatus(user.getInt("user_status"));
-                                        userItem.setUserAddedBy(user.getLong("user_master_id"));
+                                if (appointments.length() > 0) {
+                                    List<AppointmentListModel.Data.Patient.Appointment> uList = new ArrayList<>();
+                                    for (int i = 0; i < appointments.length(); i++) {
+                                        JSONObject user = appointments.getJSONObject(i);
+                                        AppointmentListModel.Data.Patient.Appointment userItem = new Gson().fromJson(user.toString(), AppointmentListModel.Data.Patient.Appointment.class);
+                                        System.out.println(new Gson().fromJson(user.toString(), AppointmentListModel.Data.Patient.Appointment.class));
 
-                                        if (user.has("user_email") && !user.isNull("user_email")) {
-                                            userItem.setUserEmail(user.getString("user_email"));
-                                        }
+                                        userItem.setFullName(fullName);
 
-                                        if (user.has("user_phone_no") && !user.isNull("user_phone_no")) {
-                                            userItem.setUserPhone(user.getString("user_phone_no"));
-                                        }
-
-                                        if (user.has("user_password") && !user.isNull("user_password")) {
-                                            userItem.setUserPassword(user.getString("user_password"));
-                                        } else {
-                                            userItem.setUserPassword("");
-                                        }
-
-                                        if (user.has("role_id") && !user.isNull("role_id")) {
-                                            userItem.setRoleId(user.getInt("role_id"));
-                                        }
-
-                                        if (user.has("role_name") && !user.isNull("role_name")) {
-                                            userItem.setRoleName(user.getString("role_name"));
-                                        }
-
-                                        if (user.has("user_image_url") && !user.isNull("user_image_url")) {
-                                            userItem.setUserProfile(user.getString("user_image_url"));
-                                        }
-
-                                        if (user.has("user_module_ids") && !user.isNull("user_module_ids")) {
-                                            userItem.setModuleIds(GeneralExtension
-                                                    .toLongArray(user.getString("user_module_ids"), ","));
-                                        }
-
-                                        if (user.has("user_permission_ids") && !user.isNull("user_permission_ids")) {
-                                            userItem.setPermissionIds(GeneralExtension
-                                                    .toLongArray(user.getString("user_permission_ids"), ","));
-                                        }
-
-                                        if (PermissionExtension.checkForPermission(USER_VIEW))
-                                            userItem.setViewable(true);
-
-                                        if (PermissionExtension.checkForPermission(USER_DELETE))
-                                            userItem.setDeletable(true);
-
-                                        if (PermissionExtension.checkForPermission(USER_UPDATE))
-                                            userItem.setEditable(true);
-
-                                        if (PermissionExtension.checkForPermission(USER_STATUS))
-                                            userItem.setChangeable(true);
 
                                         uList.add(userItem);
 //                                        dbHandler.AddAppointment(userItem);
@@ -416,7 +508,7 @@ public class AppointmentListFragment  extends DialogFragment  {
 
                                 checkForEmptyState();
 
-                                isLastPage = totalPage <= currentPage;
+//                                isLastPage = totalPage <= currentPage;
                             } else {
                                 Toast.makeText(mActivity, message, Toast.LENGTH_SHORT).show();
                             }
@@ -461,7 +553,7 @@ public class AppointmentListFragment  extends DialogFragment  {
         }
     }
 
-    public void deleteUser(long userId, int position) {
+    public void deleteAppointment(long appointmentId, int position) {
         LoadingDialogExtension.showLoading(mActivity, LanguageExtension.setText("deleting_progress", getString(R.string.deleting_progress)));
 //        LoadingDialog dialogL = new LoadingDialog();
 //        dialogL.setCancelable(false);
@@ -471,10 +563,10 @@ public class AppointmentListFragment  extends DialogFragment  {
 //        dialogL.show(getChildFragmentManager(), LoadingDialog.TAG);
 
         AndroidNetworking
-                .post(BASE_URL + USER_DELETE_API)
+                .post(BASE_URL + HEALTH_RECORD_APPOINTMENT_DELETE)
                 .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .addBodyParameter("user_id", String.valueOf(userId))
-                .setTag("delete-user-api")
+                .addBodyParameter("appointment_id", String.valueOf(appointmentId))
+//                .setTag("delete-user-api")
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -513,7 +605,7 @@ public class AppointmentListFragment  extends DialogFragment  {
             if (ConnectivityReceiver.isConnected()) {
                 isLoadedOnline = true;
                 currentPage = PAGE_START;
-//                getUsers(pPosition);
+//                getAppointment(pPosition);
                 getUsersFromDB();
             } else {
                 isLoadedOnline = false;
@@ -551,7 +643,7 @@ public class AppointmentListFragment  extends DialogFragment  {
                                 if (ConnectivityReceiver.isConnected()) {
                                     isLoadedOnline = true;
                                     currentPage = PAGE_START;
-                                    getUsers(pPosition);
+                                    getAppointment(pPosition);
                                 } else {
                                     isLoadedOnline = false;
                                     getUsersFromDB();
@@ -632,14 +724,14 @@ public class AppointmentListFragment  extends DialogFragment  {
 //            if (ConnectivityReceiver.isConnected()) {
 //                isLoadedOnline = true;
 //                currentPage = PAGE_START;
-//                getUsers(pPosition);
+//                getAppointment(pPosition);
 //            } else {
 //                isLoadedOnline = false;
 //                getUsersFromDB();
 //            }
 //        }
 
-//        if (requestCode == REQUEST_DELETE_USER && resultCode == RESULT_SUCCESS_DELETE_USER) {
+//        if (requestCode == REQUEST_DELETE_HEALTH_PATIENT_APPOINTMENT_DELETE && resultCode == RESULT_SUCCESS_DELETE_USER) {
 //            if (data != null) {
 //                Bundle bundle = data.getExtras();
 //                long userId = bundle.getLong("id");
@@ -654,11 +746,11 @@ public class AppointmentListFragment  extends DialogFragment  {
 //    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUserAdded(UserAddedEvent event) {
+    public void onUserAdded(TaskAddedEvent event) {
         if (ConnectivityReceiver.isConnected()) {
             isLoadedOnline = true;
             currentPage = PAGE_START;
-            getUsers(pPosition);
+            getAppointment(pPosition);
         } else {
             isLoadedOnline = false;
             getUsersFromDB();

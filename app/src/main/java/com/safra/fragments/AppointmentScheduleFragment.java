@@ -106,54 +106,33 @@ public class AppointmentScheduleFragment extends Fragment {
 
         setText();
 
-//        if (PermissionExtension.checkForPermission(USER_ADD)) {
-//            binding.fabAdd.setVisibility(View.VISIBLE);
-//        } else {
-//            binding.fabAdd.setVisibility(View.VISIBLE);
-//        }
-
         binding.rvAppointmentSchedule.setLayoutManager(new LinearLayoutManager(mActivity, RecyclerView.VERTICAL, false));
         binding.rvAppointmentSchedule.addItemDecoration(new SpaceItemDecoration(mActivity, RecyclerView.VERTICAL,
                 1, R.dimen.recycler_vertical_offset, R.dimen.recycler_horizontal_offset, true));
         adapter = new AppointmentRecyclerAdapter(mActivity, new AppointmentRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onDelete(PatientListModel.Data.Patient item, int position) {
-                DeleteDialog dialogD = new DeleteDialog();
-                Bundle bundle = new Bundle();
-                bundle.putString("request_key", REQUEST_DELETE_USER);
-                bundle.putString("message", LanguageExtension.setText("do_you_want_to_delete_this_user", getString(R.string.do_you_want_to_delete_this_user)));
-                bundle.putLong("id", item.getId());
-//                bundle.putLong("online_id", item.getUserOnlineId());
-                bundle.putInt("position", position);
-                bundle.putString("type", "user");
-                dialogD.setArguments(bundle);
-                dialogD.show(getChildFragmentManager(), DeleteDialog.TAG);
             }
 
             @Override
             public void onEdit(PatientListModel.Data.Patient item, int position) {
-                Intent i = new Intent(mActivity, AddPatient.class);
-                i.putExtra("heading", LanguageExtension.setText("edit_patient", getString(R.string.edit_patient)));
-                i.putExtra("is_new", false);
-                i.putExtra("user_id", item.getId());
-//                i.putExtra("online_id", item.getUserOnlineId());
-                startActivity(i);
+
             }
 
             @Override
             public void onView(PatientListModel.Data.Patient item, int position) {
                 AppointmentListFragment dialogD = new AppointmentListFragment();
-
                 Bundle bundle = new Bundle();
-                bundle.putLong("user_id", item.getId());
-//                bundle.putLong("online_id", item.getUserOnlineId());
+                bundle.putLong("appointment_patient_id", item.getId());
+                bundle.putString("f_name", item.getFirst_name());
+                bundle.putString("m_name", item.getMiddle_name());
+                bundle.putString("l_name", item.getLast_name());
                 dialogD.setArguments(bundle);
                 dialogD.show(mActivity.getSupportFragmentManager(), AppointmentListFragment.TAG);
             }
 
             @Override
             public void changeStatus(View view, PatientListModel.Data.Patient item, int position) {
-//                setPopUpWindowForChangeStatus(view, item.getUserId(), item.getUserOnlineId(), item.getUserStatus());
             }
         });
         binding.rvAppointmentSchedule.setAdapter(adapter);
@@ -172,7 +151,6 @@ public class AppointmentScheduleFragment extends Fragment {
             if (ConnectivityReceiver.isConnected()) {
                 isLoadedOnline = true;
                 currentPage = PAGE_START;
-//                getUsersFromDB();
 //                getUsersFromDB();
                 getPatients(pPosition);
             } else {
@@ -226,28 +204,6 @@ public class AppointmentScheduleFragment extends Fragment {
             }
         });
 
-//        binding.fabAdd.setOnClickListener(v -> {
-//            Intent i = new Intent(mActivity, AddPatient.class);
-//            i.putExtra("heading", LanguageExtension.setText("add_patient", getString(R.string.add_patient)));
-//            i.putExtra("is_new", true);
-//            startActivity(i);
-//        });
-
-        getChildFragmentManager().setFragmentResultListener(REQUEST_DELETE_USER, this,
-                (requestKey, result) -> {
-                    long userId = result.getLong("id");
-                    long onlineId = result.getLong("online_id");
-                    int position = result.getInt("position");
-                    if (ConnectivityReceiver.isConnected()) {
-
-//                        deleteUserOffline(userId,onlineId, position);
-//                        deleteUser(onlineId, position);
-                        deleteUserOffline(userId, position);
-                    } else
-//                        deleteUser(onlineId, position);
-
-                    deleteUserOffline(userId, position);
-                });
 
         return binding.getRoot();
     }
@@ -257,35 +213,6 @@ public class AppointmentScheduleFragment extends Fragment {
         binding.tvEmptyState.setText(LanguageExtension.setText("no_user_found", getString(R.string.no_user_found)));
     }
 
-//    private void getUsersFromDB() {
-//        userList.clear();
-//
-//        userList.addAll(dbHandler.getUsers(isRemembered ? userSessionManager.getUserId() : Safra.userId));
-//
-//        for (UserItem userItem : userList) {
-//            if (PermissionExtension.checkForPermission(USER_VIEW))
-//                userItem.setViewable(true);
-//
-//            if (PermissionExtension.checkForPermission(USER_DELETE))
-//                userItem.setDeletable(true);
-//
-//            if (PermissionExtension.checkForPermission(USER_UPDATE))
-//                userItem.setEditable(true);
-//
-//            if (PermissionExtension.checkForPermission(USER_STATUS))
-//                userItem.setChangeable(true);
-//        }
-//
-//        adapter.clearLists();
-//        adapter.addUserList(userList);
-//        Log.e(TAG, "getUsersFromDB: " + adapter.getItemCount());
-//
-//        checkForEmptyState();
-//
-//        if (binding.srlManageProject.isRefreshing())
-//            binding.srlManageProject.setRefreshing(false);
-//    }
-
     private void loadMoreItems() {
         int p = ViewExtension.addLoadingAnimation(userList, adapter);
         currentPage++;
@@ -293,15 +220,7 @@ public class AppointmentScheduleFragment extends Fragment {
         Log.e(TAG, "loadMoreItems: " + currentPage);
         getPatients(p);
     }
-
-//    private void addLoadingAnimation() {
-//        userList.add(null);
-//        pPosition = userList.size() - 1;
-//        Log.e(TAG, "onLoadMore: " + pPosition);
-//        adapter.notifyItemInserted(pPosition);
-//    }
-
-    private void getPatients(int pPosition) {
+  private void getPatients(int pPosition) {
         Log.e(TAG, "API CALL " + pPosition);
         binding.srlManageProject.setRefreshing(currentPage == PAGE_START);
 
@@ -322,8 +241,8 @@ public class AppointmentScheduleFragment extends Fragment {
                             String message = response.getString("message");
                             if (success == 1) {
                                 JSONObject data = response.getJSONObject("data");
-                                JSONArray users = data.getJSONArray("patients");
-                                Log.e(TAG, "onResponse Success: " + users);
+                                JSONArray patients = data.getJSONArray("patients");
+                                Log.e(TAG, "onResponse Success: " + patients);
 
 
                                 if (currentPage == PAGE_START) {
@@ -332,11 +251,11 @@ public class AppointmentScheduleFragment extends Fragment {
 //                                    pPosition = -1;
                                 }
 
-                                if (users.length() > 0) {
+                                if (patients.length() > 0) {
 //                                    List<UserItem> uList = new ArrayList<>();
                                     List<PatientListModel.Data.Patient> uList = new ArrayList<>();
-                                    for (int i = 0; i < users.length(); i++) {
-                                        JSONObject user = users.getJSONObject(i);
+                                    for (int i = 0; i < patients.length(); i++) {
+                                        JSONObject user = patients.getJSONObject(i);
 //                                        UserItem userItem = new UserItem();
                                         PatientListModel.Data.Patient userItem = new PatientListModel.Data.Patient();
                                         userItem.setId(user.getInt("id"));
@@ -411,17 +330,6 @@ public class AppointmentScheduleFragment extends Fragment {
 //        checkForEmptyState();
     }
 
-    public void deleteUserOffline(long userId, int position) {
-        int i = dbHandler.deleteUserOffline(userId);
-
-        if (i > 0) {
-            userList.remove(position);
-            adapter.removeUser(position);
-            checkForEmptyState();
-        }
-    }
-
-
 
     private void checkForEmptyState() {
         if (adapter != null) {
@@ -437,34 +345,6 @@ public class AppointmentScheduleFragment extends Fragment {
             binding.clEmptyState.setVisibility(View.VISIBLE);
         }
     }
-
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == REQUEST_EDIT_USER && resultCode == RESULT_SUCCESS_EDIT_USER) {
-//            if (ConnectivityReceiver.isConnected()) {
-//                isLoadedOnline = true;
-//                currentPage = PAGE_START;
-//                getUsers(pPosition);
-//            } else {
-//                isLoadedOnline = false;
-//                getUsersFromDB();
-//            }
-//        }
-
-//        if (requestCode == REQUEST_DELETE_USER && resultCode == RESULT_SUCCESS_DELETE_USER) {
-//            if (data != null) {
-//                Bundle bundle = data.getExtras();
-//                long userId = bundle.getLong("id");
-//                long onlineId = bundle.getLong("online_id");
-//                int position = bundle.getInt("position");
-//                if (ConnectivityReceiver.isConnected())
-//                    deleteUser(onlineId, position);
-//                else
-//                    deleteUserOffline(userId, position);
-//            }
-//        }
-//    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUserAdded(UserAddedEvent event) {

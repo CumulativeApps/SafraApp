@@ -354,14 +354,14 @@ public class ActionPlanListRecyclerAdapter extends RecyclerView.Adapter<Recycler
 //                            dialogL.dismiss();
                             if (success == 1) {
 
-
-                                goalAdapter.removeUser(position);
-                                // Remove the item from this adapter's data list
-                                userList1.remove(position);
-                                // Notify this adapter that the item is removed
-                                notifyItemRemoved(position);
-                                // Notify this adapter that the data set has changed
-                                notifyItemRangeChanged(position, getItemCount());
+//
+//                                goalAdapter.removeUser(position);
+//                                // Remove the item from this adapter's data list
+//                                userList1.remove(position);
+//                                // Notify this adapter that the item is removed
+//                                notifyItemRemoved(position);
+//                                // Notify this adapter that the data set has changed
+//                                notifyItemRangeChanged(position, getItemCount());
 
                             }
                             } catch (JSONException e) {

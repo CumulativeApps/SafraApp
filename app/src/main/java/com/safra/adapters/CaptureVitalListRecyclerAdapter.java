@@ -10,10 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.safra.R;
 import com.safra.databinding.ItemLoadingBinding;
-import com.safra.databinding.RecyclerAppointmentListBinding;
+import com.safra.databinding.RecyclerCapturevitalListBinding;
 import com.safra.extensions.LanguageExtension;
 import com.safra.extensions.ViewExtension;
-import com.safra.models.AppointmentListModel;
+import com.safra.models.CaptureVitalListModel;
+import com.safra.models.UserItem;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,25 +24,25 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class AppointmentListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private final int VIEW_APPOINTMENT_LIST = 1;
+public class CaptureVitalListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private final int VIEW_ALLERGIES_LIST = 1;
 
     private final Context context;
-    private final List<AppointmentListModel.Data.Patient.Appointment> userList = new ArrayList<>();
-    private final List<AppointmentListModel.Data.Patient.Appointment> userData = new ArrayList<>();
-    private final AppointmentListRecyclerAdapter.OnItemClickListener listener;
+    private final List<CaptureVitalListModel.Data.Vital> userList = new ArrayList<>();
+    private final List<CaptureVitalListModel.Data.Vital> userData = new ArrayList<>();
+    private final CaptureVitalListRecyclerAdapter.OnItemClickListener listener;
 
     public interface OnItemClickListener {
-        void onDelete(AppointmentListModel.Data.Patient.Appointment item, int position);
+        void onDelete(CaptureVitalListModel.Data.Vital item, int position);
 
-        void onEdit(AppointmentListModel.Data.Patient.Appointment item, int position);
+        void onEdit(CaptureVitalListModel.Data.Vital item, int position);
 
-        void onView(AppointmentListModel.Data.Patient.Appointment item, int position);
+        void onView(CaptureVitalListModel.Data.Vital item, int position);
 
-        void changeStatus(View itemView, AppointmentListModel.Data.Patient.Appointment item, int position);
+        void changeStatus(View itemView, CaptureVitalListModel.Data.Vital item, int position);
     }
 
-    public AppointmentListRecyclerAdapter(Context context, AppointmentListRecyclerAdapter.OnItemClickListener listener) {
+    public CaptureVitalListRecyclerAdapter(Context context, CaptureVitalListRecyclerAdapter.OnItemClickListener listener) {
         this.context = context;
         this.listener = listener;
     }
@@ -49,26 +50,26 @@ public class AppointmentListRecyclerAdapter extends RecyclerView.Adapter<Recycle
     @Override
     public int getItemViewType(int position) {
         int VIEW_PROGRESS = 0;
-        return userList.get(position) != null ? VIEW_APPOINTMENT_LIST : VIEW_PROGRESS;
+        return userList.get(position) != null ? VIEW_ALLERGIES_LIST : VIEW_PROGRESS;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        if (viewType == VIEW_APPOINTMENT_LIST) {
-            RecyclerAppointmentListBinding binding = RecyclerAppointmentListBinding.inflate(inflater, parent, false);
-            return new AppointmentListRecyclerAdapter.AppointmentListViewHolder(binding);
+        if (viewType == VIEW_ALLERGIES_LIST) {
+            RecyclerCapturevitalListBinding binding = RecyclerCapturevitalListBinding.inflate(inflater, parent, false);
+            return new CaptureVitalListRecyclerAdapter.CaptureVitalListViewHolder(binding);
         } else {
             ItemLoadingBinding binding = ItemLoadingBinding.inflate(inflater, parent, false);
-            return new AppointmentListRecyclerAdapter.ProgressViewHolder(binding);
+            return new CaptureVitalListRecyclerAdapter.ProgressViewHolder(binding);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof AppointmentListRecyclerAdapter.AppointmentListViewHolder)
-            ((AppointmentListRecyclerAdapter.AppointmentListViewHolder) holder).bindView(userList.get(position));
+        if (holder instanceof CaptureVitalListRecyclerAdapter.CaptureVitalListViewHolder)
+            ((CaptureVitalListRecyclerAdapter.CaptureVitalListViewHolder) holder).bindView(userList.get(position));
     }
 
     @Override
@@ -76,38 +77,38 @@ public class AppointmentListRecyclerAdapter extends RecyclerView.Adapter<Recycle
         return userList.size();
     }
 
-    public void addUserList(List<AppointmentListModel.Data.Patient.Appointment> userList) {
+    public void addUserList(List<CaptureVitalListModel.Data.Vital> userList) {
         this.userList.addAll(userList);
         this.userData.addAll(userList);
     }
 
-    public void removeUser(int position) {
-        AppointmentListModel.Data.Patient.Appointment userItem = getItem(position);
+    public void removeUser(int position){
+        CaptureVitalListModel.Data.Vital userItem = getItem(position);
         userList.remove(position);
         notifyItemRemoved(position);
         userData.remove(userItem);
 
     }
 
-    public AppointmentListModel.Data.Patient.Appointment getItem(int position) {
+    public CaptureVitalListModel.Data.Vital getItem(int position){
         return userList.get(position);
     }
 
-    public void clearLists() {
+    public void clearLists(){
         userList.clear();
         userData.clear();
 
         notifyDataSetChanged();
     }
 
-    public void searchUser(String searchText) {
+    public void searchUser(String searchText){
         searchText = searchText.toLowerCase();
         userList.clear();
-        if (searchText.isEmpty()) {
+        if(searchText.isEmpty()){
             userList.addAll(userData);
         } else {
-            for (AppointmentListModel.Data.Patient.Appointment ui : userData) {
-                if (ui.getStart_date().toLowerCase().contains(searchText))
+            for(CaptureVitalListModel.Data.Vital ui : userData){
+                if(ui.getBlood_pressure().toLowerCase().contains(searchText))
                     userList.add(ui);
             }
         }
@@ -115,21 +116,24 @@ public class AppointmentListRecyclerAdapter extends RecyclerView.Adapter<Recycle
         notifyDataSetChanged();
     }
 
-    class AppointmentListViewHolder extends RecyclerView.ViewHolder {
-        RecyclerAppointmentListBinding binding;
+    class CaptureVitalListViewHolder extends RecyclerView.ViewHolder {
+        RecyclerCapturevitalListBinding binding;
 
-        public AppointmentListViewHolder(@NonNull RecyclerAppointmentListBinding binding) {
+        public CaptureVitalListViewHolder(@NonNull RecyclerCapturevitalListBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public void bindView(AppointmentListModel.Data.Patient.Appointment item) {
-            binding.tvAppointmentTitle.setText(LanguageExtension.setText("appointment", context.getString(R.string.appointment)));
-            binding.tvNoteTitle.setText(LanguageExtension.setText("note", context.getString(R.string.note)));
-            binding.tvStatusTitle.setText(LanguageExtension.setText("status", context.getString(R.string.status)));
+        public void bindView(CaptureVitalListModel.Data.Vital item) {
+            binding.tvHeightTitle.setText(LanguageExtension.setText("height", context.getString(R.string.height)));
+            binding.tvWeightTitle.setText(LanguageExtension.setText("weight", context.getString(R.string.weight)));
+            binding.tvBMITitle.setText(LanguageExtension.setText("bmi", context.getString(R.string.bmi)));
+            binding.tvTemperatureTitle.setText(LanguageExtension.setText("temperature", context.getString(R.string.temperature)));
+            binding.tvPulseTitle.setText(LanguageExtension.setText("pulse", context.getString(R.string.pulse)));
+            binding.tvRespiratoryRateTitle.setText(LanguageExtension.setText("respiratory_rate", context.getString(R.string.respiratory_rate)));
+            binding.tvBloodPressureTitle.setText(LanguageExtension.setText("blood_pressure", context.getString(R.string.blood_pressure)));
+            binding.tvBloodOxygenTitle.setText(LanguageExtension.setText("blood_oxygen", context.getString(R.string.blood_oxygen)));
             binding.tvCreatedDateTitle.setText(LanguageExtension.setText("created_date", context.getString(R.string.created_date)));
-            binding.tvChangeStatus.setText(LanguageExtension.setText("change_status", context.getString(R.string.change_status)));
-//            binding.tvViewDetails.setText(LanguageExtension.setText("view_details", context.getString(R.string.view_details)));
 
             if (item.getFullName().equals(" null null null")) {
                 binding.tvPatientName.setText("Unidentified patient");
@@ -138,15 +142,15 @@ public class AppointmentListRecyclerAdapter extends RecyclerView.Adapter<Recycle
             }
 
 
-            binding.tvAppointment.setText(item.getStart_date() + " " + item.getStart_time());
 
-            binding.tvNote.setText(item.getNote());
-
-            if (item.getStatus() == 0) {
-                binding.tvStatus.setText("Active");
-            } else {
-                binding.tvStatus.setText("Completed");
-            }
+            binding.tvHeight.setText(String.valueOf(item.getHeight()+ " cm"));
+            binding.tvWeight.setText(String.valueOf(item.getWeight()+ " kg"));
+            binding.tvBMI.setText(String.valueOf(String.valueOf(item.getbMI())));
+            binding.tvTemperature.setText(String.valueOf(item.getTemperature()+ " °C"));
+            binding.tvPulse.setText(String.valueOf(item.getPulse()+ "/min"));
+            binding.tvRespiratoryRate.setText(String.valueOf(item.getRespiratory_rate()+ "/min"));
+            binding.tvBloodPressure.setText(String.valueOf(item.getBlood_pressure()));
+            binding.tvBloodOxygen.setText(String.valueOf(item.getBlood_oxygen_saturation()+ " %"));
 
             String inputDate1 = String.valueOf(item.getCreated_at());
             String inputFormat1 = "EEE MMM dd HH:mm:ss 'GMT'Z yyyy";
@@ -177,10 +181,15 @@ public class AppointmentListRecyclerAdapter extends RecyclerView.Adapter<Recycle
             }
 
 
+
+
+
+
+
 //            ViewExtension.makeVisible(binding.ivDelete, item.isDeletable());
 //            ViewExtension.makeVisible(binding.ivEdit, item.isEditable());
 //            ViewExtension.makeVisible(binding.tvChangeStatus, item.isChangeable());
-//            ViewExtension.makeVisible(binding.ivView, item.isViewable());
+//            ViewExtension.makeVisible(binding.tvViewDetails, item.isViewable());
             ViewExtension.makeVisible(binding.clExpandLayout, item.isExpanded());
             ViewExtension.toggleArrow(binding.ivExpandDetail, item.isExpanded());
 
@@ -199,13 +208,12 @@ public class AppointmentListRecyclerAdapter extends RecyclerView.Adapter<Recycle
 
             binding.ivDelete.setOnClickListener(v -> listener.onDelete(item, getAbsoluteAdapterPosition()));
 
-            binding.ivEdit.setOnClickListener(v -> listener.onEdit(item, getAbsoluteAdapterPosition()));
+//            binding.ivEdit.setOnClickListener(v -> listener.onEdit(item, getAbsoluteAdapterPosition()));
 
-            binding.tvChangeStatus.setOnClickListener(v -> listener.changeStatus(v, item, getAbsoluteAdapterPosition()));
+//            binding.tvChangeStatus.setOnClickListener(v -> listener.changeStatus(v, item, getAbsoluteAdapterPosition()));
 
-            binding.ivView.setOnClickListener(v -> listener.onView(item, getAbsoluteAdapterPosition()));
+//            binding.tvViewDetails.setOnClickListener(v -> listener.onView(item, getAbsoluteAdapterPosition()));
         }
-
     }
 
     class ProgressViewHolder extends RecyclerView.ViewHolder {

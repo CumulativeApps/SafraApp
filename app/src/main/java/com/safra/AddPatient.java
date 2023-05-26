@@ -165,9 +165,21 @@ public class AddPatient extends AppCompatActivity {
                 phone1 = getIntent().getStringExtra("phone1");
                 phone2 = getIntent().getStringExtra("phone2");
                 address = getIntent().getStringExtra("address");
-                binding.etPatientFName.setText(fName);
-                binding.etPatientMName.setText(mName);
-                binding.etPatientLName.setText(lName);
+                if(fName.equals("null")){
+                    clPatientFName.setVisibility(View.GONE);
+                    clPatientMName.setVisibility(View.GONE);
+                    clPatientLName.setVisibility(View.GONE);
+                    checkboxUnidentified.setChecked(true); // Select the checkbox
+
+
+                }else{
+                    binding.etPatientFName.setText(fName);
+                    binding.etPatientMName.setText(mName);
+                    binding.etPatientLName.setText(lName);
+                    checkboxUnidentified.setChecked(false); // Select the checkbox
+
+                }
+
                 binding.etBirthDate.setText(b_Date);
                 binding.etPhoneNo.setText(phone1);
                 binding.etPhoneNo1.setText(phone2);
