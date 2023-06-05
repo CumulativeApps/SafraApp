@@ -210,8 +210,7 @@ public class ActionPlanTaskListAdapter extends RecyclerView.Adapter<RecyclerView
                 }
             }
 
-            System.out.println("users LIST:-"+ namesList);
-//            System.out.println("users LIST:-"+ namesList1);
+
 
 //
 //            if (item.getResponsible() != null)

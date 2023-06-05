@@ -22,6 +22,7 @@
         android:theme="@style/Theme.Safra"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
+
         <activity
             android:name=".AddResourceActivity"
             android:exported="false">
@@ -45,6 +46,15 @@
         </activity>
         <activity
             android:name=".AddProjects"
+            android:exported="false"
+            android:label="@string/title_activity_add_projects"
+            android:theme="@style/Theme.Safra.NoActionBar">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".AddMedicine"
             android:exported="false"
             android:label="@string/title_activity_add_projects"
             android:theme="@style/Theme.Safra.NoActionBar">
@@ -95,6 +105,13 @@
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".AddUser"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Safra.NoActionBar"
+            android:windowSoftInputMode="adjustResize"
+            tools:ignore="LockedOrientationActivity" />
+
+        <activity
+            android:name=".AddMedication"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Safra.NoActionBar"
             android:windowSoftInputMode="adjustResize"

@@ -115,12 +115,10 @@ public class ActionPlanListFragment extends DialogFragment {
         }
 
 
-
-
         binding.rvActionPlanList.setLayoutManager(new LinearLayoutManager(mActivity, RecyclerView.VERTICAL, false));
         binding.rvActionPlanList.addItemDecoration(new SpaceItemDecoration(mActivity, RecyclerView.VERTICAL,
                 1, R.dimen.recycler_vertical_offset, R.dimen.recycler_horizontal_offset, true));
-        adapter = new ActionPlanListRecyclerAdapter(this,getChildFragmentManager(),mActivity, new ActionPlanListRecyclerAdapter.OnItemClickListener() {
+        adapter = new ActionPlanListRecyclerAdapter(this, getChildFragmentManager(), mActivity, new ActionPlanListRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onDelete(ProjectPlanListModel.Data.AimGoals.Aim item, int position) {
                 DeleteDialog dialogD = new DeleteDialog();
@@ -131,7 +129,6 @@ public class ActionPlanListFragment extends DialogFragment {
                 bundle.putLong("online_id", item.getId());
                 bundle.putInt("position", position);
                 bundle.putString("type", "project");
-                System.out.println("POSITION :- "+position);
                 dialogD.setArguments(bundle);
                 dialogD.show(getChildFragmentManager(), DeleteDialog.TAG);
             }
@@ -173,7 +170,7 @@ public class ActionPlanListFragment extends DialogFragment {
                     @Override
                     public void onClick(View v) {
                         String text = editText.getText().toString();
-                        editPlannerAim(text,position);
+                        editPlannerAim(text, position);
 
 
                         // Do something with the text
@@ -183,16 +180,15 @@ public class ActionPlanListFragment extends DialogFragment {
 
                 dialog.show();
             }
-            public void editPlannerAim(String text, int position){
+
+            public void editPlannerAim(String text, int position) {
                 LoadingDialogExtension.showLoading(getContext(), LanguageExtension.setText("saving_task_progress", getString(R.string.saving_task_progress)));
 //                String abc = String.valueOf(userList.get(0).getId());
                 String id = String.valueOf(userList.get(position).getId());
 //                passAim = editText.getText().toString();
                 JSONArray jsonArray = new JSONArray(data);
-        System.out.println("saveActionPlan ID"+ position);
 
 //        tvAim = edAim.getText().toString();
-//        System.out.println("tvAim"+tvAim);
                 JSONObject requestBody = new JSONObject();
                 try {
                     requestBody.put("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken);
@@ -229,25 +225,24 @@ public class ActionPlanListFragment extends DialogFragment {
                                 LoadingDialogExtension.hideLoading();
                             }
                         });
-            };
+            }
+
+            ;
 
 
             @Override
             public void onView(ProjectPlanListModel.Data.AimGoals.Aim item, int position) {
                 long aimId = item.getId();
-                String aimName =item.getAim();
-                System.out.println("user_id");
+                String aimName = item.getAim();
                 Intent i = new Intent(mActivity, AddGoalActvity.class);
                 i.putExtra("heading", LanguageExtension.setText("add_goal", getString(R.string.add_goal)));
                 i.putExtra("is_new", false);
-                i.putExtra("aim_id",  aimId);
-                i.putExtra("aim_name",  aimName);
-                System.out.println("item.getId()"+ aimName);
+                i.putExtra("aim_id", aimId);
+                i.putExtra("aim_name", aimName);
 
 //                i.putExtra("online_id", item.getUserOnlineId());
                 startActivity(i);
             }
-
 
 
             @Override
@@ -312,30 +307,30 @@ public class ActionPlanListFragment extends DialogFragment {
             }
         });
 
-        binding.etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                searchText = s.toString();
-                if (isLoadedOnline) {
-                    currentPage = PAGE_START;
-                    getProjects(pPosition);
-                } else {
-                    adapter.searchUser(searchText);
-
-                    checkForEmptyState();
-                }
-            }
-        });
+//        binding.etSearch.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                searchText = s.toString();
+//                if (isLoadedOnline) {
+//                    currentPage = PAGE_START;
+//                    getProjects(pPosition);
+//                } else {
+//                    adapter.searchUser(searchText);
+//
+//                    checkForEmptyState();
+//                }
+//            }
+//        });
 
         binding.fabAdd.setOnClickListener(v -> {
             long ID = projectId;
@@ -367,7 +362,7 @@ public class ActionPlanListFragment extends DialogFragment {
     }
 
     private void setText() {
-        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
+//        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
         binding.tvEmptyState.setText(LanguageExtension.setText("no_user_found", getString(R.string.no_user_found)));
     }
 
@@ -441,13 +436,6 @@ public class ActionPlanListFragment extends DialogFragment {
 //                                    userList1.addAll(projectPlanListModel.getData().getAimGoals().getAims().get(0).getGoals());
 
 
-
-
-
-
-
-
-
 //                                    for (int i = 0; i < outerArray.length(); i++) {
 //                                        JSONObject user = outerArray.getJSONObject(i);
 //                                        ProjectPlanListModel.Data.AimGoals.Aim projectListResponseModel = new ProjectPlanListModel.Data.AimGoals.Aim();
@@ -481,7 +469,7 @@ public class ActionPlanListFragment extends DialogFragment {
 //////
 ////                                                goalList.add(goal);
 ////                                            }
-////                                            System.out.println("item.getGoals()" + goalList);
+
 ////
 ////                                            projectListResponseModel.setGoals(goalList);
 ////                                        }
@@ -489,7 +477,6 @@ public class ActionPlanListFragment extends DialogFragment {
 //
 //                                        uList.add(projectListResponseModel);
 ////                                        uList1.add(goal);
-////                                        System.out.println("uList1"+goal.getGoal());
 //
 ////                                        dbHandler.AddProjects(ProjectListResponseModel);
 ////                                        }
@@ -544,7 +531,6 @@ public class ActionPlanListFragment extends DialogFragment {
                     }
                 });
     }
-
 
 
     public void deleteUserOffline(long userId, int position) {

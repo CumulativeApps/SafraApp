@@ -282,7 +282,6 @@ public class AddAppointment extends AppCompatActivity {
     }
 
     private void saveAppointment(HashMap<String, String> parameters) {
-        System.out.println("parameters" +parameters);
         LoadingDialogExtension.showLoading(this, LanguageExtension.setText("saving_task_progress", getString(R.string.saving_task_progress)));
 //        LoadingDialog dialogL = new LoadingDialog();
 //        dialogL.setCancelable(false);

@@ -1,25 +1,5 @@
 package com.safra.utilities;
 
-import android.app.Activity;
-import android.text.TextUtils;
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.safra.R;
-import com.safra.adapters.FormAdapter;
-import com.safra.interfaces.FileSelectionInterface;
-import com.safra.interfaces.OnFormElementValueChangedListener;
-import com.safra.interfaces.OpenPropertiesInterface;
-import com.safra.interfaces.RequestLocationInterface;
-import com.safra.models.formElements.BaseFormElement;
-
-import java.util.List;
-
 import static com.safra.utilities.FormElements.TYPE_CASCADING;
 import static com.safra.utilities.FormElements.TYPE_CHECKBOX_GROUP;
 import static com.safra.utilities.FormElements.TYPE_DATE;
@@ -40,6 +20,26 @@ import static com.safra.utilities.FormElements.TYPE_TEXT;
 import static com.safra.utilities.FormElements.TYPE_TEXT_AREA;
 import static com.safra.utilities.FormElements.TYPE_TIME;
 import static com.safra.utilities.FormElements.TYPE_WEEK;
+
+import android.app.Activity;
+import android.text.TextUtils;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.safra.R;
+import com.safra.adapters.FormAdapter;
+import com.safra.interfaces.FileSelectionInterface;
+import com.safra.interfaces.OnFormElementValueChangedListener;
+import com.safra.interfaces.OpenPropertiesInterface;
+import com.safra.interfaces.RequestLocationInterface;
+import com.safra.models.formElements.BaseFormElement;
+
+import java.util.List;
 
 public class FormBuilder {
 
@@ -187,7 +187,7 @@ public class FormBuilder {
         return this.formAdapter.getElementList();
     }
 
-    public int getTotalMarks(){
+    public int getTotalMarks() {
         return formAdapter.getTotalMarks();
     }
 
@@ -205,7 +205,7 @@ public class FormBuilder {
         return isAllValid;
     }
 
-    public void clearFormElements(){
+    public void clearFormElements() {
         this.formAdapter.clearElements();
     }
 

@@ -20,4 +20,6 @@
 
     <color name="text_field_bg_color">#22C6C6C6</color>
     <color name="text_field_stroke_color">#22000000</color>
+    <color name="highlight_color">#FF0000</color> <!-- Example: Red color -->
+
 </resources>

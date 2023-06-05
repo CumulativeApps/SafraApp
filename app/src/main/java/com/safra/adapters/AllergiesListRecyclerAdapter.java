@@ -13,7 +13,8 @@ import com.safra.databinding.ItemLoadingBinding;
 import com.safra.databinding.RecyclerAllergiesListBinding;
 import com.safra.extensions.LanguageExtension;
 import com.safra.extensions.ViewExtension;
-import com.safra.models.UserItem;
+import com.safra.models.AllergiesListModel;
+import com.safra.models.AllergiesListModel.Data.Patient.Allergy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,18 +23,18 @@ public class AllergiesListRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
     private final int VIEW_ALLERGIES_LIST = 1;
 
     private final Context context;
-    private final List<UserItem> userList = new ArrayList<>();
-    private final List<UserItem> userData = new ArrayList<>();
+    private final List<AllergiesListModel.Data.Patient.Allergy> userList = new ArrayList<>();
+    private final List<AllergiesListModel.Data.Patient.Allergy> userData = new ArrayList<>();
     private final AllergiesListRecyclerAdapter.OnItemClickListener listener;
 
     public interface OnItemClickListener {
-        void onDelete(UserItem item, int position);
+        void onDelete(AllergiesListModel.Data.Patient.Allergy item, int position);
 
-        void onEdit(UserItem item, int position);
+        void onEdit(AllergiesListModel.Data.Patient.Allergy item, int position);
 
-        void onView(UserItem item, int position);
+        void onView(AllergiesListModel.Data.Patient.Allergy item, int position);
 
-        void changeStatus(View itemView, UserItem item, int position);
+        void changeStatus(View itemView, AllergiesListModel.Data.Patient.Allergy item, int position);
     }
 
     public AllergiesListRecyclerAdapter(Context context, AllergiesListRecyclerAdapter.OnItemClickListener listener) {
@@ -71,20 +72,20 @@ public class AllergiesListRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         return userList.size();
     }
 
-    public void addUserList(List<UserItem> userList) {
+    public void addUserList(List<AllergiesListModel.Data.Patient.Allergy> userList) {
         this.userList.addAll(userList);
         this.userData.addAll(userList);
     }
 
     public void removeUser(int position){
-        UserItem userItem = getItem(position);
+        AllergiesListModel.Data.Patient.Allergy userItem = getItem(position);
         userList.remove(position);
         notifyItemRemoved(position);
         userData.remove(userItem);
 
     }
 
-    public UserItem getItem(int position){
+    public AllergiesListModel.Data.Patient.Allergy getItem(int position){
         return userList.get(position);
     }
 
@@ -101,8 +102,8 @@ public class AllergiesListRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         if(searchText.isEmpty()){
             userList.addAll(userData);
         } else {
-            for(UserItem ui : userData){
-                if(ui.getUserName().toLowerCase().contains(searchText))
+            for(AllergiesListModel.Data.Patient.Allergy ui : userData){
+                if(ui.getAllergen().toLowerCase().contains(searchText))
                     userList.add(ui);
             }
         }
@@ -118,31 +119,31 @@ public class AllergiesListRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
             this.binding = binding;
         }
 
-        public void bindView(UserItem item) {
+        public void bindView(AllergiesListModel.Data.Patient.Allergy item) {
             binding.tvReactionTitle.setText(LanguageExtension.setText("reaction", context.getString(R.string.reaction)));
             binding.tvSeverityTitle.setText(LanguageExtension.setText("severity", context.getString(R.string.severity)));
             binding.tvCommentTitle.setText(LanguageExtension.setText("comment", context.getString(R.string.comment)));
 //            binding.tvViewDetails.setText(LanguageExtension.setText("view_details", context.getString(R.string.view_details)));
 
-            binding.tvAllergenName.setText(item.getUserName());
+            binding.tvAllergenName.setText(item.getAllergen());
 
-            if (item.getUserEmail() != null)
-                binding.tvReaction.setText(item.getUserEmail());
+            if (item.getReaction() != null)
+                binding.tvReaction.setText(item.getReaction());
             else
                 binding.tvReaction.setText("-");
 
-            if (item.getUserPhone() != null)
-                binding.tvSeverity.setText(item.getUserPhone());
+            if (item.getSeverity() != null)
+                binding.tvSeverity.setText(item.getSeverity());
             else
                 binding.tvSeverity.setText("-");
 
-            if (item.getRoleName() != null)
-                binding.tvComment.setText(item.getRoleName());
+            if (item.getComment() != null)
+                binding.tvComment.setText(item.getComment());
             else
                 binding.tvComment.setText("-");
 
-            ViewExtension.makeVisible(binding.ivDelete, item.isDeletable());
-            ViewExtension.makeVisible(binding.ivEdit, item.isEditable());
+//            ViewExtension.makeVisible(binding.ivDelete, item.isDeletable());
+//            ViewExtension.makeVisible(binding.ivEdit, item.isEditable());
 //            ViewExtension.makeVisible(binding.tvChangeStatus, item.isChangeable());
 //            ViewExtension.makeVisible(binding.tvViewDetails, item.isViewable());
             ViewExtension.makeVisible(binding.clExpandLayout, item.isExpanded());

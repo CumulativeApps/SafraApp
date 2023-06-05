@@ -57,7 +57,6 @@ public class AddGoalActvity extends AppCompatActivity {
         isRemembered = userSessionManager.isRemembered();
         aimId = getIntent().getLongExtra("aim_id", -1);
         aimName = getIntent().getStringExtra("aim_name");
-        System.out.println("AIMID"+aimName);
         passAim = editText.getText().toString();
         aimTitle.setText(aimName);
 
@@ -89,10 +88,8 @@ public class AddGoalActvity extends AppCompatActivity {
         String ID = String.valueOf(aimId);
         passAim = editText.getText().toString();
         JSONArray jsonArray = new JSONArray(data);
-//        System.out.println("saveActionPlan ID"+ ID);
 
 //        tvAim = edAim.getText().toString();
-//        System.out.println("tvAim"+tvAim);
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken);

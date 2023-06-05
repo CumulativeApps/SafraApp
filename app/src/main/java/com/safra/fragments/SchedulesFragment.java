@@ -4,10 +4,11 @@ import static com.safra.utilities.Common.BASE_URL;
 import static com.safra.utilities.Common.PLANNER_AIM_SPINNER_LIST;
 import static com.safra.utilities.Common.PLANNER_GOAL_SPINNER_LIST;
 import static com.safra.utilities.Common.PLANNER_PROJECT_SPINNER_LIST;
+import static com.safra.utilities.Common.PLANNER_SCHEDULE_CALENDAR_LIST;
 import static com.safra.utilities.UserSessionManager.userSessionManager;
 
 import android.app.AlertDialog;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,35 +16,32 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CalendarView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
-import com.prolificinteractive.materialcalendarview.CalendarMode;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
-import com.prolificinteractive.materialcalendarview.format.DayFormatter;
-import com.prolificinteractive.materialcalendarview.spans.DotSpan;
+import com.prolificinteractive.materialcalendarview.OnMonthChangedListener;
 import com.safra.R;
 import com.safra.Safra;
 import com.safra.databinding.FragmentSchedulesBinding;
 import com.safra.models.ProjectSpinnerModel;
-
+import com.safra.models.ScheduleCalendarModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 
@@ -52,6 +50,11 @@ public class SchedulesFragment extends Fragment {
 
     private boolean isRemembered;
     private FragmentSchedulesBinding binding;
+    private int months, years;
+    private String startingDate;
+    private List<ScheduleCalendarModel.Datum> eventList;
+    int goalId;
+    String NAme;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,14 +71,13 @@ public class SchedulesFragment extends Fragment {
         fetchProjects();
 
 
-
-        binding.calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+        binding.calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+            public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
                 // Handle the selected date and display events for that date
                 // You can show events in a dialog, a separate activity, or update a separate view
                 // based on your implementation
-                String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
+                String selectedDate = date.getYear() + "-" + String.format("%02d", date.getMonth() + 1) + "-" + String.format("%02d", date.getDay());
                 displayEventsForDate(selectedDate);
             }
 
@@ -106,18 +108,103 @@ public class SchedulesFragment extends Fragment {
                 // Create a list to store the events
                 List<Event> events = new ArrayList<>();
 
-                // Add static events for specific dates
-                if (selectedDate.equals("15/5/2023")) {
-                    events.add(new Event("Event 1", "blue"));  // Event with blue color
-                    events.add(new Event("Event 2", "red"));   // Event with red color
-                } else if (selectedDate.equals("17/5/2023")) {
-                    events.add(new Event("Event 3", "blue"));  // Event with blue color
+                // Check if eventList is null
+                if (eventList == null) {
+                    return events; // Return an empty list
+                }
+
+                // Iterate over all events and add the ones that match or fall within the selected date range
+                for (ScheduleCalendarModel.Datum event : eventList) {
+                    String startDate = event.getStart_date();
+                    String endDate = event.getEnd_date();
+
+                    // Compare selectedDate with the start and end dates
+                    if (selectedDate.equals(startDate) || selectedDate.equals(endDate) ||
+                            (selectedDate.compareTo(startDate) > 0 && selectedDate.compareTo(endDate) < 0)) {
+                        events.add(new Event(event.getTitle(), "blue"));
+                    }
                 }
 
                 return events;
             }
 
+
         });
+
+        binding.calendarView.setOnMonthChangedListener(new OnMonthChangedListener() {
+            @Override
+            public void onMonthChanged(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date) {
+                fetchDataForMonth(date.getMonth() + 1, date.getYear());
+            }
+
+            private void fetchDataForMonth(int month, int year) {
+                System.out.println("month:-" + month);
+                System.out.println("year:-" + year);
+
+                AndroidNetworking
+                        .post(BASE_URL + PLANNER_SCHEDULE_CALENDAR_LIST)
+                        .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
+                        .addBodyParameter("goal_id", String.valueOf(goalId))
+                        .addBodyParameter("month", String.valueOf(month))
+                        .addBodyParameter("year", String.valueOf(year))
+                        .build()
+                        .getAsJSONObject(new JSONObjectRequestListener() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+
+                                binding.calendarView.removeDecorators();
+
+                                populateEventList(response);
+                                // Rest of the code...
+                            }
+
+                            private void populateEventList(JSONObject response) {
+                                try {
+                                    int success = response.getInt("success");
+                                    if (success == 1) {
+
+                                        JSONArray eventsArray = response.getJSONArray("data");
+
+                                        eventList = new ArrayList<>();
+
+                                        for (int i = 0; i < eventsArray.length(); i++) {
+                                            JSONObject eventObject = eventsArray.getJSONObject(i);
+                                            ScheduleCalendarModel.Datum event = new ScheduleCalendarModel.Datum();
+                                            event.setTitle(eventObject.getString("title"));
+                                            event.setStart_date(eventObject.getString("start_date"));
+                                            event.setEnd_date(eventObject.getString("end_date"));
+                                            System.out.println("eventList:-" + eventList);
+
+                                            eventList.add(event);
+
+                                            String[] startDateParts = event.getStart_date().split("-");
+                                            int startYear = Integer.parseInt(startDateParts[0]);
+                                            int startMonth = Integer.parseInt(startDateParts[1]);
+                                            int startDay = Integer.parseInt(startDateParts[2]);
+                                            CalendarDay calendarDay = CalendarDay.from(startYear, startMonth - 1, startDay);
+                                            Drawable highlightBackground = ContextCompat.getDrawable(getContext(), android.R.color.holo_blue_bright);
+                                            EventDecorator eventDecorator = new EventDecorator(calendarDay, highlightBackground);
+                                            binding.calendarView.addDecorator(eventDecorator);
+                                        }
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    // Handle JSON parsing error
+                                }
+                            }
+
+
+                            @Override
+                            public void onError(ANError anError) {
+                                Log.e(TAG, "onError: " + anError.getErrorCode());
+                                Log.e(TAG, "onError: " + anError.getErrorDetail());
+                                Log.e(TAG, "onError: " + anError.getErrorBody());
+                            }
+                        });
+            }
+
+        });
+
 
         return binding.getRoot();
 
@@ -195,7 +282,7 @@ public class SchedulesFragment extends Fragment {
     }
 
     private void fetchAim(int selectedProjectId) {
-        System.out.println("FetchAIm APi Call");
+
         AndroidNetworking.post(BASE_URL + PLANNER_AIM_SPINNER_LIST)
                 .addQueryParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
                 .addQueryParameter("project_id", String.valueOf(selectedProjectId))
@@ -269,7 +356,6 @@ public class SchedulesFragment extends Fragment {
     }
 
     private void fetchGoal(int selectedProjectId) {
-        System.out.println("FetchAIm APi Call");
         AndroidNetworking.post(BASE_URL + PLANNER_GOAL_SPINNER_LIST)
                 .addQueryParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
                 .addQueryParameter("aim_id", String.valueOf(selectedProjectId))
@@ -301,6 +387,26 @@ public class SchedulesFragment extends Fragment {
                                 ArrayAdapter<ProjectSpinnerModel> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_form_type, projectList);
                                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                                 binding.spnGoalSpinner.setAdapter(adapter);
+
+                                binding.spnGoalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                    @Override
+                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                        // Get the selected project ID
+                                        goalId = projectList.get(position).getId();
+
+                                        // Pass the selected project ID to the next API method
+//                                        fetchAim(goalId);
+
+                                    }
+
+                                    @Override
+                                    public void onNothingSelected(AdapterView<?> parent) {
+                                        // Handle when nothing is selected
+
+
+                                    }
+                                });
+
                             } else {
                                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                             }
@@ -336,6 +442,90 @@ public class SchedulesFragment extends Fragment {
         }
     }
 
+    private class EventDecorator implements DayViewDecorator {
+        private CalendarDay date;
+        private Drawable backgroundDrawable;
 
+        public EventDecorator(CalendarDay date, Drawable backgroundDrawable) {
+            this.date = date;
+            this.backgroundDrawable = backgroundDrawable;
+        }
+
+        @Override
+        public boolean shouldDecorate(CalendarDay day) {
+            return date.equals(day);
+        }
+
+        @Override
+        public void decorate(DayViewFacade view) {
+            view.setBackgroundDrawable(backgroundDrawable);
+        }
+    }
 
 }
+
+//            private void fetchDataForMonth(int i) {
+//
+//
+//                AndroidNetworking
+//                        .post(BASE_URL + PLANNER_SCHEDULE_CALENDAR_LIST)
+//                        .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
+//                        .addBodyParameter("goal_id", "137")
+//                        .addBodyParameter("month", String.valueOf(months))
+//                        .addBodyParameter("year", String.valueOf(years))
+//                        .build()
+//                        .getAsJSONObject(new JSONObjectRequestListener() {
+//                            @Override
+//                            public void onResponse(JSONObject response) {
+//                                try {
+//                                    int success = response.getInt("success");
+//                                    String message = response.getString("message");
+//
+//                                    if (success == 1) {
+//                                        JSONArray dataArray = response.getJSONArray("data");
+//
+////                                        JSONArray medicines = data.getJSONArray("medicines");
+//
+//                                        List<ScheduleCalendarModel.Datum> uList = new ArrayList<>();
+//                                        for (int i = 0; i < dataArray.length(); i++) {
+//                                            JSONObject medicine = dataArray.getJSONObject(i);
+//
+//                                            ScheduleCalendarModel.Datum userItem = new ScheduleCalendarModel.Datum();
+//                                            userItem.setTitle(medicine.getString("title"));
+//                                            userItem.setStart_date(medicine.getString("start_date"));
+//
+//
+//
+//                                            NAme = userItem.getTitle();
+//                                            startingDate = userItem.getStart_date();
+//
+//
+//
+//                                            uList.add(userItem);
+////                                    adapter.addUserList(userList);
+//
+//                                        }
+//
+//                                    } else {
+//                                        String errorMessage = "API request unsuccessful: " + message;
+//                                        // Handle the error message
+//                                    }
+//                                } catch (JSONException e) {
+//                                    e.printStackTrace();
+//                                    // Handle JSON parsing error
+//                                }
+//
+//                            }
+//
+//                            @Override
+//                            public void onError(ANError anError) {
+//                                Log.e(TAG, "onError: " + anError.getErrorCode());
+//                                Log.e(TAG, "onError: " + anError.getErrorDetail());
+//                                Log.e(TAG, "onError: " + anError.getErrorBody());
+//
+//                            }
+//                        });
+//
+//
+//            }
+

@@ -144,7 +144,6 @@ public class AddPatient extends AppCompatActivity {
             binding.tvAddProjectHeading.setText(getIntent().getStringExtra("heading"));
             isNew = getIntent().getBooleanExtra("is_new", false);
             if (isNew) {
-                System.out.println("NEW");
                 if (ConnectivityReceiver.isConnected()) {
 //                    getUserListFromDB();
 //                    getGroupListFromDB();
@@ -155,7 +154,6 @@ public class AddPatient extends AppCompatActivity {
                 }
             } else {
 
-                System.out.println("EDIT");
                 patientId = getIntent().getIntExtra("patient_Id", -1);
                 onlineId = getIntent().getLongExtra("online_id", -1);
                 fName = getIntent().getStringExtra("f_name");
@@ -335,10 +333,8 @@ public class AddPatient extends AppCompatActivity {
                 parameters.put("undefined", String.valueOf(undefinedValue));
 
                 if(undefinedValue == 1){
-                    System.out.println("PASS NULL");
 
                 }else if(undefinedValue == 0){
-                    System.out.println("PASS VALUE");
                     parameters.put("first_name", fName);
                     parameters.put("middle_name", mName);
                     parameters.put("last_name", lName);
@@ -449,7 +445,6 @@ public class AddPatient extends AppCompatActivity {
     }
 
     private void editPatient(HashMap<String, String> parameters) {
-        System.out.println("EDIT API CALL:- "+parameters);
         LoadingDialogExtension.showLoading(this, LanguageExtension.setText("updating_task_progress", getString(R.string.updating_task_progress)));
 //        LoadingDialog dialogL = new LoadingDialog();
 //        dialogL.setCancelable(false);

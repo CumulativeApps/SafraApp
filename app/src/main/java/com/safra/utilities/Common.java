@@ -91,6 +91,14 @@ public class Common {
     public static final String REQUEST_DELETE_HEALTH_PATIENT_LIST = "request_delete_patient";
     public static final String REQUEST_DELETE_HEALTH_PATIENT_CAPTURE_VITAL_LIST = "request_delete_patient_capture_vital_list";
     public static final String REQUEST_DELETE_HEALTH_PATIENT_APPOINTMENT_DELETE = "request_delete_patient_appointment_delete";
+    public static final String REQUEST_DELETE_HEALTH_MEDICINE_DELETE = "request_delete_patient_medicine_delete";
+    public static final String REQUEST_DELETE_HEALTH_PROVIDER_DELETE = "request_delete_patient_provider_delete";
+    public static final String REQUEST_DELETE_HEALTH_DIAGNOSIS_DELETE = "request_delete_patient_diagnosis_delete";
+    public static final String REQUEST_DELETE_HEALTH_ALLERGIES_DELETE = "request_delete_patient_allergies_delete";
+    public static final String REQUEST_DELETE_HEALTH_MEDICATION_DELETE = "request_delete_patient_medication_delete";
+    public static final String REQUEST_DELETE_ACTIVE_VISITS_DELETE = "request_delete_active_visits_delete";
+
+
 
     //            public static final String BASE_URL = "https://safra.co.mz/api/";
     public static final String BASE_URL = "https://staging.safra.co.mz/api/";
@@ -182,6 +190,8 @@ public class Common {
     public static final String PLANNER_GOAL_SPINNER_LIST = "planner-goals";
     public static final String PLANNER_TASK_SPINNER_LIST = "planner-tasks";
     public static final String PLANNER_BUDGET_LIST = "planner-resources";
+    public static final String PLANNER_SCHEDULE_CALENDAR_LIST = "planner-calendars-tasks";
+
 
 
     public static final String HEALTH_RECORD_PATIENT_LIST = "get-patients";
@@ -199,5 +209,45 @@ public class Common {
     public static final String HEALTH_RECORD_CAPTURE_VITAL_LIST = "get-vitals";
     public static final String HEALTH_RECORD_CAPTURE_VITAL_SAVE = "add-vitals";
     public static final String HEALTH_RECORD_CAPTURE_VITAL_DELETE = "delete-vitals";
+
+
+    public static final String HEALTH_RECORD_MEDICINE_LIST = "get-medicines";
+    public static final String HEALTH_RECORD_PROVIDER_LIST = "get-providers";
+    public static final String HEALTH_RECORD_ADD_MEDICINE = "add-medicines";
+    public static final String HEALTH_RECORD_ADD_PROVIDER = "add-providers";
+    public static final String HEALTH_RECORD_UPDATE_MEDICINE = "update-medicines";
+    public static final String HEALTH_RECORD_DELETE_MEDICINE = "delete-medicines";
+    public static final String HEALTH_RECORD_DELETE_PROVIDER = "delete-providers";
+    public static final String HEALTH_RECORD_CHANGE_STATUS = "update-medicines-status";
+
+
+    public static final String HEALTH_RECORD_DIAGNOSTICS_LIST = "get-diagnostics";
+    public static final String HEALTH_RECORD_DIAGNOSTICS_ADD = "add-diagnostics";
+    public static final String HEALTH_RECORD_DIAGNOSTICS_DELETE = "delete-diagnostics";
+
+
+    public static final String HEALTH_RECORD_ALLERGIES_LIST = "get-allergies";
+    public static final String HEALTH_RECORD_ALLERGIES_ADD = "add-allergies";
+    public static final String HEALTH_RECORD_ALLERGIES_DELETE = "delete-allergies";
+    public static final String HEALTH_RECORD_ALLERGIES_UPDATE = "update-allergies";
+
+
+
+    public static final String HEALTH_RECORD_ACTIVE_VITAL_LIST = "active-visits";
+
+
+    public static final String HEALTH_RECORD_MEDICATION_LIST = "get-medication";
+    public static final String HEALTH_RECORD_MEDICATION_ADD = "add-medication";
+    public static final String HEALTH_RECORD_AVALIABLE_MEDICINES_LIST = "get-available-medicines";
+    public static final String HEALTH_RECORD_MEDICATION_DELETE = "delete-medication";
+
+    public static final String HEALTH_RECORD_MEDICATION_UPDATE = "update-medication";
+    public static final String HEALTH_RECORD_MEDICATION_UPDATE_STATUS = "update-medication-status";
+
+
+    public static final String HEALTH_RECORD_OVERVIEW_LIST = "get-overview";
+
+    public static final String HEALTH_RECORD_ACTIVE_VISIT_ADD = "add-visit";
+    public static final String HEALTH_RECORD_ACTIVE_VISIT_DELETE = "delete-visit";
 
 }

@@ -116,6 +116,14 @@ public class AppointmentScheduleFragment extends Fragment {
 
             @Override
             public void onEdit(PatientListModel.Data.Patient item, int position) {
+                OverviewFragment dialogD = new OverviewFragment();
+                Bundle bundle = new Bundle();
+                bundle.putLong("overview_id", item.getId());
+                dialogD.setArguments(bundle);
+                bundle.putString("f_name", item.getFirst_name());
+                bundle.putString("m_name", item.getMiddle_name());
+                bundle.putString("l_name", item.getLast_name());
+                dialogD.show(mActivity.getSupportFragmentManager(), OverviewFragment.TAG);
 
             }
 
@@ -180,36 +188,36 @@ public class AppointmentScheduleFragment extends Fragment {
             }
         });
 
-        binding.etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                searchText = s.toString();
-                if (isLoadedOnline) {
-                    currentPage = PAGE_START;
-                    getPatients(pPosition);
-                } else {
-                    adapter.searchUser(searchText);
-                    checkForEmptyState();
-                }
-            }
-        });
+//        binding.etSearch.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                searchText = s.toString();
+//                if (isLoadedOnline) {
+//                    currentPage = PAGE_START;
+//                    getPatients(pPosition);
+//                } else {
+//                    adapter.searchUser(searchText);
+//                    checkForEmptyState();
+//                }
+//            }
+//        });
 
 
         return binding.getRoot();
     }
 
     private void setText() {
-        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
+//        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
         binding.tvEmptyState.setText(LanguageExtension.setText("no_user_found", getString(R.string.no_user_found)));
     }
 

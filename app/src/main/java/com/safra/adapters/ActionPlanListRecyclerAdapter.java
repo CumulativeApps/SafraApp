@@ -4,16 +4,10 @@
 package com.safra.adapters;
 
 import static com.safra.utilities.Common.BASE_URL;
-import static com.safra.utilities.Common.PAGE_START;
-import static com.safra.utilities.Common.PLANNER_AIM_DELETE;
 import static com.safra.utilities.Common.PLANNER_GOAL_DELETE;
-import static com.safra.utilities.Common.PLANNER_PROJECT_AIM_LIST;
-import static com.safra.utilities.Common.REQUEST_DELETE_AIM;
 import static com.safra.utilities.Common.REQUEST_DELETE_GOAL;
-import static com.safra.utilities.Common.REQUEST_DELETE_PROJECT;
 import static com.safra.utilities.UserSessionManager.userSessionManager;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,9 +15,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,28 +26,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
-import com.google.gson.Gson;
-import com.safra.AddGoalActvity;
-import com.safra.AddProjects;
 import com.safra.EditGoalActivity;
 import com.safra.R;
 import com.safra.Safra;
 import com.safra.databinding.ItemLoadingBinding;
 import com.safra.databinding.RecyclerActionplanListBinding;
-import com.safra.databinding.RecyclerActionplanListBinding;
 import com.safra.dialogs.DeleteDialog;
 import com.safra.extensions.LanguageExtension;
 import com.safra.extensions.LoadingDialogExtension;
 import com.safra.extensions.ViewExtension;
-import com.safra.fragments.ActionPlanListFragment;
 import com.safra.fragments.ActionPlanTaskListFragment;
-import com.safra.fragments.UserDetailFragment;
-import com.safra.models.ActionPlanListModel;
-import com.safra.models.UserItem;
 import com.safra.utilities.ConnectivityReceiver;
-import com.safra.utilities.SpaceItemDecoration;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -77,15 +58,19 @@ public class ActionPlanListRecyclerAdapter extends RecyclerView.Adapter<Recycler
     private LifecycleOwner lifecycleOwner;
 
     private boolean isRemembered;
+
     public interface OnItemClickListener {
         void onDelete(ProjectPlanListModel.Data.AimGoals.Aim item, int position);
+
         void onEdit(ProjectPlanListModel.Data.AimGoals.Aim item, int position);
+
         void onView(ProjectPlanListModel.Data.AimGoals.Aim item, int position);
+
         void changeStatus(View itemView, ProjectPlanListModel.Data.AimGoals.Aim item, int position);
     }
 
 
-    public ActionPlanListRecyclerAdapter(LifecycleOwner lifecycleOwner,FragmentManager fragmentManager,Context context, OnItemClickListener listener) {
+    public ActionPlanListRecyclerAdapter(LifecycleOwner lifecycleOwner, FragmentManager fragmentManager, Context context, OnItemClickListener listener) {
         this.fragmentManager = fragmentManager;
         this.lifecycleOwner = lifecycleOwner;
         this.context = context;
@@ -113,11 +98,13 @@ public class ActionPlanListRecyclerAdapter extends RecyclerView.Adapter<Recycler
         }
         );
     }
+
     @Override
     public int getItemViewType(int position) {
         int VIEW_PROGRESS = 0;
         return userList.get(position) != null ? VIEW_ACTION_PLAN_LIST : VIEW_PROGRESS;
     }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -151,37 +138,36 @@ public class ActionPlanListRecyclerAdapter extends RecyclerView.Adapter<Recycler
     }
 
 
-
     public void addUserList(List<ProjectPlanListModel.Data.AimGoals.Aim> userList) {
         this.userList.addAll(userList);
         this.userData.addAll(userList);
     }
 
-    public void removeUser(int position){
+    public void removeUser(int position) {
         ProjectPlanListModel.Data.AimGoals.Aim userItem = getItem(position);
         userList.remove(position);
         notifyItemRemoved(position);
         userData.remove(userItem);
     }
 
-    public ProjectPlanListModel.Data.AimGoals.Aim getItem(int position){
+    public ProjectPlanListModel.Data.AimGoals.Aim getItem(int position) {
         return userList.get(position);
     }
 
-    public void clearLists(){
+    public void clearLists() {
         userList.clear();
         userData.clear();
         notifyDataSetChanged();
     }
 
-    public void searchUser(String searchText){
+    public void searchUser(String searchText) {
         searchText = searchText.toLowerCase();
         userList.clear();
-        if(searchText.isEmpty()){
+        if (searchText.isEmpty()) {
             userList.addAll(userData);
         } else {
-            for(ProjectPlanListModel.Data.AimGoals.Aim ui : userData){
-                if(ui.getAim().toLowerCase().contains(searchText))
+            for (ProjectPlanListModel.Data.AimGoals.Aim ui : userData) {
+                if (ui.getAim().toLowerCase().contains(searchText))
                     userList.add(ui);
             }
         }
@@ -200,7 +186,7 @@ public class ActionPlanListRecyclerAdapter extends RecyclerView.Adapter<Recycler
 
 
         public void bindView(ProjectPlanListModel.Data.AimGoals.Aim item) {
-            System.out.println("userList"+ userList1.size());
+
             isRemembered = userSessionManager.isRemembered();
 
 
@@ -220,68 +206,62 @@ public class ActionPlanListRecyclerAdapter extends RecyclerView.Adapter<Recycler
 //                    deleteUserOffline(userId, position);
                     });
 
-             GoalAdapter goalAdapter = new GoalAdapter(context, new GoalAdapter.OnItemClickListener() {
+            GoalAdapter goalAdapter = new GoalAdapter(context, new GoalAdapter.OnItemClickListener() {
 
-                 @Override
-                 public void onDelete(ProjectPlanListModel.Data.AimGoals.Aim.Goal item, int position) {
-
-                     System.out.println("Click On Delete Button");
-                     System.out.println("userlist"+userList);
-                     System.out.println("userlist1"+userList1);
-                     DeleteDialog dialogD = new DeleteDialog();
-                     Bundle bundle = new Bundle();
-                     bundle.putString("request_key", REQUEST_DELETE_GOAL);
-                     bundle.putString("message", LanguageExtension.setText("do_you_want_to_delete_this_user", context.getString(R.string.do_you_want_to_delete_this_user)));
-                     bundle.putLong("id", item.getId());
-                     bundle.putLong("online_id", item.getId());
-                     bundle.putInt("position", position);
-                     bundle.putString("type", "project");
-                     System.out.println("POSITION :- "+position);
-                     dialogD.setArguments(bundle);
-                     dialogD.show(fragmentManager, DeleteDialog.TAG);
+                @Override
+                public void onDelete(ProjectPlanListModel.Data.AimGoals.Aim.Goal item, int position) {
 
 
-                 }
+                    DeleteDialog dialogD = new DeleteDialog();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("request_key", REQUEST_DELETE_GOAL);
+                    bundle.putString("message", LanguageExtension.setText("do_you_want_to_delete_this_user", context.getString(R.string.do_you_want_to_delete_this_user)));
+                    bundle.putLong("id", item.getId());
+                    bundle.putLong("online_id", item.getId());
+                    bundle.putInt("position", position);
+                    bundle.putString("type", "project");
 
-                 @Override
-                 public void onEdit(ProjectPlanListModel.Data.AimGoals.Aim.Goal item, int position) {
-                     System.out.println("Click On Edit Button");
-                     long goalId = item.getId();
-                     String goalNAme = item.getGoal();
+                    dialogD.setArguments(bundle);
+                    dialogD.show(fragmentManager, DeleteDialog.TAG);
 
-                     System.out.println("user_id");
-                     Intent i = new Intent(context, EditGoalActivity.class);
-                     i.putExtra("heading", LanguageExtension.setText("add_goal", context.getString(R.string.add_goal)));
-                     i.putExtra("is_new", false);
-                     i.putExtra("goal_id", goalId);
-                     i.putExtra("goal_name", goalNAme);
-                     System.out.println("Goal ID"+ goalId);
+
+                }
+
+                @Override
+                public void onEdit(ProjectPlanListModel.Data.AimGoals.Aim.Goal item, int position) {
+                    long goalId = item.getId();
+                    String goalNAme = item.getGoal();
+
+                    Intent i = new Intent(context, EditGoalActivity.class);
+                    i.putExtra("heading", LanguageExtension.setText("add_goal", context.getString(R.string.add_goal)));
+                    i.putExtra("is_new", false);
+                    i.putExtra("goal_id", goalId);
+                    i.putExtra("goal_name", goalNAme);
 
 //                i.putExtra("online_id", item.getUserOnlineId());
-                     context.startActivity(i);
+                    context.startActivity(i);
 
-                 }
+                }
 
 
+                @Override
+                public void onView(ProjectPlanListModel.Data.AimGoals.Aim.Goal item, int position) {
 
-                 @Override
-                 public void onView(ProjectPlanListModel.Data.AimGoals.Aim.Goal item, int position) {
-                     System.out.println("Click On View Button");
-                     ActionPlanTaskListFragment dialogD = new ActionPlanTaskListFragment();
-                     Bundle bundle = new Bundle();
-                     bundle.putLong("goal_id", item.getId());
-                     System.out.println("goal_id"+item.getId());
+                    ActionPlanTaskListFragment dialogD = new ActionPlanTaskListFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putLong("goal_id", item.getId());
+
 //                bundle.putLong("online_id", item.getUserOnlineId());
-                     dialogD.setArguments(bundle);
-                     dialogD.show(fragmentManager, ActionPlanTaskListFragment.TAG);
+                    dialogD.setArguments(bundle);
+                    dialogD.show(fragmentManager, ActionPlanTaskListFragment.TAG);
 
-                 }
+                }
 
-                 @Override
-                 public void changeStatus(View itemView, ProjectPlanListModel.Data.AimGoals.Aim.Goal item, int position) {
+                @Override
+                public void changeStatus(View itemView, ProjectPlanListModel.Data.AimGoals.Aim.Goal item, int position) {
 
-                 }
-             });
+                }
+            });
 
 
             binding.tvAim.setText(item.getAim());
@@ -305,7 +285,6 @@ public class ActionPlanListRecyclerAdapter extends RecyclerView.Adapter<Recycler
 //            goalAdapter.clearLists();
             goalAdapter.addUserList(item.getGoals());
 //            goalAdapter.getItemCount();
-//            System.out.println("List Of Goals- "+ goalAdapter.getItemCount());
 
             binding.innerRecyclerView.setAdapter(goalAdapter);
             binding.innerRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -348,11 +327,12 @@ public class ActionPlanListRecyclerAdapter extends RecyclerView.Adapter<Recycler
                         public void onResponse(JSONObject response) {
                             LoadingDialogExtension.hideLoading();
                             try {
-                            int success = response.getInt("success");
+                                int success = response.getInt("success");
                                 String message = response.getString("message");
                                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 //                            dialogL.dismiss();
-                            if (success == 1) {
+                                if (success == 1) {
+
 
 //
 //                                goalAdapter.removeUser(position);
@@ -363,7 +343,7 @@ public class ActionPlanListRecyclerAdapter extends RecyclerView.Adapter<Recycler
 //                                // Notify this adapter that the data set has changed
 //                                notifyItemRangeChanged(position, getItemCount());
 
-                            }
+                                }
                             } catch (JSONException e) {
                                 Log.e(TAG, "onResponseError: " + e.getLocalizedMessage());
 //                            dialogL.dismiss();

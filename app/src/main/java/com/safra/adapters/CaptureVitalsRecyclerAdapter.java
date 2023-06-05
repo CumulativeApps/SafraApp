@@ -132,15 +132,26 @@ public class CaptureVitalsRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
             binding.tvAddressTitle.setText(LanguageExtension.setText("address", context.getString(R.string.address)));
             binding.tvViewDetails.setText(LanguageExtension.setText("capture_vitals", context.getString(R.string.capture_vitals)));
 
-
-            String fullName = " "+ item.first_name +" " +item.middle_name + " " + item.last_name;
-
-
-            if (item.first_name == "null" && item.middle_name == "null" && item.last_name == "null") {
-
+            if (item.first_name.equals("null") && item.middle_name.equals("null") && item.last_name.equals("null")) {
                 binding.tvPatientName.setText("Unidentified patient");
-
-            }  else {
+            } else {
+                StringBuilder fullNameBuilder = new StringBuilder();
+                if (!item.first_name.equals("null")) {
+                    fullNameBuilder.append(item.first_name);
+                }
+                if (!item.middle_name.equals("null")) {
+                    if (fullNameBuilder.length() > 0) {
+                        fullNameBuilder.append(" ");
+                    }
+                    fullNameBuilder.append(item.middle_name);
+                }
+                if (!item.last_name.equals("null")) {
+                    if (fullNameBuilder.length() > 0) {
+                        fullNameBuilder.append(" ");
+                    }
+                    fullNameBuilder.append(item.last_name);
+                }
+                String fullName = fullNameBuilder.toString();
                 binding.tvPatientName.setText(fullName);
             }
 
@@ -206,6 +217,7 @@ public class CaptureVitalsRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
 
 
             binding.tvViewDetails.setOnClickListener(v -> listener.onView(item, getAbsoluteAdapterPosition()));
+            binding.tvOverview.setOnClickListener(v -> listener.onEdit(item, getAbsoluteAdapterPosition()));
         }
     }
 

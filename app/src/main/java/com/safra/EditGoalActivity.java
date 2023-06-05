@@ -71,7 +71,6 @@ public class EditGoalActivity extends AppCompatActivity {
         isRemembered = userSessionManager.isRemembered();
         aimId = getIntent().getLongExtra("goal_id", -1);
         aimName = getIntent().getStringExtra("goal_name");
-        System.out.println("AIMID"+aimName);
         editText.setText(aimName);
 
 
@@ -79,7 +78,6 @@ public class EditGoalActivity extends AppCompatActivity {
 //        String Name= aimName;
 
 //        String projectId = String.valueOf(userList2.get(0).getId());
-//        System.out.println("projectId" +projectId);
 
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override

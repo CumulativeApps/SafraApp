@@ -50,6 +50,7 @@ import java.util.List;
 public class DiagnosticsFragment extends Fragment {
 
     public static final String TAG = "diagnostics_fragment";
+
     private FragmentActivity mActivity = null;
 
     private FragmentDiagnosticsBinding binding;
@@ -59,12 +60,17 @@ public class DiagnosticsFragment extends Fragment {
     private DiagnosticsRecyclerAdapter adapter;
 
     private String searchText = "";
+
     private int currentPage = PAGE_START;
+
     private boolean isLastPage = false;
+
     private final int pPosition = -1;
+
     private boolean isNextPageCalled = false;
 
     private boolean isRemembered;
+
     private boolean isLoadedOnline = false;
 
     private PopupWindow popupWindow;
@@ -73,6 +79,7 @@ public class DiagnosticsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         binding = FragmentDiagnosticsBinding.inflate(inflater, container, false);
 
         isRemembered = userSessionManager.isRemembered();
@@ -89,17 +96,27 @@ public class DiagnosticsFragment extends Fragment {
 
             @Override
             public void onEdit(PatientListModel.Data.Patient item, int position) {
-
+                OverviewFragment dialogD = new OverviewFragment();
+                Bundle bundle = new Bundle();
+                bundle.putLong("overview_id", item.getId());
+                dialogD.setArguments(bundle);
+                bundle.putString("f_name", item.getFirst_name());
+                bundle.putString("m_name", item.getMiddle_name());
+                bundle.putString("l_name", item.getLast_name());
+                dialogD.show(mActivity.getSupportFragmentManager(), OverviewFragment.TAG);
             }
 
             @Override
             public void onView(PatientListModel.Data.Patient item, int position) {
-                UserDetailFragment dialogD = new UserDetailFragment();
+                DiagnosticsListFragment dialogD = new DiagnosticsListFragment();
                 Bundle bundle = new Bundle();
-                bundle.putLong("user_id", item.getId());
+                bundle.putLong("patient_id", item.getId());
+                bundle.putString("f_name", item.getFirst_name());
+                bundle.putString("m_name", item.getMiddle_name());
+                bundle.putString("l_name", item.getLast_name());
 //                bundle.putLong("online_id", item.getUserOnlineId());
                 dialogD.setArguments(bundle);
-                dialogD.show(mActivity.getSupportFragmentManager(), UserDetailFragment.TAG);
+                dialogD.show(mActivity.getSupportFragmentManager(), DiagnosticsListFragment.TAG);
             }
 
             @Override
@@ -152,36 +169,36 @@ public class DiagnosticsFragment extends Fragment {
             }
         });
 
-        binding.etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                searchText = s.toString();
-                if (isLoadedOnline) {
-                    currentPage = PAGE_START;
-                    getPatients(pPosition);
-                } else {
-                    adapter.searchUser(searchText);
-                    checkForEmptyState();
-                }
-            }
-        });
+//        binding.etSearch.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                searchText = s.toString();
+//                if (isLoadedOnline) {
+//                    currentPage = PAGE_START;
+//                    getPatients(pPosition);
+//                } else {
+//                    adapter.searchUser(searchText);
+//                    checkForEmptyState();
+//                }
+//            }
+//        });
 
 
         return binding.getRoot();
     }
 
     private void setText() {
-        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
+//        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
         binding.tvEmptyState.setText(LanguageExtension.setText("no_user_found", getString(R.string.no_user_found)));
     }
 

@@ -231,7 +231,6 @@ public class CreateForm extends AppCompatActivity
                 if (!formSettingsHashMap.get("form_description").isEmpty())
                     hashMap.put("form_description", formSettingsHashMap.get("form_description"));
                 hashMap.put("form_json", formEditHashMap.get("form_fields"));
-                System.out.println("formEditHashMap.get(\"form_fields\")"+ formEditHashMap.get("form_fields"));
                 hashMap.put("form_access", formSettingsHashMap.get("form_visibility_id"));
                 hashMap.put("form_type", formSettingsHashMap.get("form_type_id"));
                 hashMap.put("form_language_id", formSettingsHashMap.get("language_id"));

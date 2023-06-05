@@ -94,7 +94,7 @@ public class PatientFragment extends Fragment {
         binding.rvPatient.setLayoutManager(new LinearLayoutManager(mActivity, RecyclerView.VERTICAL, false));
         binding.rvPatient.addItemDecoration(new SpaceItemDecoration(mActivity, RecyclerView.VERTICAL,
                 1, R.dimen.recycler_vertical_offset, R.dimen.recycler_horizontal_offset, true));
-        adapter = new PatientRecyclerAdapter(mActivity, new PatientRecyclerAdapter.OnItemClickListener() {
+        adapter = new PatientRecyclerAdapter(mActivity,getChildFragmentManager(), new PatientRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onDelete(PatientListModel.Data.Patient item, int position) {
                 DeleteDialog dialogD = new DeleteDialog();
@@ -187,29 +187,29 @@ public class PatientFragment extends Fragment {
             }
         });
 
-        binding.etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                searchText = s.toString();
-                if (isLoadedOnline) {
-                    currentPage = PAGE_START;
-                    getPatients(pPosition);
-                } else {
-                    adapter.searchUser(searchText);
-                    checkForEmptyState();
-                }
-            }
-        });
+//        binding.etSearch.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                searchText = s.toString();
+//                if (isLoadedOnline) {
+//                    currentPage = PAGE_START;
+//                    getPatients(pPosition);
+//                } else {
+//                    adapter.searchUser(searchText);
+//                    checkForEmptyState();
+//                }
+//            }
+//        });
 
         binding.fabAdd.setOnClickListener(v -> {
             Intent i = new Intent(mActivity, AddPatient.class);
@@ -238,7 +238,7 @@ public class PatientFragment extends Fragment {
     }
 
     private void setText() {
-        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
+//        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
         binding.tvEmptyState.setText(LanguageExtension.setText("no_user_found", getString(R.string.no_user_found)));
     }
 

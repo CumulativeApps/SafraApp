@@ -89,10 +89,10 @@ public class AddActionPlan extends AppCompatActivity {
         String ID = String.valueOf(projectId);
 
         JSONArray jsonArray = new JSONArray(data);
-        System.out.println("saveActionPlan ID"+ ID);
+
 
         tvAim = edAim.getText().toString();
-        System.out.println("tvAim"+tvAim);
+
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken);

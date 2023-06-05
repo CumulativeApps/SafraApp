@@ -84,7 +84,6 @@ public class AddCaptureVitals extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityAddCaptureVitalsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         setSupportActionBar(binding.toolbar);
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayShowTitleEnabled(false);

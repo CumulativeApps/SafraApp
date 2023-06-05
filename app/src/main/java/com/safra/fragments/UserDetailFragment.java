@@ -1,5 +1,11 @@
 package com.safra.fragments;
 
+import static com.safra.db.DBHandler.dbHandler;
+import static com.safra.utilities.Common.BASE_URL;
+import static com.safra.utilities.Common.USER_VIEW_API;
+import static com.safra.utilities.LanguageManager.languageManager;
+import static com.safra.utilities.UserSessionManager.userSessionManager;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,12 +44,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static com.safra.db.DBHandler.dbHandler;
-import static com.safra.utilities.Common.BASE_URL;
-import static com.safra.utilities.Common.USER_VIEW_API;
-import static com.safra.utilities.LanguageManager.languageManager;
-import static com.safra.utilities.UserSessionManager.userSessionManager;
 
 public class UserDetailFragment extends DialogFragment {
 

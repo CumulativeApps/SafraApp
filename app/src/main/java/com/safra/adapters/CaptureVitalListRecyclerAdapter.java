@@ -135,10 +135,13 @@ public class CaptureVitalListRecyclerAdapter extends RecyclerView.Adapter<Recycl
             binding.tvBloodOxygenTitle.setText(LanguageExtension.setText("blood_oxygen", context.getString(R.string.blood_oxygen)));
             binding.tvCreatedDateTitle.setText(LanguageExtension.setText("created_date", context.getString(R.string.created_date)));
 
-            if (item.getFullName().equals(" null null null")) {
+
+
+            String fullName = item.getFullName();
+            if (fullName == null || fullName.trim().isEmpty()) {
                 binding.tvPatientName.setText("Unidentified patient");
             } else {
-                binding.tvPatientName.setText(item.getFullName());
+                binding.tvPatientName.setText(fullName);
             }
 
 

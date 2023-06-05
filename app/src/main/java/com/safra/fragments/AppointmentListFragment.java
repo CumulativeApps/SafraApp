@@ -92,6 +92,7 @@ public class AppointmentListFragment extends DialogFragment {
     private final int pPosition = -1;
     private boolean isNextPageCalled = false;
     private long patientId = -1;
+    private String patientName = "";
     String fname, mname, lname;
     String fullName = "";
 
@@ -117,6 +118,7 @@ public class AppointmentListFragment extends DialogFragment {
         setText();
 
         patientId = getArguments().getLong("appointment_patient_id", -1);
+
         fname = getArguments().getString("f_name", "");
         mname = getArguments().getString("m_name", "");
         lname = getArguments().getString("l_name", "");
@@ -346,29 +348,29 @@ public class AppointmentListFragment extends DialogFragment {
             }
         });
 
-        binding.etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                searchText = s.toString();
-                if (isLoadedOnline) {
-                    currentPage = PAGE_START;
-                    getAppointment(pPosition);
-                } else {
-                    adapter.searchUser(searchText);
-                    checkForEmptyState();
-                }
-            }
-        });
+//        binding.etSearch.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                searchText = s.toString();
+//                if (isLoadedOnline) {
+//                    currentPage = PAGE_START;
+//                    getAppointment(pPosition);
+//                } else {
+//                    adapter.searchUser(searchText);
+//                    checkForEmptyState();
+//                }
+//            }
+//        });
 
         binding.fabAdd.setOnClickListener(v -> {
             Intent i = new Intent(mActivity, AddAppointment.class);
@@ -398,7 +400,7 @@ public class AppointmentListFragment extends DialogFragment {
     }
 
     private void setText() {
-        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
+//        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
         binding.tvEmptyState.setText(LanguageExtension.setText("no_user_found", getString(R.string.no_user_found)));
     }
 

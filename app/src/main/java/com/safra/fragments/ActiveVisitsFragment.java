@@ -2,6 +2,8 @@ package com.safra.fragments;
 
 import static com.safra.db.DBHandler.dbHandler;
 import static com.safra.utilities.Common.BASE_URL;
+import static com.safra.utilities.Common.HEALTH_RECORD_ACTIVE_VITAL_LIST;
+import static com.safra.utilities.Common.HEALTH_RECORD_PATIENT_LIST;
 import static com.safra.utilities.Common.PAGE_START;
 import static com.safra.utilities.Common.REQUEST_DELETE_USER;
 import static com.safra.utilities.Common.USER_DELETE_API;
@@ -55,6 +57,8 @@ import com.safra.extensions.LanguageExtension;
 import com.safra.extensions.LoadingDialogExtension;
 import com.safra.extensions.PermissionExtension;
 import com.safra.extensions.ViewExtension;
+import com.safra.models.ActiveVisitsModel;
+import com.safra.models.PatientListModel;
 import com.safra.models.UserItem;
 import com.safra.utilities.ConnectivityReceiver;
 import com.safra.utilities.SpaceItemDecoration;
@@ -76,7 +80,8 @@ public class ActiveVisitsFragment extends Fragment {
 
     private FragmentActiveVisitsBinding binding;
 
-    private final List<UserItem> userList = new ArrayList<>();
+    private final List<ActiveVisitsModel.Datum> userList = new ArrayList<>();
+    private final List<PatientListModel.Data.Patient> userList1 = new ArrayList<>();
     private ActiveVisitsRecyclerAdapter adapter;
 
     private String searchText = "";
@@ -110,15 +115,15 @@ public class ActiveVisitsFragment extends Fragment {
         binding.rvActiveVisits.setLayoutManager(new LinearLayoutManager(mActivity, RecyclerView.VERTICAL, false));
         binding.rvActiveVisits.addItemDecoration(new SpaceItemDecoration(mActivity, RecyclerView.VERTICAL,
                 1, R.dimen.recycler_vertical_offset, R.dimen.recycler_horizontal_offset, true));
-        adapter = new ActiveVisitsRecyclerAdapter(mActivity, new ActiveVisitsRecyclerAdapter.OnItemClickListener() {
+        adapter = new ActiveVisitsRecyclerAdapter(mActivity, getChildFragmentManager(),new ActiveVisitsRecyclerAdapter.OnItemClickListener() {
             @Override
-            public void onDelete(UserItem item, int position) {
+            public void onDelete(ActiveVisitsModel.Datum item, int position) {
                 DeleteDialog dialogD = new DeleteDialog();
                 Bundle bundle = new Bundle();
                 bundle.putString("request_key", REQUEST_DELETE_USER);
                 bundle.putString("message", LanguageExtension.setText("do_you_want_to_delete_this_user", getString(R.string.do_you_want_to_delete_this_user)));
-                bundle.putLong("id", item.getUserId());
-                bundle.putLong("online_id", item.getUserOnlineId());
+                bundle.putLong("id", item.getId());
+
                 bundle.putInt("position", position);
                 bundle.putString("type", "user");
                 dialogD.setArguments(bundle);
@@ -126,40 +131,41 @@ public class ActiveVisitsFragment extends Fragment {
             }
 
             @Override
-            public void onEdit(UserItem item, int position) {
+            public void onEdit(ActiveVisitsModel.Datum item, int position) {
                 Intent i = new Intent(mActivity, AddUser.class);
                 i.putExtra("heading", LanguageExtension.setText("edit_user", getString(R.string.edit_user)));
                 i.putExtra("is_new", false);
-                i.putExtra("user_id", item.getUserId());
-                i.putExtra("online_id", item.getUserOnlineId());
+                i.putExtra("user_id", item.getId());
                 startActivity(i);
             }
 
             @Override
-            public void onView(UserItem item, int position) {
+            public void onView(ActiveVisitsModel.Datum item, int position) {
                 UserDetailFragment dialogD = new UserDetailFragment();
                 Bundle bundle = new Bundle();
-                bundle.putLong("user_id", item.getUserId());
-                bundle.putLong("online_id", item.getUserOnlineId());
+                bundle.putLong("user_id", item.getId());
                 dialogD.setArguments(bundle);
                 dialogD.show(mActivity.getSupportFragmentManager(), UserDetailFragment.TAG);
             }
 
             @Override
-            public void changeStatus(View view, UserItem item, int position) {
-                setPopUpWindowForChangeStatus(view, item.getUserId(), item.getUserOnlineId(), item.getUserStatus());
+            public void changeStatus(View view, ActiveVisitsModel.Datum item, int position) {
+//                setPopUpWindowForChangeStatus(view, item.getUserId(), item.getUserOnlineId(), item.getUserStatus());
             }
         });
         binding.rvActiveVisits.setAdapter(adapter);
 
         checkForEmptyState();
         if (ConnectivityReceiver.isConnected()) {
-            getUsersFromDB();
-//            getUsers(pPosition);
-//            isLoadedOnline = true;
+//            getUsersFromDB();
+            getActiveVisits(pPosition);
+//            getPatients(pPosition);
+//            getActiveVisits(pPosition);
+//            getPatients(pPosition);
+            isLoadedOnline = true;
         } else {
             isLoadedOnline = false;
-            getUsersFromDB();
+//            getUsersFromDB();
         }
 
         binding.srlManageUser.setOnRefreshListener(() -> {
@@ -167,11 +173,11 @@ public class ActiveVisitsFragment extends Fragment {
                 isLoadedOnline = true;
                 currentPage = PAGE_START;
 //                getUsersFromDB();
-                getUsersFromDB();
-                getUsers(pPosition);
+//                getUsersFromDB();
+//                getActiveVisits(pPosition);
             } else {
                 isLoadedOnline = false;
-                getUsersFromDB();
+//                getUsersFromDB();
             }
 
         });
@@ -196,29 +202,29 @@ public class ActiveVisitsFragment extends Fragment {
             }
         });
 
-        binding.etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                searchText = s.toString();
-                if (isLoadedOnline) {
-                    currentPage = PAGE_START;
-                    getUsers(pPosition);
-                } else {
-                    adapter.searchUser(searchText);
-                    checkForEmptyState();
-                }
-            }
-        });
+//        binding.etSearch.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                searchText = s.toString();
+//                if (isLoadedOnline) {
+//                    currentPage = PAGE_START;
+//                    getActiveVisits(pPosition);
+//                } else {
+//                    adapter.searchUser(searchText);
+//                    checkForEmptyState();
+//                }
+//            }
+//        });
 //
 //        binding.fabAdd.setOnClickListener(v -> {
 //            Intent i = new Intent(mActivity, AddUser.class);
@@ -247,28 +253,28 @@ public class ActiveVisitsFragment extends Fragment {
     }
 
     private void setText() {
-        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
-        binding.tvEmptyState.setText(LanguageExtension.setText("no_user_found", getString(R.string.no_user_found)));
+//        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
+        binding.tvEmptyState.setText(LanguageExtension.setText("no_active_visit", getString(R.string.no_active_visit)));
     }
 
     private void getUsersFromDB() {
         userList.clear();
 
-        userList.addAll(dbHandler.getUsers(isRemembered ? userSessionManager.getUserId() : Safra.userId));
-
-        for (UserItem userItem : userList) {
-            if (PermissionExtension.checkForPermission(USER_VIEW))
-                userItem.setViewable(true);
-
-            if (PermissionExtension.checkForPermission(USER_DELETE))
-                userItem.setDeletable(true);
-
-            if (PermissionExtension.checkForPermission(USER_UPDATE))
-                userItem.setEditable(true);
-
-            if (PermissionExtension.checkForPermission(USER_STATUS))
-                userItem.setChangeable(true);
-        }
+//        userList.addAll(dbHandler.getUsers(isRemembered ? userSessionManager.getUserId() : Safra.userId));
+//
+//        for (UserItem userItem : userList) {
+//            if (PermissionExtension.checkForPermission(USER_VIEW))
+//                userItem.setViewable(true);
+//
+//            if (PermissionExtension.checkForPermission(USER_DELETE))
+//                userItem.setDeletable(true);
+//
+//            if (PermissionExtension.checkForPermission(USER_UPDATE))
+//                userItem.setEditable(true);
+//
+//            if (PermissionExtension.checkForPermission(USER_STATUS))
+//                userItem.setChangeable(true);
+//        }
 
         adapter.clearLists();
         adapter.addUserList(userList);
@@ -285,7 +291,7 @@ public class ActiveVisitsFragment extends Fragment {
         currentPage++;
 //        progressLoading.setVisibility(View.VISIBLE);
         Log.e(TAG, "loadMoreItems: " + currentPage);
-        getUsers(p);
+        getActiveVisits(p);
     }
 
 //    private void addLoadingAnimation() {
@@ -295,16 +301,17 @@ public class ActiveVisitsFragment extends Fragment {
 //        adapter.notifyItemInserted(pPosition);
 //    }
 
-    private void getUsers(int pPosition) {
-        binding.srlManageUser.setRefreshing(currentPage == PAGE_START);
+    private void getPatients(int pPosition) {
+        Log.e(TAG, "API CALL " + pPosition);
+
 
         isNextPageCalled = true;
         AndroidNetworking
-                .post(BASE_URL + USER_LIST_API)
+                .post(BASE_URL + HEALTH_RECORD_PATIENT_LIST)
                 .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .addBodyParameter("page_no", String.valueOf(currentPage))
-                .addBodyParameter("search_text", searchText)
-                .setTag("user-list-api")
+//                .addBodyParameter("page_no", String.valueOf(currentPage))
+//                .addBodyParameter("search_text", searchText)
+//                .setTag("user-list-api")
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -315,9 +322,9 @@ public class ActiveVisitsFragment extends Fragment {
                             String message = response.getString("message");
                             if (success == 1) {
                                 JSONObject data = response.getJSONObject("data");
-                                JSONArray users = data.getJSONArray("user_list");
-                                int totalPage = data.getInt("total_page");
-                                currentPage = data.getInt("current_page");
+                                JSONArray patients = data.getJSONArray("patients");
+                                Log.e(TAG, "onResponse Success: " + patients);
+
 
                                 if (currentPage == PAGE_START) {
                                     userList.clear();
@@ -325,66 +332,133 @@ public class ActiveVisitsFragment extends Fragment {
 //                                    pPosition = -1;
                                 }
 
-                                if (users.length() > 0) {
-                                    List<UserItem> uList = new ArrayList<>();
-                                    for (int i = 0; i < users.length(); i++) {
-                                        JSONObject user = users.getJSONObject(i);
-                                        UserItem userItem = new UserItem();
-                                        userItem.setUserOnlineId(user.getInt("user_id"));
-                                        userItem.setUserName(user.getString("user_name"));
-                                        userItem.setUserStatus(user.getInt("user_status"));
-                                        userItem.setUserAddedBy(user.getLong("user_master_id"));
+                                if (patients.length() > 0) {
+//                                    List<UserItem> uList = new ArrayList<>();
+                                    List<PatientListModel.Data.Patient> uList = new ArrayList<>();
+                                    for (int i = 0; i < patients.length(); i++) {
+                                        JSONObject user = patients.getJSONObject(i);
+//                                        UserItem userItem = new UserItem();
+                                        PatientListModel.Data.Patient userItem = new PatientListModel.Data.Patient();
+                                        userItem.setId(user.getInt("id"));
+                                        userItem.setUser_id(user.getInt("user_id"));
+                                        userItem.setFirst_name(user.getString("first_name"));
+                                        userItem.setMiddle_name(user.getString("middle_name"));
+                                        userItem.setLast_name(user.getString("last_name"));
+                                        userItem.setGender(user.getString("gender"));
+                                        userItem.setBirthdate(user.getString("birthdate"));
+//                                        userItem.setPhone(user.getInt("phone"));
+                                        userItem.setAddress(user.getString("address"));
 
-                                        if (user.has("user_email") && !user.isNull("user_email")) {
-                                            userItem.setUserEmail(user.getString("user_email"));
-                                        }
 
-                                        if (user.has("user_phone_no") && !user.isNull("user_phone_no")) {
-                                            userItem.setUserPhone(user.getString("user_phone_no"));
-                                        }
-
-                                        if (user.has("user_password") && !user.isNull("user_password")) {
-                                            userItem.setUserPassword(user.getString("user_password"));
-                                        } else {
-                                            userItem.setUserPassword("");
-                                        }
-
-                                        if (user.has("role_id") && !user.isNull("role_id")) {
-                                            userItem.setRoleId(user.getInt("role_id"));
-                                        }
-
-                                        if (user.has("role_name") && !user.isNull("role_name")) {
-                                            userItem.setRoleName(user.getString("role_name"));
-                                        }
-
-                                        if (user.has("user_image_url") && !user.isNull("user_image_url")) {
-                                            userItem.setUserProfile(user.getString("user_image_url"));
-                                        }
-
-                                        if (user.has("user_module_ids") && !user.isNull("user_module_ids")) {
-                                            userItem.setModuleIds(GeneralExtension
-                                                    .toLongArray(user.getString("user_module_ids"), ","));
-                                        }
-
-                                        if (user.has("user_permission_ids") && !user.isNull("user_permission_ids")) {
-                                            userItem.setPermissionIds(GeneralExtension
-                                                    .toLongArray(user.getString("user_permission_ids"), ","));
-                                        }
-
-                                        if (PermissionExtension.checkForPermission(USER_VIEW))
-                                            userItem.setViewable(true);
-
-                                        if (PermissionExtension.checkForPermission(USER_DELETE))
-                                            userItem.setDeletable(true);
-
-                                        if (PermissionExtension.checkForPermission(USER_UPDATE))
-                                            userItem.setEditable(true);
-
-                                        if (PermissionExtension.checkForPermission(USER_STATUS))
-                                            userItem.setChangeable(true);
+                                        if (user.has("phone") && !user.isNull("phone"))
+                                            userItem.setPhone(user.getString("phone"));
+                                        if (user.has("mobile") && !user.isNull("mobile"))
+                                            userItem.setMobile(user.getString("mobile"));
 
                                         uList.add(userItem);
-                                        dbHandler.addUser(userItem);
+//                                        dbHandler.AddPatient(userItem);
+                                    }
+
+                                    userList1.addAll(uList);
+                                    adapter.addUserList1(uList);
+                                }
+
+                                if (pPosition > 1 && pPosition <= userList.size() - 1) {
+                                    userList.remove(pPosition);
+                                    adapter.removeUser(pPosition);
+                                    adapter.notifyItemChanged(pPosition - 1);
+                                }
+
+                                if (currentPage == PAGE_START)
+                                    adapter.notifyDataSetChanged();
+                                else
+                                    adapter.notifyItemRangeInserted(pPosition, data.length());
+
+                                checkForEmptyState();
+
+//                                isLastPage = totalPage <= currentPage;
+                            } else {
+                                Toast.makeText(mActivity, message, Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            Log.e(TAG, "onResponse Error: " + e.getLocalizedMessage());
+                        }
+
+                        isNextPageCalled = false;
+
+
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e(TAG, "onError: " + anError.getErrorCode());
+                        Log.e(TAG, "onError: " + anError.getErrorDetail());
+                        Log.e(TAG, "onError: " + anError.getErrorBody());
+
+                        isNextPageCalled = false;
+
+                    }
+                });
+
+    }
+
+
+    private void getActiveVisits(int pPosition) {
+        binding.srlManageUser.setRefreshing(currentPage == PAGE_START);
+
+        isNextPageCalled = true;
+        AndroidNetworking
+                .post(BASE_URL + HEALTH_RECORD_ACTIVE_VITAL_LIST)
+                .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
+//                .addBodyParameter("page_no", String.valueOf(currentPage))
+//                .addBodyParameter("search_text", searchText)
+//                .setTag("user-list-api")
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+//                        Log.e(TAG, "onResponse: " + response);
+                        try {
+                            int success = response.getInt("success");
+//                            String message = response.getString("message");
+                            if (success == 1) {
+                                JSONArray data = response.getJSONArray("data");
+//                                JSONArray users = data.getJSONArray("user_list");
+//                                int totalPage = data.getInt("total_page");
+//                                currentPage = data.getInt("current_page");
+
+                                if (currentPage == PAGE_START) {
+                                    userList.clear();
+                                    adapter.clearLists();
+//                                    pPosition = -1;
+                                }
+
+                                if (data.length() > 0) {
+                                    List<ActiveVisitsModel.Datum> uList = new ArrayList<>();
+                                    for (int i = 0; i < data.length(); i++) {
+                                        JSONObject user = data.getJSONObject(i);
+                                        ActiveVisitsModel.Datum userItem = new ActiveVisitsModel.Datum();
+
+                                        if (user.has("patient_name") && !user.isNull("patient_name"))
+                                            userItem.setPatient_name(user.getString("patient_name"));
+
+                                        if (user.has("start_date") && !user.isNull("start_date"))
+                                            userItem.setStart_date(user.getString("start_date"));
+
+
+                                        if (user.has("start_time") && !user.isNull("start_time"))
+                                            userItem.setStart_time(user.getString("start_time"));
+
+                                        if (user.has("patient_id") && !user.isNull("patient_id"))
+                                            userItem.setPatient_id(user.getInt("patient_id"));
+
+
+//                                        user.getString(userItem.getStart_date());
+
+
+
+                                        uList.add(userItem);
+//                                        dbHandler.addUser(userItem);
                                     }
 
                                     userList.addAll(uList);
@@ -404,9 +478,9 @@ public class ActiveVisitsFragment extends Fragment {
 
                                 checkForEmptyState();
 
-                                isLastPage = totalPage <= currentPage;
+//                                isLastPage = totalPage <= currentPage;
                             } else {
-                                Toast.makeText(mActivity, message, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mActivity, "API Issue ", Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
@@ -432,8 +506,8 @@ public class ActiveVisitsFragment extends Fragment {
                 });
 
 //        userList.clear();
-//        userList.add(new UserItem(1, "John Doe", "02/10/2021, 11:52 AM", "John.doe@safra.cloud", "Moderator", 10, 10));
-//        userList.add(new UserItem(2, "Jane Doe", "02/10/2021, 11:52 AM", "John.doe@safra.cloud", "Moderator", 10, 10));
+//        userList.add(new ActiveVisitsModel.Datum(1, "John Doe", "02/10/2021, 11:52 AM", "John.doe@safra.cloud", "Moderator", 10, 10));
+//        userList.add(new ActiveVisitsModel.Datum(2, "Jane Doe", "02/10/2021, 11:52 AM", "John.doe@safra.cloud", "Moderator", 10, 10));
 //
 //        adapter.notifyDataSetChanged();
 //        checkForEmptyState();
@@ -501,7 +575,7 @@ public class ActiveVisitsFragment extends Fragment {
             if (ConnectivityReceiver.isConnected()) {
                 isLoadedOnline = true;
                 currentPage = PAGE_START;
-//                getUsers(pPosition);
+//                getActiveVisits(pPosition);
                 getUsersFromDB();
             } else {
                 isLoadedOnline = false;
@@ -539,7 +613,7 @@ public class ActiveVisitsFragment extends Fragment {
                                 if (ConnectivityReceiver.isConnected()) {
                                     isLoadedOnline = true;
                                     currentPage = PAGE_START;
-                                    getUsers(pPosition);
+                                    getActiveVisits(pPosition);
                                 } else {
                                     isLoadedOnline = false;
                                     getUsersFromDB();
@@ -620,7 +694,7 @@ public class ActiveVisitsFragment extends Fragment {
 //            if (ConnectivityReceiver.isConnected()) {
 //                isLoadedOnline = true;
 //                currentPage = PAGE_START;
-//                getUsers(pPosition);
+//                getActiveVisits(pPosition);
 //            } else {
 //                isLoadedOnline = false;
 //                getUsersFromDB();
@@ -646,7 +720,7 @@ public class ActiveVisitsFragment extends Fragment {
         if (ConnectivityReceiver.isConnected()) {
             isLoadedOnline = true;
             currentPage = PAGE_START;
-            getUsers(pPosition);
+            getActiveVisits(pPosition);
         } else {
             isLoadedOnline = false;
             getUsersFromDB();

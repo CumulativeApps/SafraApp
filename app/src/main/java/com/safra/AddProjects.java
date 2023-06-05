@@ -267,7 +267,6 @@ public class AddProjects extends AppCompatActivity {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        System.out.println("RESPONSE:-"+response);
                         LoadingDialogExtension.hideLoading();
                         try {
 //                            int success = response.getInt("success");

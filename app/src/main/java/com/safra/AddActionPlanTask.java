@@ -117,8 +117,8 @@ public class AddActionPlanTask extends AppCompatActivity {
         binding.etEndDate.setFocusableInTouchMode(false);
         projectId = getIntent().getLongExtra("planner_project_id", -1);
         actionTaskId = getIntent().getIntExtra("action_task_id", -1);
-        System.out.println("Project ID:-" + projectId);
-        System.out.println("TASK ID:-" + actionTaskId);
+
+
         calendarStart = Calendar.getInstance();
         calendarEnd = Calendar.getInstance();
 
@@ -144,7 +144,7 @@ public class AddActionPlanTask extends AppCompatActivity {
             } else {
                 taskId = getIntent().getLongExtra("task_id", -1);
                 onlineId = getIntent().getLongExtra("online_id", -1);
-                System.out.println("onlineId" + onlineId);
+
                 Log.e(TAG, "onCreate: " + taskId);
                 if (ConnectivityReceiver.isConnected())
                     getUsers(PAGE_START);
@@ -769,7 +769,6 @@ public class AddActionPlanTask extends AppCompatActivity {
     }
 
     private void saveTask(HashMap<String, String> parameters) {
-        System.out.println("String.valueOf(projectId)" + String.valueOf(projectId));
         LoadingDialogExtension.showLoading(this, LanguageExtension.setText("saving_task_progress", getString(R.string.saving_task_progress)));
 //        LoadingDialog dialogL = new LoadingDialog();
 //        dialogL.setCancelable(false);
@@ -817,7 +816,6 @@ public class AddActionPlanTask extends AppCompatActivity {
     }
 
     private void editTask(HashMap<String, String> parameters) {
-        System.out.println("parameters:-" + parameters);
         LoadingDialogExtension.showLoading(this, LanguageExtension.setText("updating_task_progress", getString(R.string.updating_task_progress)));
 //        LoadingDialog dialogL = new LoadingDialog();
 //        dialogL.setCancelable(false);

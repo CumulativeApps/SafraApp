@@ -333,7 +333,9 @@
     <string name="edit_user">Edit User</string>
     <string name="edit_project">Edit Project</string>
     <string name="edit_patient">Edit Patient</string>
+    <string name="edit_allergies">Edit Allergies</string>
     <string name="edit_task">Edit Task</string>
+    <string name="edit_Medicine">Edit Medicine</string>
     <string name="choose_an_application_to_open_with">Choose an application to open with:</string>
     <string name="file_downloaded_at">File Downloaded At:</string>
     <string name="up_to">Up to </string>
@@ -439,5 +441,18 @@
     <string name="pulse">Pulse</string>
     <string name="respiratory_rate">Respiratory Rate</string>
     <string name="blood_oxygen_saturation">Blood oxygen saturation</string>
+    <string name="add_medicine">Add Medicine</string>
+    <string name="add_providers">Add Providers</string>
+    <string name="medicine_list">Medicine List</string>
+    <string name="chemical_name">Chemical name</string>
+    <string name="provider">Provider</string>
+    <string name="diagnosis_list">Diagnosis List</string>
+    <string name="overview">Overview</string>
+    <string name="instructions">Instructions</string>
+    <string name="add_medication">Add Medication</string>
+    <string name="edit_medication">Edit Medication</string>
+    <string name="medication">Medication</string>
+    <string name="no_active_visit">No Active Visit</string>
+
 
 </resources>

@@ -92,6 +92,11 @@ dependencies {
 
     implementation 'org.jsoup:jsoup:1.13.1'
 
+
+    implementation 'com.github.mahimrocky:EventCalender:v1.0.0'
+
     implementation 'com.prolificinteractive:material-calendarview:1.4.3'
+
+
 
 }

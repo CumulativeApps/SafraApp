@@ -1,12 +1,12 @@
 package com.safra.adapters;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
@@ -17,7 +17,12 @@ import com.safra.databinding.ItemLoadingBinding;
 import com.safra.databinding.RecyclerPatientBinding;
 import com.safra.extensions.LanguageExtension;
 import com.safra.extensions.ViewExtension;
-import com.safra.fragments.AllergiesFragment;
+import com.safra.fragments.AllergiesListFragment;
+import com.safra.fragments.AppointmentListFragment;
+import com.safra.fragments.CaptureVitalListFragment;
+import com.safra.fragments.DiagnosticsListFragment;
+import com.safra.fragments.MedicationFragment;
+import com.safra.fragments.OverviewFragment;
 import com.safra.models.PatientListModel;
 
 import java.text.SimpleDateFormat;
@@ -33,7 +38,10 @@ public class PatientRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private final List<PatientListModel.Data.Patient> userList = new ArrayList<>();
     private final List<PatientListModel.Data.Patient> userData = new ArrayList<>();
     private final PatientRecyclerAdapter.OnItemClickListener listener;
-    public PatientRecyclerAdapter(Context context, PatientRecyclerAdapter.OnItemClickListener listener) {
+    private FragmentManager fragmentManager;
+
+    public PatientRecyclerAdapter(Context context, FragmentManager fragmentManager, PatientRecyclerAdapter.OnItemClickListener listener) {
+        this.fragmentManager = fragmentManager;
         this.context = context;
         this.listener = listener;
     }
@@ -134,14 +142,26 @@ public class PatientRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             binding.tvAddressTitle.setText(LanguageExtension.setText("address", context.getString(R.string.address)));
 //            binding.tvViewDetails.setText(LanguageExtension.setText("view_details", context.getString(R.string.view_details)));
 
-            String fullName = " "+ item.first_name +" " +item.middle_name + " " + item.last_name;
-
-
-            if (item.first_name == "null" && item.middle_name == "null" && item.last_name == "null") {
-
+            if (item.first_name.equals("null") && item.middle_name.equals("null") && item.last_name.equals("null")) {
                 binding.tvPatientName.setText("Unidentified patient");
-
-            }  else {
+            } else {
+                StringBuilder fullNameBuilder = new StringBuilder();
+                if (!item.first_name.equals("null")) {
+                    fullNameBuilder.append(item.first_name);
+                }
+                if (!item.middle_name.equals("null")) {
+                    if (fullNameBuilder.length() > 0) {
+                        fullNameBuilder.append(" ");
+                    }
+                    fullNameBuilder.append(item.middle_name);
+                }
+                if (!item.last_name.equals("null")) {
+                    if (fullNameBuilder.length() > 0) {
+                        fullNameBuilder.append(" ");
+                    }
+                    fullNameBuilder.append(item.last_name);
+                }
+                String fullName = fullNameBuilder.toString();
                 binding.tvPatientName.setText(fullName);
             }
 
@@ -192,36 +212,85 @@ public class PatientRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             ViewExtension.makeVisible(binding.clExpandLayout, item.isExpanded());
             ViewExtension.toggleArrow(binding.ivExpandDetail, item.isExpanded());
 
-//            String[] data = {"","Appointment Scheduling", "Diagnostics", "Capture Vitals", "Allergies","Medication"};
-//
-//
-//            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, data);
-//            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//            binding.spinner.setAdapter(adapter);
-//
-//
-//            binding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//                @Override
-//                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                    String selectedItem = (String) parent.getItemAtPosition(position);
-//                    if (selectedItem.equals("Allergies")) {
-//                        // Redirect to Allergies Fragment
-//                        AllergiesFragment allergiesFragment = new AllergiesFragment();
-//                        FragmentManager fragmentManager = getSupportFragmentManager();
-//                        fragmentManager.beginTransaction()
-//                                .replace(R.id.fragment_container, allergiesFragment)
-//                                .commit();
-//                    } else {
-//                        // Handle other options if needed
-//                    }
-//                    // Perform your desired action with the selected item
-//                }
-//
-//                @Override
-//                public void onNothingSelected(AdapterView<?> parent) {
-//                    // Handle the case when no item is selected
-//                }
-//            });
+            String[] data = {"Select Action", "Appointment Scheduling", "Diagnostics", "Capture Vitals", "Allergies", "Medication", "Overview"};
+
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, data);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            binding.spinner.setAdapter(adapter);
+
+
+            binding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    String selectedItem = (String) parent.getItemAtPosition(position);
+                    if (selectedItem.equals("Appointment Scheduling")) {
+                        AppointmentListFragment dialogD = new AppointmentListFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putLong("appointment_patient_id", item.getId());
+                        bundle.putString("f_name", item.getFirst_name());
+                        bundle.putString("m_name", item.getMiddle_name());
+                        bundle.putString("l_name", item.getLast_name());
+                        dialogD.setArguments(bundle);
+                        dialogD.show(fragmentManager, AppointmentListFragment.TAG);
+                    } else if (selectedItem.equals("Diagnostics")) {
+                        DiagnosticsListFragment dialogD = new DiagnosticsListFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putLong("patient_id", item.getId());
+                        bundle.putString("f_name", item.getFirst_name());
+                        bundle.putString("m_name", item.getMiddle_name());
+                        bundle.putString("l_name", item.getLast_name());
+//                bundle.putLong("online_id", item.getUserOnlineId());
+                        dialogD.setArguments(bundle);
+                        dialogD.show(fragmentManager, DiagnosticsListFragment.TAG);
+                    } else if (selectedItem.equals("Capture Vitals")) {
+                        CaptureVitalListFragment dialogD = new CaptureVitalListFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putLong("capture_patient_id", item.getId());
+                        bundle.putString("f_name", item.getFirst_name());
+                        bundle.putString("m_name", item.getMiddle_name());
+                        bundle.putString("l_name", item.getLast_name());
+                        dialogD.setArguments(bundle);
+                        dialogD.show(fragmentManager, CaptureVitalListFragment.TAG);
+                    } else if (selectedItem.equals("Allergies")) {
+                        AllergiesListFragment dialogD = new AllergiesListFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putLong("patient_id", item.getId());
+                        dialogD.setArguments(bundle);
+                        bundle.putString("f_name", item.getFirst_name());
+                        bundle.putString("m_name", item.getMiddle_name());
+                        bundle.putString("l_name", item.getLast_name());
+                        dialogD.show(fragmentManager, AllergiesListFragment.TAG);
+                        // Handle other options if needed
+                    } else if (selectedItem.equals("Medication")) {
+                        MedicationFragment dialogD = new MedicationFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putLong("patient_id", item.getId());
+                        bundle.putString("f_name", item.getFirst_name());
+                        bundle.putString("m_name", item.getMiddle_name());
+                        bundle.putString("l_name", item.getLast_name());
+//                bundle.putLong("online_id", item.getUserOnlineId());
+                        dialogD.setArguments(bundle);
+                        dialogD.show(fragmentManager, MedicationFragment.TAG);
+                    } else if (selectedItem.equals("Overview")) {
+                        OverviewFragment dialogD = new OverviewFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putLong("overview_id", item.getId());
+                        dialogD.setArguments(bundle);
+                        bundle.putString("f_name", item.getFirst_name());
+                        bundle.putString("m_name", item.getMiddle_name());
+                        bundle.putString("l_name", item.getLast_name());
+                        dialogD.show(fragmentManager, OverviewFragment.TAG);
+                        // Handle other options if needed
+                    }
+                    // Perform your desired action with the selected item
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    // Handle the case when no item is selected
+                }
+            });
 
             itemView.setOnClickListener(v -> {
                 if (!item.isExpanded()) {

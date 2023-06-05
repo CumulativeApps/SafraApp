@@ -2,16 +2,12 @@ package com.safra.fragments;
 
 import static com.safra.db.DBHandler.dbHandler;
 import static com.safra.utilities.Common.BASE_URL;
+import static com.safra.utilities.Common.HEALTH_RECORD_ALLERGIES_DELETE;
+import static com.safra.utilities.Common.HEALTH_RECORD_ALLERGIES_LIST;
 import static com.safra.utilities.Common.PAGE_START;
-import static com.safra.utilities.Common.REQUEST_DELETE_USER;
-import static com.safra.utilities.Common.USER_DELETE_API;
-import static com.safra.utilities.Common.USER_LIST_API;
+import static com.safra.utilities.Common.REQUEST_DELETE_HEALTH_ALLERGIES_DELETE;
 import static com.safra.utilities.Common.USER_STATUS_API;
 import static com.safra.utilities.UserPermissions.USER_ADD;
-import static com.safra.utilities.UserPermissions.USER_DELETE;
-import static com.safra.utilities.UserPermissions.USER_STATUS;
-import static com.safra.utilities.UserPermissions.USER_UPDATE;
-import static com.safra.utilities.UserPermissions.USER_VIEW;
 import static com.safra.utilities.UserSessionManager.userSessionManager;
 
 import android.content.Context;
@@ -19,15 +15,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -38,26 +25,30 @@ import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
-
+import com.google.gson.Gson;
 import com.safra.AddAllergies;
 import com.safra.R;
 import com.safra.Safra;
 import com.safra.adapters.AllergiesListRecyclerAdapter;
-import com.safra.adapters.AppointmentListRecyclerAdapter;
 import com.safra.databinding.FragmentAllergiesListBinding;
-import com.safra.databinding.FragmentAppointmentListBinding;
 import com.safra.databinding.PopupChangeUserStatusBinding;
 import com.safra.dialogs.DeleteDialog;
-import com.safra.events.UserAddedEvent;
-import com.safra.extensions.GeneralExtension;
+import com.safra.events.TaskAddedEvent;
 import com.safra.extensions.LanguageExtension;
 import com.safra.extensions.LoadingDialogExtension;
 import com.safra.extensions.PermissionExtension;
 import com.safra.extensions.ViewExtension;
-import com.safra.models.UserItem;
+import com.safra.models.AllergiesListModel;
 import com.safra.utilities.ConnectivityReceiver;
 import com.safra.utilities.SpaceItemDecoration;
 
@@ -70,6 +61,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class AllergiesListFragment extends DialogFragment {
@@ -82,20 +74,22 @@ public class AllergiesListFragment extends DialogFragment {
     private AllergiesListRecyclerAdapter adapter;
 
     private boolean isRemembered;
+    private long patientId = -1;
 
-
-    private final List<UserItem> userList = new ArrayList<>();
+    private final List<AllergiesListModel.Data.Patient.Allergy> userList = new ArrayList<>();
 
     private String searchText = "";
     private int currentPage = PAGE_START;
     private boolean isLastPage = false;
     private final int pPosition = -1;
     private boolean isNextPageCalled = false;
-
+    String fName, mName, lName;
+    String fullName;
 
     private boolean isLoadedOnline = false;
 
     private PopupWindow popupWindow;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,19 +112,51 @@ public class AllergiesListFragment extends DialogFragment {
         } else {
             binding.fabAdd.setVisibility(View.VISIBLE);
         }
+        patientId = getArguments().getLong("patient_id", -1);
+
+
+        fName = getArguments().getString("f_name");
+        mName = getArguments().getString("m_name");
+        lName = getArguments().getString("l_name");
+
+
+        fullName = " " + fName + " " + mName + " " + lName;
+
+
+        if (Objects.equals(fName, "null") && Objects.equals(mName, "null") && Objects.equals(lName, "null")) {
+            binding.tvUserName.setText("Unidentified patient");
+        } else {
+            StringBuilder fullNameBuilder = new StringBuilder();
+            if (!Objects.equals(fName, "null")) {
+                fullNameBuilder.append(fName);
+            }
+            if (!Objects.equals(mName, "null")) {
+                if (fullNameBuilder.length() > 0) {
+                    fullNameBuilder.append(" ");
+                }
+                fullNameBuilder.append(mName);
+            }
+            if (!Objects.equals(lName, "null")) {
+                if (fullNameBuilder.length() > 0) {
+                    fullNameBuilder.append(" ");
+                }
+                fullNameBuilder.append(lName);
+            }
+            String fullName = fullNameBuilder.toString();
+            binding.tvUserName.setText(fullName);
+        }
 
         binding.rvAllergiesList.setLayoutManager(new LinearLayoutManager(mActivity, RecyclerView.VERTICAL, false));
         binding.rvAllergiesList.addItemDecoration(new SpaceItemDecoration(mActivity, RecyclerView.VERTICAL,
                 1, R.dimen.recycler_vertical_offset, R.dimen.recycler_horizontal_offset, true));
         adapter = new AllergiesListRecyclerAdapter(mActivity, new AllergiesListRecyclerAdapter.OnItemClickListener() {
             @Override
-            public void onDelete(UserItem item, int position) {
+            public void onDelete(AllergiesListModel.Data.Patient.Allergy item, int position) {
                 DeleteDialog dialogD = new DeleteDialog();
                 Bundle bundle = new Bundle();
-                bundle.putString("request_key", REQUEST_DELETE_USER);
+                bundle.putString("request_key", REQUEST_DELETE_HEALTH_ALLERGIES_DELETE);
                 bundle.putString("message", LanguageExtension.setText("do_you_want_to_delete_this_user", getString(R.string.do_you_want_to_delete_this_user)));
-                bundle.putLong("id", item.getUserId());
-                bundle.putLong("online_id", item.getUserOnlineId());
+                bundle.putLong("id", item.getId());
                 bundle.putInt("position", position);
                 bundle.putString("type", "user");
                 dialogD.setArguments(bundle);
@@ -138,36 +164,40 @@ public class AllergiesListFragment extends DialogFragment {
             }
 
             @Override
-            public void onEdit(UserItem item, int position) {
+            public void onEdit(AllergiesListModel.Data.Patient.Allergy item, int position) {
                 Intent i = new Intent(mActivity, AddAllergies.class);
-                i.putExtra("heading", LanguageExtension.setText("edit_patient", getString(R.string.edit_patient)));
+                i.putExtra("heading", LanguageExtension.setText("edit_allergies", getString(R.string.edit_allergies)));
                 i.putExtra("is_new", false);
-                i.putExtra("user_id", item.getUserId());
-                i.putExtra("online_id", item.getUserOnlineId());
+                i.putExtra("allergies_patient_id", patientId);
+                i.putExtra("allergy_id", item.getId());
+                i.putExtra("allergen", item.getAllergen());
+                i.putExtra("reaction", item.getReaction());
+                i.putExtra("comment", item.getComment());
+                i.putExtra("severity", item.getSeverity());
+
                 startActivity(i);
             }
 
             @Override
-            public void onView(UserItem item, int position) {
+            public void onView(AllergiesListModel.Data.Patient.Allergy item, int position) {
                 UserDetailFragment dialogD = new UserDetailFragment();
                 Bundle bundle = new Bundle();
-                bundle.putLong("user_id", item.getUserId());
-                bundle.putLong("online_id", item.getUserOnlineId());
+                bundle.putLong("user_id", item.getId());
                 dialogD.setArguments(bundle);
                 dialogD.show(mActivity.getSupportFragmentManager(), UserDetailFragment.TAG);
             }
 
             @Override
-            public void changeStatus(View view, UserItem item, int position) {
-                setPopUpWindowForChangeStatus(view, item.getUserId(), item.getUserOnlineId(), item.getUserStatus());
+            public void changeStatus(View view, AllergiesListModel.Data.Patient.Allergy item, int position) {
+//                setPopUpWindowForChangeStatus(view, item.getUserId(), item.getUserOnlineId(), item.getUserStatus());
             }
         });
         binding.rvAllergiesList.setAdapter(adapter);
 
         checkForEmptyState();
         if (ConnectivityReceiver.isConnected()) {
-            getUsersFromDB();
-//            getUsers(pPosition);
+//            getUsersFromDB();
+            getAllergies(pPosition);
 //            isLoadedOnline = true;
         } else {
             isLoadedOnline = false;
@@ -180,7 +210,7 @@ public class AllergiesListFragment extends DialogFragment {
                 currentPage = PAGE_START;
 //                getUsersFromDB();
                 getUsersFromDB();
-                getUsers(pPosition);
+                getAllergies(pPosition);
             } else {
                 isLoadedOnline = false;
                 getUsersFromDB();
@@ -208,79 +238,80 @@ public class AllergiesListFragment extends DialogFragment {
             }
         });
 
-        binding.etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                searchText = s.toString();
-                if (isLoadedOnline) {
-                    currentPage = PAGE_START;
-                    getUsers(pPosition);
-                } else {
-                    adapter.searchUser(searchText);
-                    checkForEmptyState();
-                }
-            }
-        });
+//        binding.etSearch.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                searchText = s.toString();
+//                if (isLoadedOnline) {
+//                    currentPage = PAGE_START;
+//                    getAllergies(pPosition);
+//                } else {
+//                    adapter.searchUser(searchText);
+//                    checkForEmptyState();
+//                }
+//            }
+//        });
 
         binding.fabAdd.setOnClickListener(v -> {
             Intent i = new Intent(mActivity, AddAllergies.class);
             i.putExtra("heading", LanguageExtension.setText("add_allergy", getString(R.string.add_allergy)));
+            i.putExtra("allergies_patient_id", patientId);
             i.putExtra("is_new", true);
             startActivity(i);
         });
 
-        getChildFragmentManager().setFragmentResultListener(REQUEST_DELETE_USER, this,
+        getChildFragmentManager().setFragmentResultListener(REQUEST_DELETE_HEALTH_ALLERGIES_DELETE, this,
                 (requestKey, result) -> {
                     long userId = result.getLong("id");
-                    long onlineId = result.getLong("online_id");
                     int position = result.getInt("position");
                     if (ConnectivityReceiver.isConnected()) {
 
 //                        deleteUserOffline(userId,onlineId, position);
-                        deleteUser(onlineId, position);
-                        deleteUserOffline(userId, position);
+                        deleteAllergies(userId, position);
+//                        deleteUserOffline(userId, position);
                     } else
-                        deleteUser(onlineId, position);
+                        deleteAllergies(userId, position);
 
-                    deleteUserOffline(userId, position);
+//                    deleteUserOffline(userId, position);
                 });
 
         return binding.getRoot();
     }
 
     private void setText() {
-        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
+//        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
+
         binding.tvEmptyState.setText(LanguageExtension.setText("no_user_found", getString(R.string.no_user_found)));
     }
 
     private void getUsersFromDB() {
         userList.clear();
 
-        userList.addAll(dbHandler.getUsers(isRemembered ? userSessionManager.getUserId() : Safra.userId));
-
-        for (UserItem userItem : userList) {
-            if (PermissionExtension.checkForPermission(USER_VIEW))
-                userItem.setViewable(true);
-
-            if (PermissionExtension.checkForPermission(USER_DELETE))
-                userItem.setDeletable(true);
-
-            if (PermissionExtension.checkForPermission(USER_UPDATE))
-                userItem.setEditable(true);
-
-            if (PermissionExtension.checkForPermission(USER_STATUS))
-                userItem.setChangeable(true);
-        }
+//        userList.addAll(dbHandler.getAllergies(isRemembered ? userSessionManager.getUserId() : Safra.userId));
+//
+//        for (AllergiesListModel.Data.Patient.Allergy userItem : userList) {
+//            if (PermissionExtension.checkForPermission(USER_VIEW))
+//                userItem.setViewable(true);
+//
+//            if (PermissionExtension.checkForPermission(USER_DELETE))
+//                userItem.setDeletable(true);
+//
+//            if (PermissionExtension.checkForPermission(USER_UPDATE))
+//                userItem.setEditable(true);
+//
+//            if (PermissionExtension.checkForPermission(USER_STATUS))
+//                userItem.setChangeable(true);
+//        }
 
         adapter.clearLists();
         adapter.addUserList(userList);
@@ -297,7 +328,7 @@ public class AllergiesListFragment extends DialogFragment {
         currentPage++;
 //        progressLoading.setVisibility(View.VISIBLE);
         Log.e(TAG, "loadMoreItems: " + currentPage);
-        getUsers(p);
+        getAllergies(p);
     }
 
 //    private void addLoadingAnimation() {
@@ -307,16 +338,14 @@ public class AllergiesListFragment extends DialogFragment {
 //        adapter.notifyItemInserted(pPosition);
 //    }
 
-    private void getUsers(int pPosition) {
+    private void getAllergies(int pPosition) {
         binding.srlManageProject.setRefreshing(currentPage == PAGE_START);
 
         isNextPageCalled = true;
         AndroidNetworking
-                .post(BASE_URL + USER_LIST_API)
+                .post(BASE_URL + HEALTH_RECORD_ALLERGIES_LIST)
                 .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .addBodyParameter("page_no", String.valueOf(currentPage))
-                .addBodyParameter("search_text", searchText)
-                .setTag("user-list-api")
+                .addBodyParameter("patient_id", String.valueOf(patientId))
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -326,10 +355,9 @@ public class AllergiesListFragment extends DialogFragment {
                             int success = response.getInt("success");
                             String message = response.getString("message");
                             if (success == 1) {
-                                JSONObject data = response.getJSONObject("data");
-                                JSONArray users = data.getJSONArray("user_list");
-                                int totalPage = data.getInt("total_page");
-                                currentPage = data.getInt("current_page");
+                                JSONObject data = response.getJSONObject("data").getJSONObject("patient");
+                                JSONArray users = data.getJSONArray("allergies");
+
 
                                 if (currentPage == PAGE_START) {
                                     userList.clear();
@@ -338,62 +366,18 @@ public class AllergiesListFragment extends DialogFragment {
                                 }
 
                                 if (users.length() > 0) {
-                                    List<UserItem> uList = new ArrayList<>();
+                                    List<AllergiesListModel.Data.Patient.Allergy> uList = new ArrayList<>();
                                     for (int i = 0; i < users.length(); i++) {
                                         JSONObject user = users.getJSONObject(i);
-                                        UserItem userItem = new UserItem();
-                                        userItem.setUserOnlineId(user.getInt("user_id"));
-                                        userItem.setUserName(user.getString("user_name"));
-                                        userItem.setUserStatus(user.getInt("user_status"));
-                                        userItem.setUserAddedBy(user.getLong("user_master_id"));
+//                                        AllergiesListModel.Data.Patient.Allergy userItem = new AllergiesListModel.Data.Patient.Allergy();
+                                        AllergiesListModel.Data.Patient.Allergy userItem = new Gson().fromJson(user.toString(), AllergiesListModel.Data.Patient.Allergy.class);
 
-                                        if (user.has("user_email") && !user.isNull("user_email")) {
-                                            userItem.setUserEmail(user.getString("user_email"));
-                                        }
 
-                                        if (user.has("user_phone_no") && !user.isNull("user_phone_no")) {
-                                            userItem.setUserPhone(user.getString("user_phone_no"));
-                                        }
+//                                        userItem.setUserOnlineId(user.getInt("user_id"));
+//                                        userItem.setUserName(user.getString("user_name"));
+//                                        userItem.setUserStatus(user.getInt("user_status"));
+//                                        userItem.setUserAddedBy(user.getLong("user_master_id"));
 
-                                        if (user.has("user_password") && !user.isNull("user_password")) {
-                                            userItem.setUserPassword(user.getString("user_password"));
-                                        } else {
-                                            userItem.setUserPassword("");
-                                        }
-
-                                        if (user.has("role_id") && !user.isNull("role_id")) {
-                                            userItem.setRoleId(user.getInt("role_id"));
-                                        }
-
-                                        if (user.has("role_name") && !user.isNull("role_name")) {
-                                            userItem.setRoleName(user.getString("role_name"));
-                                        }
-
-                                        if (user.has("user_image_url") && !user.isNull("user_image_url")) {
-                                            userItem.setUserProfile(user.getString("user_image_url"));
-                                        }
-
-                                        if (user.has("user_module_ids") && !user.isNull("user_module_ids")) {
-                                            userItem.setModuleIds(GeneralExtension
-                                                    .toLongArray(user.getString("user_module_ids"), ","));
-                                        }
-
-                                        if (user.has("user_permission_ids") && !user.isNull("user_permission_ids")) {
-                                            userItem.setPermissionIds(GeneralExtension
-                                                    .toLongArray(user.getString("user_permission_ids"), ","));
-                                        }
-
-                                        if (PermissionExtension.checkForPermission(USER_VIEW))
-                                            userItem.setViewable(true);
-
-                                        if (PermissionExtension.checkForPermission(USER_DELETE))
-                                            userItem.setDeletable(true);
-
-                                        if (PermissionExtension.checkForPermission(USER_UPDATE))
-                                            userItem.setEditable(true);
-
-                                        if (PermissionExtension.checkForPermission(USER_STATUS))
-                                            userItem.setChangeable(true);
 
                                         uList.add(userItem);
 //                                        dbHandler.AddAllergies(userItem);
@@ -416,7 +400,7 @@ public class AllergiesListFragment extends DialogFragment {
 
                                 checkForEmptyState();
 
-                                isLastPage = totalPage <= currentPage;
+//                                isLastPage = totalPage <= currentPage;
                             } else {
                                 Toast.makeText(mActivity, message, Toast.LENGTH_SHORT).show();
                             }
@@ -444,8 +428,8 @@ public class AllergiesListFragment extends DialogFragment {
                 });
 
 //        userList.clear();
-//        userList.add(new UserItem(1, "John Doe", "02/10/2021, 11:52 AM", "John.doe@safra.cloud", "Moderator", 10, 10));
-//        userList.add(new UserItem(2, "Jane Doe", "02/10/2021, 11:52 AM", "John.doe@safra.cloud", "Moderator", 10, 10));
+//        userList.add(new AllergiesListModel.Data.Patient.Allergy(1, "John Doe", "02/10/2021, 11:52 AM", "John.doe@safra.cloud", "Moderator", 10, 10));
+//        userList.add(new AllergiesListModel.Data.Patient.Allergy(2, "Jane Doe", "02/10/2021, 11:52 AM", "John.doe@safra.cloud", "Moderator", 10, 10));
 //
 //        adapter.notifyDataSetChanged();
 //        checkForEmptyState();
@@ -461,7 +445,7 @@ public class AllergiesListFragment extends DialogFragment {
         }
     }
 
-    public void deleteUser(long userId, int position) {
+    public void deleteAllergies(long userId, int position) {
         LoadingDialogExtension.showLoading(mActivity, LanguageExtension.setText("deleting_progress", getString(R.string.deleting_progress)));
 //        LoadingDialog dialogL = new LoadingDialog();
 //        dialogL.setCancelable(false);
@@ -471,9 +455,9 @@ public class AllergiesListFragment extends DialogFragment {
 //        dialogL.show(getChildFragmentManager(), LoadingDialog.TAG);
 
         AndroidNetworking
-                .post(BASE_URL + USER_DELETE_API)
+                .post(BASE_URL + HEALTH_RECORD_ALLERGIES_DELETE)
                 .addBodyParameter("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken)
-                .addBodyParameter("user_id", String.valueOf(userId))
+                .addBodyParameter("allergie_id", String.valueOf(userId))
                 .setTag("delete-user-api")
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -513,7 +497,7 @@ public class AllergiesListFragment extends DialogFragment {
             if (ConnectivityReceiver.isConnected()) {
                 isLoadedOnline = true;
                 currentPage = PAGE_START;
-//                getUsers(pPosition);
+//                getAllergies(pPosition);
                 getUsersFromDB();
             } else {
                 isLoadedOnline = false;
@@ -551,7 +535,7 @@ public class AllergiesListFragment extends DialogFragment {
                                 if (ConnectivityReceiver.isConnected()) {
                                     isLoadedOnline = true;
                                     currentPage = PAGE_START;
-                                    getUsers(pPosition);
+                                    getAllergies(pPosition);
                                 } else {
                                     isLoadedOnline = false;
                                     getUsersFromDB();
@@ -632,7 +616,7 @@ public class AllergiesListFragment extends DialogFragment {
 //            if (ConnectivityReceiver.isConnected()) {
 //                isLoadedOnline = true;
 //                currentPage = PAGE_START;
-//                getUsers(pPosition);
+//                getAllergies(pPosition);
 //            } else {
 //                isLoadedOnline = false;
 //                getUsersFromDB();
@@ -654,11 +638,11 @@ public class AllergiesListFragment extends DialogFragment {
 //    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUserAdded(UserAddedEvent event) {
+    public void onUserAdded(TaskAddedEvent event) {
         if (ConnectivityReceiver.isConnected()) {
             isLoadedOnline = true;
             currentPage = PAGE_START;
-            getUsers(pPosition);
+            getAllergies(pPosition);
         } else {
             isLoadedOnline = false;
             getUsersFromDB();

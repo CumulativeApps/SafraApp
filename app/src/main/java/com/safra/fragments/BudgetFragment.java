@@ -161,6 +161,10 @@ public class BudgetFragment extends Fragment {
                                     binding.clTaskSpinner.setVisibility(View.GONE);
                                     binding.clButtons.setVisibility(View.GONE);
                                 } else {
+                                    binding.clAimSpinner.setVisibility(View.VISIBLE);
+                                    binding.clGoalSpinner.setVisibility(View.VISIBLE);
+                                    binding.clTaskSpinner.setVisibility(View.VISIBLE);
+                                    binding.clButtons.setVisibility(View.VISIBLE);
                                     List<ProjectSpinnerModel> projectList = new ArrayList<>();
                                     for (int i = 0; i < dataArray.length(); i++) {
                                         JSONObject projectObj = dataArray.getJSONObject(i);
@@ -229,7 +233,10 @@ public class BudgetFragment extends Fragment {
                                 if (dataArray.length() == 0) {
                                     binding.clGoalSpinner.setVisibility(View.GONE);
                                     binding.clTaskSpinner.setVisibility(View.GONE);
+
                                 } else {
+                                    binding.clGoalSpinner.setVisibility(View.VISIBLE);
+                                    binding.clTaskSpinner.setVisibility(View.VISIBLE);
                                     List<ProjectSpinnerModel> projectList = new ArrayList<>();
                                     for (int i = 0; i < dataArray.length(); i++) {
                                         JSONObject projectObj = dataArray.getJSONObject(i);
@@ -300,9 +307,16 @@ public class BudgetFragment extends Fragment {
                                 JSONArray dataArray = response.getJSONArray("data");
                                 if (dataArray.length() == 0) {
 
+                                    binding.tvTotal.setVisibility(View.GONE);
+                                    binding.innerRecyclerView.setVisibility(View.GONE);
+                                    binding.tvTotalTitle.setVisibility(View.GONE);
                                     binding.clTaskSpinner.setVisibility(View.GONE);
                                     binding.clButtons.setVisibility(View.GONE);
                                 } else {
+                                    binding.tvTotal.setVisibility(View.VISIBLE);
+                                    binding.innerRecyclerView.setVisibility(View.VISIBLE);
+                                    binding.clTaskSpinner.setVisibility(View.VISIBLE);
+                                    binding.clButtons.setVisibility(View.VISIBLE);
                                     List<ProjectSpinnerModel> projectList = new ArrayList<>();
                                     for (int i = 0; i < dataArray.length(); i++) {
                                         JSONObject projectObj = dataArray.getJSONObject(i);
@@ -378,7 +392,8 @@ public class BudgetFragment extends Fragment {
                             List<BudgetListModel.Datum> taskList = new ArrayList<>();
                             double totalSubtotal = 0.0; // Variable to hold the sum of subtotals
                             binding.clTotal.setVisibility(View.VISIBLE);
-
+                            binding.innerRecyclerView.setVisibility(View.VISIBLE);
+                            binding.tvTotalTitle.setVisibility(View.VISIBLE);
                             for (int i = 0; i < dataArray.length(); i++) {
                                 JSONObject taskObj = dataArray.getJSONObject(i);
                                 int id = taskObj.getInt("id");

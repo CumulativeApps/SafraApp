@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_box_layout"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp">
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clActiveVisits"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingBottom="5dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="5dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="4dp"
+            android:src="@drawable/ic_delete"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvActiveVisits"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:gravity="end"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:textColor="@color/text_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="2023-04-26 18:16:00" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <!--        <View-->
+    <!--            android:id="@+id/viewLine"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="1dp"-->
+    <!--            android:background="@color/caption_color"-->
+    <!--            app:layout_constraintTop_toBottomOf="@id/clActiveVisits" />-->
+
+    <!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_marginTop="8dp"-->
+    <!--            app:layout_constraintTop_toBottomOf="@id/viewLine">-->
+
+    <!--            <ImageView-->
+    <!--                android:id="@+id/ivDelete"-->
+    <!--                android:layout_width="wrap_content"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:background="?selectableItemBackgroundBorderless"-->
+    <!--                android:clickable="true"-->
+    <!--                android:focusable="true"-->
+    <!--                android:padding="4dp"-->
+    <!--                android:src="@drawable/ic_delete"-->
+    <!--                android:visibility="gone"-->
+    <!--                app:layout_constraintStart_toStartOf="parent"-->
+    <!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+    <!--            <ImageView-->
+    <!--                android:id="@+id/ivEdit"-->
+    <!--                android:layout_width="wrap_content"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:layout_marginStart="10dp"-->
+    <!--                android:background="?selectableItemBackgroundBorderless"-->
+    <!--                android:clickable="true"-->
+    <!--                android:focusable="true"-->
+    <!--                android:padding="4dp"-->
+    <!--                android:src="@drawable/ic_edit"-->
+    <!--                android:visibility="visible"-->
+    <!--                app:layout_constraintStart_toEndOf="@id/ivDelete"-->
+    <!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+
+    <!--            <TextView-->
+    <!--                android:id="@+id/tvViewDetails"-->
+    <!--                android:layout_width="wrap_content"-->
+    <!--                android:layout_height="0dp"-->
+    <!--                android:background="?selectableItemBackground"-->
+    <!--                android:clickable="true"-->
+    <!--                android:focusable="true"-->
+    <!--                android:gravity="center"-->
+    <!--                android:padding="4dp"-->
+    <!--                android:text="@string/change_status"-->
+    <!--                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"-->
+    <!--                android:textColor="?colorPrimary"-->
+    <!--                app:layout_constraintBottom_toBottomOf="@id/ivEdit"-->
+    <!--                app:layout_constraintEnd_toEndOf="parent"-->
+    <!--                app:layout_constraintTop_toTopOf="@id/ivEdit" />-->
+
+
+    <!--            &lt;!&ndash;            <TextView&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:id="@+id/tvViewDetails"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:layout_width="wrap_content"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:layout_height="0dp"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:layout_marginStart="291dp"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:background="?selectableItemBackground"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:clickable="true"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:focusable="true"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:gravity="center"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:padding="4dp"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:text="@string/view_details"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:textColor="?colorPrimary"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                app:layout_constraintBottom_toBottomOf="@id/ivDelete"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                app:layout_constraintEnd_toEndOf="parent"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                app:layout_constraintStart_toStartOf="parent"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                app:layout_constraintTop_toTopOf="@id/ivDelete" />&ndash;&gt;-->
+
+    <!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,81 +1,48 @@
 package com.safra.fragments;
 
-import static com.safra.db.DBHandler.dbHandler;
 import static com.safra.utilities.Common.BASE_URL;
 import static com.safra.utilities.Common.PAGE_START;
-import static com.safra.utilities.Common.PLANNER_AIM_DELETE;
-import static com.safra.utilities.Common.PLANNER_EDIT_AIM;
-import static com.safra.utilities.Common.PLANNER_PROJECT_AIM_LIST;
 import static com.safra.utilities.Common.PLANNER_TASK_DELETE;
 import static com.safra.utilities.Common.PLANNER_TASK_LIST;
-import static com.safra.utilities.Common.PROJECT;
-import static com.safra.utilities.Common.PROJECT_DELETE;
-import static com.safra.utilities.Common.PROJECT_STATUS;
 import static com.safra.utilities.Common.REQUEST_DELETE_ACTION_TASK;
-import static com.safra.utilities.Common.REQUEST_DELETE_PROJECT;
 import static com.safra.utilities.UserPermissions.USER_ADD;
-import static com.safra.utilities.UserPermissions.USER_DELETE;
-import static com.safra.utilities.UserPermissions.USER_STATUS;
-import static com.safra.utilities.UserPermissions.USER_UPDATE;
-import static com.safra.utilities.UserPermissions.USER_VIEW;
 import static com.safra.utilities.UserSessionManager.userSessionManager;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.google.gson.Gson;
-import com.safra.AddActionPlan;
 import com.safra.AddActionPlanTask;
-import com.safra.AddGoalActvity;
-import com.safra.AddProjects;
 import com.safra.AddResourceActivity;
 import com.safra.R;
 import com.safra.Safra;
-import com.safra.adapters.ActionPlanListRecyclerAdapter;
-import com.safra.adapters.ActionPlanRecyclerAdapter;
 import com.safra.adapters.ActionPlanTaskListAdapter;
-import com.safra.adapters.ProjectPlanListModel;
-import com.safra.databinding.FragmentActionPlanBinding;
-import com.safra.databinding.FragmentActionPlanListBinding;
 import com.safra.databinding.FragmentActionPlanTaskListBinding;
-import com.safra.databinding.PopupChangeProjectStatusBinding;
 import com.safra.dialogs.DeleteDialog;
 import com.safra.events.TaskAddedEvent;
-import com.safra.events.UserAddedEvent;
 import com.safra.extensions.LanguageExtension;
 import com.safra.extensions.LoadingDialogExtension;
 import com.safra.extensions.PermissionExtension;
 import com.safra.extensions.ViewExtension;
 import com.safra.models.ActionTaskListModel;
-import com.safra.models.ProjectListResponseModel;
 import com.safra.utilities.ConnectivityReceiver;
 import com.safra.utilities.SpaceItemDecoration;
 
@@ -102,7 +69,7 @@ public class ActionPlanTaskListFragment extends DialogFragment {
     //    private final List<UserItem> userList = new ArrayList<>();
     private final List<ActionTaskListModel.Data.Goal.Task> userList = new ArrayList<>();
     private final List<ActionTaskListModel.Data.User> userList1 = new ArrayList<>();
-//    private final List<ActionTaskListModel.Data.User> userList1 = new ArrayList<>();
+    //    private final List<ActionTaskListModel.Data.User> userList1 = new ArrayList<>();
     //    private final List<ProjectListResponseModel.Goal> goalList = new ArrayList<>();
     private ActionPlanTaskListAdapter adapter;
 
@@ -148,12 +115,10 @@ public class ActionPlanTaskListFragment extends DialogFragment {
         }
 
 
-
-
         binding.rvActionPlanTaskList.setLayoutManager(new LinearLayoutManager(mActivity, RecyclerView.VERTICAL, false));
         binding.rvActionPlanTaskList.addItemDecoration(new SpaceItemDecoration(mActivity, RecyclerView.VERTICAL,
                 1, R.dimen.recycler_vertical_offset, R.dimen.recycler_horizontal_offset, true));
-        adapter = new ActionPlanTaskListAdapter(this,getChildFragmentManager(),mActivity,userList1, new ActionPlanTaskListAdapter.OnItemClickListener() {
+        adapter = new ActionPlanTaskListAdapter(this, getChildFragmentManager(), mActivity, userList1, new ActionPlanTaskListAdapter.OnItemClickListener() {
             @Override
             public void onDelete(ActionTaskListModel.Data.Goal.Task item, int position) {
                 DeleteDialog dialogD = new DeleteDialog();
@@ -164,7 +129,6 @@ public class ActionPlanTaskListFragment extends DialogFragment {
                 bundle.putLong("online_id", item.getId());
                 bundle.putInt("position", position);
                 bundle.putString("type", "project");
-                System.out.println("POSITION :- "+position);
                 dialogD.setArguments(bundle);
                 dialogD.show(getChildFragmentManager(), DeleteDialog.TAG);
             }
@@ -176,9 +140,7 @@ public class ActionPlanTaskListFragment extends DialogFragment {
                 Intent i = new Intent(mActivity, AddActionPlanTask.class);
                 i.putExtra("action_task_id", item.getId());
                 i.putExtra("planner_project_id", ID);
-
                 i.putExtra("heading", LanguageExtension.setText("edit_task", getString(R.string.edit_task)));
-
                 startActivity(i);
 
 
@@ -187,19 +149,16 @@ public class ActionPlanTaskListFragment extends DialogFragment {
             @Override
             public void onView(ActionTaskListModel.Data.Goal.Task item, int position) {
                 long taskId = item.getId();
-                String taskName =item.getTitle();
+                String taskName = item.getTitle();
                 System.out.println("user_id");
                 Intent i = new Intent(mActivity, AddResourceActivity.class);
                 i.putExtra("heading", LanguageExtension.setText("add_goal", getString(R.string.add_goal)));
                 i.putExtra("is_new", true);
-                i.putExtra("task_id",  taskId);
-                i.putExtra("task_name",  taskName);
-//                System.out.println("item.getId()"+ aimName);
-
+                i.putExtra("task_id", taskId);
+                i.putExtra("task_name", taskName);
 //                i.putExtra("online_id", item.getUserOnlineId());
                 startActivity(i);
             }
-
 
 
             @Override
@@ -227,8 +186,8 @@ public class ActionPlanTaskListFragment extends DialogFragment {
 //                getUsersFromDB();
 
 //                getTaskList(pPosition);
-                                        if (binding.srlManageProject.isRefreshing())
-                            binding.srlManageProject.setRefreshing(false);
+                if (binding.srlManageProject.isRefreshing())
+                    binding.srlManageProject.setRefreshing(false);
             } else {
                 isLoadedOnline = false;
 //                getUsersFromDB();
@@ -266,30 +225,30 @@ public class ActionPlanTaskListFragment extends DialogFragment {
             }
         });
 
-        binding.etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                searchText = s.toString();
-                if (isLoadedOnline) {
-                    currentPage = PAGE_START;
-                    getTaskList(pPosition);
-                } else {
-                    adapter.searchUser(searchText);
-
-                    checkForEmptyState();
-                }
-            }
-        });
+//        binding.etSearch.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                searchText = s.toString();
+//                if (isLoadedOnline) {
+//                    currentPage = PAGE_START;
+//                    getTaskList(pPosition);
+//                } else {
+//                    adapter.searchUser(searchText);
+//
+//                    checkForEmptyState();
+//                }
+//            }
+//        });
 
         binding.fabAdd.setOnClickListener(v -> {
             long ID = projectId;
@@ -361,10 +320,9 @@ public class ActionPlanTaskListFragment extends DialogFragment {
     }
 
     private void setText() {
-        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
+//        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
         binding.tvEmptyState.setText(LanguageExtension.setText("no_user_found", getString(R.string.no_user_found)));
     }
-
 
 
     private void loadMoreItems() {
@@ -555,7 +513,6 @@ public class ActionPlanTaskListFragment extends DialogFragment {
 //                    }
 //                });
 //    }
-
 
 
 //    public void deleteUserOffline(long userId, int position) {

@@ -134,7 +134,6 @@ public class AddTask extends AppCompatActivity {
             } else {
                 taskId = getIntent().getLongExtra("task_id", -1);
                 onlineId = getIntent().getLongExtra("online_id", -1);
-                System.out.println("onlineId" +onlineId);
                 Log.e(TAG, "onCreate: " + taskId);
                 if (ConnectivityReceiver.isConnected())
                     getEditData();
@@ -388,7 +387,6 @@ public class AddTask extends AppCompatActivity {
                 if (!tDetail.isEmpty())
                     parameters.put("task_details", tDetail);
                 parameters.put("task_priority", String.valueOf(selectedPriority));
-                System.out.println("task_priority" + String.valueOf(selectedPriority));
                 parameters.put("task_start_date", sdfForServer.format(new Date(calendarStart.getTimeInMillis())));
                 parameters.put("task_end_date", sdfForServer.format(new Date(calendarEnd.getTimeInMillis())));
                 if (!cUser.isEmpty())

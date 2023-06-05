@@ -131,14 +131,37 @@ public class AppointmentRecyclerAdapter extends RecyclerView.Adapter<RecyclerVie
             binding.tvAddressTitle.setText(LanguageExtension.setText("address", context.getString(R.string.address)));
             binding.tvViewDetails.setText(LanguageExtension.setText("appointment_schedule", context.getString(R.string.appointment_schedule)));
 
-            String fullName = " "+ item.first_name +" " +item.middle_name + " " + item.last_name;
+//            String fullName = " "+ item.first_name +" " +item.middle_name + " " + item.last_name;
+//
+//
+//            if (item.first_name == "null" && item.middle_name == "null" && item.last_name == "null") {
+//
+//                binding.tvPatientName.setText("Unidentified patient");
+//
+//            }  else {
+//                binding.tvPatientName.setText(fullName);
+//            }
 
-
-            if (item.first_name == "null" && item.middle_name == "null" && item.last_name == "null") {
-
+            if (item.first_name.equals("null") && item.middle_name.equals("null") && item.last_name.equals("null")) {
                 binding.tvPatientName.setText("Unidentified patient");
-
-            }  else {
+            } else {
+                StringBuilder fullNameBuilder = new StringBuilder();
+                if (!item.first_name.equals("null")) {
+                    fullNameBuilder.append(item.first_name);
+                }
+                if (!item.middle_name.equals("null")) {
+                    if (fullNameBuilder.length() > 0) {
+                        fullNameBuilder.append(" ");
+                    }
+                    fullNameBuilder.append(item.middle_name);
+                }
+                if (!item.last_name.equals("null")) {
+                    if (fullNameBuilder.length() > 0) {
+                        fullNameBuilder.append(" ");
+                    }
+                    fullNameBuilder.append(item.last_name);
+                }
+                String fullName = fullNameBuilder.toString();
                 binding.tvPatientName.setText(fullName);
             }
 
@@ -177,7 +200,6 @@ public class AppointmentRecyclerAdapter extends RecyclerView.Adapter<RecyclerVie
                 int age = calendar.get(Calendar.YEAR) - 1970;
                 binding.tvAge.setText(String.valueOf(age));
                 // Now you can use the 'age' variable for further processing
-                System.out.println("Age: " + age);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -203,6 +225,7 @@ public class AppointmentRecyclerAdapter extends RecyclerView.Adapter<RecyclerVie
 
 
             binding.tvViewDetails.setOnClickListener(v -> listener.onView(item, getAbsoluteAdapterPosition()));
+            binding.tvOverview.setOnClickListener(v -> listener.onEdit(item, getAbsoluteAdapterPosition()));
         }
     }
 

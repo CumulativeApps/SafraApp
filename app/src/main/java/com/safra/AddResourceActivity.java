@@ -63,19 +63,15 @@ public class AddResourceActivity extends AppCompatActivity {
 
 
         String TaskName = getIntent().getStringExtra("name");
-        System.out.println("TaskName"+TaskName);
         name.setText(TaskName);
 
         String Quantity = getIntent().getStringExtra("quantity");
-        System.out.println("TaskName"+Quantity);
         quantity.setText(Quantity);
 
         String UnitPrice = getIntent().getStringExtra("price");
-        System.out.println("TaskName"+UnitPrice);
         unitPrice.setText(UnitPrice);
 
         String SubTotal = getIntent().getStringExtra("subtotal");
-        System.out.println("TaskName"+SubTotal);
 //        name.setText(SubTotal);
 
 
@@ -83,7 +79,6 @@ public class AddResourceActivity extends AppCompatActivity {
         isRemembered = userSessionManager.isRemembered();
         aimId = getIntent().getLongExtra("task_id", -1);
         aimName = getIntent().getStringExtra("task_name");
-        System.out.println("AIMID"+aimName);
         passName = name.getText().toString();
         passQuantity = quantity.getText().toString();
         passUnitPrice = unitPrice.getText().toString();
@@ -130,10 +125,8 @@ public class AddResourceActivity extends AppCompatActivity {
         int subTotal = Integer.parseInt(passQuantity) * Integer.parseInt(passUnitPrice);
 
         JSONArray jsonArray = new JSONArray(data);
-//        System.out.println("saveActionPlan ID"+ ID);
 
 //        tvAim = edAim.getText().toString();
-//        System.out.println("tvAim"+tvAim);
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken);
@@ -182,14 +175,12 @@ public class AddResourceActivity extends AppCompatActivity {
         int subTotal = Integer.parseInt(passQuantity) * Integer.parseInt(passUnitPrice);
         updateResourceId = getIntent().getIntExtra("goal_task_resource_id", -1);
         updateTaskId = getIntent().getIntExtra("planner_task_id", -1);
-        System.out.println("goal_task_resource_id:-"+ updateResourceId);
-        System.out.println("planner_task_id:-"+ updateTaskId);
+
 
 
         JSONArray jsonArray = new JSONArray(data);
 
 //        tvAim = edAim.getText().toString();
-//        System.out.println("tvAim"+tvAim);
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("user_token", isRemembered ? userSessionManager.getUserToken() : Safra.userToken);
