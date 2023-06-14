@@ -1,7 +1,7 @@
 package com.safra.models.formElements;
 
 import static com.safra.utilities.FormElements.TYPE_CHECKBOX;
-import static com.safra.utilities.FormElements.TYPE_TEXT;
+
 
 public class CheckBoxFormElement extends BaseFormElement {
 
@@ -12,9 +12,7 @@ public class CheckBoxFormElement extends BaseFormElement {
         CheckBoxFormElement textFormElement = new CheckBoxFormElement();
         textFormElement
                 .setType(TYPE_CHECKBOX)
-                .setFieldType("checkbox")
-                .setFieldSubType("text")
-                .setClassName("form-control");
+                .setFieldType("checkbox");
         return textFormElement;
     }
 

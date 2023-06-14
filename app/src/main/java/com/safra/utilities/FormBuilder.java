@@ -105,7 +105,7 @@ public class FormBuilder {
         recyclerView.setAdapter(formAdapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TEXT, 0);
-        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_CHECKBOX, 0);
+
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_URL, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TEXT_AREA, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_NUMBER, 0);
@@ -127,6 +127,7 @@ public class FormBuilder {
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_CASCADING, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_QUIZ_MCQ, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_QUIZ_TEXT, 0);
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_CHECKBOX, 0);
     }
 
     private void initializeFormBuilderHelper(Activity context,
@@ -142,7 +143,7 @@ public class FormBuilder {
         recyclerView.setAdapter(formAdapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TEXT, 0);
-        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_CHECKBOX, 0);
+
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_URL, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TEXT_AREA, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_NUMBER, 0);
@@ -164,6 +165,7 @@ public class FormBuilder {
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_CASCADING, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_QUIZ_MCQ, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_QUIZ_TEXT, 0);
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_CHECKBOX, 0);
     }
 
     public void addFormElements(List<BaseFormElement> baseFormElements) {

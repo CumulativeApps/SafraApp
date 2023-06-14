@@ -229,6 +229,9 @@ public class FormAdapter
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         Log.e(TAG, "onCreateViewHolder: " + viewType);
         switch (viewType) {
+            case TYPE_CHECKBOX:
+                FormElementCheckboxBinding checkboxBinding = FormElementCheckboxBinding.inflate(inflater, parent, false);
+                return new CheckBoxFieldViewHolder(checkboxBinding, this, isPreview, isReadOnly);
             case TYPE_TEXT_AREA:
                 FormElementTextareaBinding textAreaBinding = FormElementTextareaBinding.inflate(inflater, parent, false);
                 return new TextAreaFieldViewHolder(textAreaBinding, this, isPreview, isReadOnly);
@@ -291,9 +294,7 @@ public class FormAdapter
                 FormElementQuizTextBinding quizTextBinding = FormElementQuizTextBinding.inflate(inflater, parent, false);
                 return new QuizTextViewHolder(quizTextBinding, this, isPreview, isReadOnly);
             case TYPE_TEXT:
-            case TYPE_CHECKBOX:
-                FormElementCheckboxBinding checkboxBinding = FormElementCheckboxBinding.inflate(inflater, parent, false);
-                return new CheckBoxFieldViewHolder(checkboxBinding, this, isPreview, isReadOnly);
+
             case TYPE_URL:
             default:
                 FormElementTextBinding binding = FormElementTextBinding.inflate(inflater, parent, false);
