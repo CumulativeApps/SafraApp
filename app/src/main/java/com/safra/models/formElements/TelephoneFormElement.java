@@ -11,7 +11,7 @@ public class TelephoneFormElement extends BaseFormElement {
         TelephoneFormElement telephoneFormElement = new TelephoneFormElement();
         telephoneFormElement
                 .setType(TYPE_TEL)
-                .setFieldType("text")
+                .setFieldType("phoneNumber")
                 .setFieldSubType("tel")
                 .setClassName("form-control");
         return telephoneFormElement;

@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.safra.R;
 import com.safra.databinding.FormElementCascadingBinding;
+import com.safra.databinding.FormElementCheckboxBinding;
 import com.safra.databinding.FormElementCheckboxGroupBinding;
 import com.safra.databinding.FormElementDateBinding;
 import com.safra.databinding.FormElementEmailBinding;
@@ -30,7 +30,6 @@ import com.safra.databinding.FormElementTextareaBinding;
 import com.safra.databinding.FormElementTimeBinding;
 import com.safra.databinding.FormElementWeekBinding;
 import com.safra.events.FieldListChangedEvent;
-import com.safra.extensions.LanguageExtension;
 import com.safra.interfaces.FileSelectionInterface;
 import com.safra.interfaces.HandlerClickListener;
 import com.safra.interfaces.OnFormElementValueChangedListener;
@@ -39,12 +38,10 @@ import com.safra.interfaces.ReloadListener;
 import com.safra.interfaces.RequestLocationInterface;
 import com.safra.models.OptionItem;
 import com.safra.models.formElements.BaseFormElement;
-import com.safra.models.formElements.QuizTextAnswerFormElement;
-import com.safra.models.formElements.QuizTextFormElement;
-import com.safra.models.formElements.QuizTextPointFormElement;
 import com.safra.viewholders.BaseFieldViewHolder;
 import com.safra.viewholders.CascadingFieldViewHolder;
-import com.safra.viewholders.CheckboxFieldViewHolder;
+import com.safra.viewholders.CheckBoxFieldViewHolder;
+import com.safra.viewholders.SelectBoxesFieldViewHolder;
 import com.safra.viewholders.DateFieldViewHolder;
 import com.safra.viewholders.EmailFieldViewHolder;
 import com.safra.viewholders.FileFieldViewHolder;
@@ -61,7 +58,7 @@ import com.safra.viewholders.TelephoneFieldViewHolder;
 import com.safra.viewholders.TextAreaFieldViewHolder;
 import com.safra.viewholders.TextFieldViewHolder;
 import com.safra.viewholders.TimeFieldViewHolder;
-import com.safra.viewholders.WeekFieldViewHolder;
+import com.safra.viewholders.DateTimeFieldViewHolder;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -71,7 +68,7 @@ import java.util.List;
 import static com.safra.utilities.FormElements.TYPE_ACHIEVED_UNIT;
 import static com.safra.utilities.FormElements.TYPE_CASCADING;
 import static com.safra.utilities.FormElements.TYPE_CASCADING_SELECT;
-import static com.safra.utilities.FormElements.TYPE_CHECKBOX_GROUP;
+import static com.safra.utilities.FormElements.TYPE_SELECT_BOXES_GROUP;
 import static com.safra.utilities.FormElements.TYPE_DATE;
 import static com.safra.utilities.FormElements.TYPE_EMAIL;
 import static com.safra.utilities.FormElements.TYPE_FILE;
@@ -87,12 +84,15 @@ import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT_POINT;
 import static com.safra.utilities.FormElements.TYPE_RADIO_GROUP;
 import static com.safra.utilities.FormElements.TYPE_SELECT;
 import static com.safra.utilities.FormElements.TYPE_SEPARATOR;
+import static com.safra.utilities.FormElements.TYPE_SURVEY;
 import static com.safra.utilities.FormElements.TYPE_TEL;
 import static com.safra.utilities.FormElements.TYPE_TEXT;
+import static com.safra.utilities.FormElements.TYPE_CHECKBOX;
 import static com.safra.utilities.FormElements.TYPE_TEXT_AREA;
 import static com.safra.utilities.FormElements.TYPE_TIME;
 import static com.safra.utilities.FormElements.TYPE_UNIT_PRICE;
-import static com.safra.utilities.FormElements.TYPE_WEEK;
+import static com.safra.utilities.FormElements.TYPE_URL;
+import static com.safra.utilities.FormElements.TYPE_DATETIME;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -254,19 +254,20 @@ public class FormAdapter
             case TYPE_TIME:
                 FormElementTimeBinding timeBinding = FormElementTimeBinding.inflate(inflater, parent, false);
                 return new TimeFieldViewHolder(timeBinding, this, this, isPreview, isReadOnly);
-            case TYPE_WEEK:
+            case TYPE_DATETIME:
                 FormElementWeekBinding weekBinding = FormElementWeekBinding.inflate(inflater, parent, false);
-                return new WeekFieldViewHolder(weekBinding, this, this, isPreview, isReadOnly);
+                return new DateTimeFieldViewHolder(weekBinding, this, this, isPreview, isReadOnly);
             case TYPE_MONTH:
                 FormElementMonthBinding monthBinding = FormElementMonthBinding.inflate(inflater, parent, false);
                 return new MonthFieldViewHolder(monthBinding, this, this, isPreview, isReadOnly);
             case TYPE_RADIO_GROUP:
+            case TYPE_SURVEY:
             case TYPE_QUIZ_MCQ:
                 FormElementRadioGroupBinding radioBinding = FormElementRadioGroupBinding.inflate(inflater, parent, false);
                 return new RadioFieldViewHolder(radioBinding, this, this, isPreview, isReadOnly);
-            case TYPE_CHECKBOX_GROUP:
-                FormElementCheckboxGroupBinding checkboxBinding = FormElementCheckboxGroupBinding.inflate(inflater, parent, false);
-                return new CheckboxFieldViewHolder(checkboxBinding, this, this, isPreview, isReadOnly);
+            case TYPE_SELECT_BOXES_GROUP:
+                FormElementCheckboxGroupBinding selectBoxBinding = FormElementCheckboxGroupBinding.inflate(inflater, parent, false);
+                return new SelectBoxesFieldViewHolder(selectBoxBinding, this, this, isPreview, isReadOnly);
             case TYPE_SELECT:
             case TYPE_PLACE_TARGET:
                 FormElementSelectBinding selectBinding = FormElementSelectBinding.inflate(inflater, parent, false);
@@ -290,6 +291,10 @@ public class FormAdapter
                 FormElementQuizTextBinding quizTextBinding = FormElementQuizTextBinding.inflate(inflater, parent, false);
                 return new QuizTextViewHolder(quizTextBinding, this, isPreview, isReadOnly);
             case TYPE_TEXT:
+            case TYPE_CHECKBOX:
+                FormElementCheckboxBinding checkboxBinding = FormElementCheckboxBinding.inflate(inflater, parent, false);
+                return new CheckBoxFieldViewHolder(checkboxBinding, this, isPreview, isReadOnly);
+            case TYPE_URL:
             default:
                 FormElementTextBinding binding = FormElementTextBinding.inflate(inflater, parent, false);
                 return new TextFieldViewHolder(binding, this, isPreview, isReadOnly);
@@ -316,7 +321,7 @@ public class FormAdapter
         BaseFormElement baseFormElement = elementList.get(position);
         Log.e("FormAdapter", "updateValue: " + baseFormElement + "->" + fieldValue);
         switch (baseFormElement.getType()) {
-            case TYPE_CHECKBOX_GROUP:
+            case TYPE_SELECT_BOXES_GROUP:
                 boolean isError = true;
                 StringBuilder sb = new StringBuilder();
                 for (OptionItem o : baseFormElement.getOptions()) {
@@ -336,6 +341,7 @@ public class FormAdapter
                 notifyItemChanged(position);
                 break;
             case TYPE_RADIO_GROUP:
+            case TYPE_SURVEY:
             case TYPE_QUIZ_MCQ:
             case TYPE_SELECT:
             case TYPE_CASCADING_SELECT:
@@ -345,10 +351,12 @@ public class FormAdapter
                 notifyItemChanged(position);
                 break;
             case TYPE_TEXT:
+            case TYPE_CHECKBOX:
+            case TYPE_URL:
             case TYPE_TEXT_AREA:
             case TYPE_DATE:
             case TYPE_TIME:
-            case TYPE_WEEK:
+            case TYPE_DATETIME:
             case TYPE_MONTH:
             case TYPE_NUMBER:
             case TYPE_FILE:

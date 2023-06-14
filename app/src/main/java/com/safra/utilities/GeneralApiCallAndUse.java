@@ -112,6 +112,7 @@ public class GeneralApiCallAndUse {
                             String message = response.getString("message");
                             if (success == 1) {
                                 JSONArray formTypes = response.getJSONObject("data").getJSONArray("form_list");
+
                                 if (formTypes.length() > 0) {
                                     for (int i = 0; i < formTypes.length(); i++) {
                                         JSONObject formType = formTypes.getJSONObject(i);

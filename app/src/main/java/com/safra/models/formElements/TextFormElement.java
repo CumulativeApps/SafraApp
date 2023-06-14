@@ -13,7 +13,7 @@ public class TextFormElement extends BaseFormElement {
         TextFormElement textFormElement = new TextFormElement();
         textFormElement
                 .setType(TYPE_TEXT)
-                .setFieldType("text")
+                .setFieldType("textfield")
                 .setFieldSubType("text")
                 .setClassName("form-control");
         return textFormElement;

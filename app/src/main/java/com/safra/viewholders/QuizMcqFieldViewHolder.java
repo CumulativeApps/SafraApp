@@ -74,9 +74,9 @@ public class QuizMcqFieldViewHolder extends BaseFieldViewHolder {
         }
 
         binding.rvOptions.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
-        RadioRecyclerAdapter adapter = new RadioRecyclerAdapter(context, options, !isReadOnly, (item, position1) ->
-                listener.updateValue(item.getOptionValue(), getAbsoluteAdapterPosition()));
-        binding.rvOptions.setAdapter(adapter);
+//        RadioRecyclerAdapter adapter = new RadioRecyclerAdapter(context, options, !isReadOnly, (item, position1) ->
+//                listener.updateValue(item.getOptionValue(), getAbsoluteAdapterPosition()));
+//        binding.rvOptions.setAdapter(adapter);
 
         binding.layoutHandlers.ivProperties.setOnClickListener(v -> handlerClickListener
                 .openProperties(baseFormElement, getAbsoluteAdapterPosition(), -1));

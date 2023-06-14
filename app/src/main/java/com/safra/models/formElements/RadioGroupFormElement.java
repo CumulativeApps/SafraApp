@@ -1,10 +1,10 @@
 package com.safra.models.formElements;
 
-import com.safra.models.OptionItem;
-
 import java.util.List;
 
 import static com.safra.utilities.FormElements.TYPE_RADIO_GROUP;
+
+import com.safra.models.OptionItem;
 
 public class RadioGroupFormElement extends BaseFormElement {
 
@@ -15,7 +15,7 @@ public class RadioGroupFormElement extends BaseFormElement {
         RadioGroupFormElement radioGroupFormElement = new RadioGroupFormElement();
         radioGroupFormElement
                 .setType(TYPE_RADIO_GROUP)
-                .setFieldType("radio-group");
+                .setFieldType("radio");
         return radioGroupFormElement;
     }
 

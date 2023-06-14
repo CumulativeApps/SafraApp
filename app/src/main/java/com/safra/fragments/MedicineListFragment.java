@@ -364,7 +364,7 @@ public class MedicineListFragment extends DialogFragment {
 
     private void setText() {
 //        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
-        binding.tvEmptyState.setText(LanguageExtension.setText("no_user_found", getString(R.string.no_user_found)));
+        binding.tvEmptyState.setText(LanguageExtension.setText("no_medicine_found", getString(R.string.no_medicine_found)));
     }
 
 

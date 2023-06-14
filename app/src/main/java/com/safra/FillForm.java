@@ -72,7 +72,7 @@ import static com.safra.utilities.Common.FORM_FILL_PRIVATE_API;
 import static com.safra.utilities.Common.REQUEST_GPS;
 import static com.safra.utilities.Common.SERVER_DATE_FORMAT;
 import static com.safra.utilities.FormElements.TYPE_CASCADING;
-import static com.safra.utilities.FormElements.TYPE_CHECKBOX_GROUP;
+import static com.safra.utilities.FormElements.TYPE_SELECT_BOXES_GROUP;
 import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT;
 import static com.safra.utilities.UserSessionManager.userSessionManager;
 
@@ -205,7 +205,7 @@ public class FillForm extends AppCompatActivity
             BaseFormElement baseFormElement = formBuilder.getFormElement(i);
 
             List<String> userDataList = new ArrayList<>();
-            if (baseFormElement.getType() == TYPE_CHECKBOX_GROUP) {
+            if (baseFormElement.getType() == TYPE_SELECT_BOXES_GROUP) {
                 if (baseFormElement.getFieldValue() != null) {
                     String[] data = baseFormElement.getFieldValue().split(",");
                     userDataList.addAll(Arrays.asList(data));

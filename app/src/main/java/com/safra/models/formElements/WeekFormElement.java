@@ -1,6 +1,6 @@
 package com.safra.models.formElements;
 
-import static com.safra.utilities.FormElements.TYPE_WEEK;
+import static com.safra.utilities.FormElements.TYPE_DATETIME;
 
 public class WeekFormElement extends BaseFormElement {
 
@@ -12,8 +12,8 @@ public class WeekFormElement extends BaseFormElement {
     public static WeekFormElement createInstance(){
         WeekFormElement weekFormElement = new WeekFormElement();
         weekFormElement
-                .setType(TYPE_WEEK)
-                .setFieldType("text")
+                .setType(TYPE_DATETIME)
+                .setFieldType("datetime")
                 .setFieldSubType("week")
                 .setClassName("form-control");
         return weekFormElement;

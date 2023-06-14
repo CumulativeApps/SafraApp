@@ -14,6 +14,7 @@ import com.safra.databinding.ItemLoadingBinding;
 import com.safra.databinding.RecyclerTemplatesBinding;
 import com.safra.extensions.LanguageExtension;
 import com.safra.models.TemplateItem;
+import com.safra.models.TemplateItem.Data.TemplateList;
 
 import java.util.List;
 
@@ -22,15 +23,15 @@ public class TemplatesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
     private final int VIEW_TEMPLATE = 1;
 
     private final Context context;
-    private final List<TemplateItem> templateList;
+    private final List<TemplateItem.Data.TemplateList> templateList;
     private final OnItemClickListener listener;
 
     public interface OnItemClickListener{
-        void onClick(TemplateItem item, int position);
-        void showPreview(TemplateItem item, int position);
+        void onClick(TemplateItem.Data.TemplateList item, int position);
+        void showPreview(TemplateItem.Data.TemplateList item, int position);
     }
 
-    public TemplatesRecyclerAdapter(Context context, List<TemplateItem> templateList,
+    public TemplatesRecyclerAdapter(Context context, List<TemplateItem.Data.TemplateList> templateList,
                                     OnItemClickListener listener) {
         this.context = context;
         this.templateList = templateList;
@@ -76,12 +77,12 @@ public class TemplatesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
             this.binding = binding;
         }
 
-        public void bindView(TemplateItem item) {
+        public void bindView(TemplateItem.Data.TemplateList item) {
             binding.tvPreview.setText(LanguageExtension.setText("preview", context.getString(R.string.preview)));
 
-            binding.tvTemplateTitle.setText(item.getTemplateName());
+            binding.tvTemplateTitle.setText(item.getTemplate_name());
 
-            if(item.getTemplateId() == -1)
+            if(item.getTemplate_id() == -1)
                 binding.tvPreview.setVisibility(View.GONE);
             else
                 binding.tvPreview.setVisibility(View.VISIBLE);

@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,7 @@ import com.safra.adapters.FormTypeSpinnerAdapter;
 import com.safra.adapters.FormVisibilitySpinnerAdapter;
 import com.safra.adapters.GroupCustomSpinnerAdapter;
 import com.safra.adapters.LanguageSpinnerAdapter;
+import com.safra.adapters.SeeReferenceAdapter;
 import com.safra.adapters.UserCustomSpinnerAdapter;
 import com.safra.databinding.FragmentFormSettingsBinding;
 import com.safra.events.FieldListChangedEvent;
@@ -81,6 +83,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class FormSettingsFragment extends Fragment {
 
@@ -101,6 +104,10 @@ public class FormSettingsFragment extends Fragment {
 
     private final List<RoleItem> groupList = new ArrayList<>();
     private GroupCustomSpinnerAdapter adapterG;
+    String spinnerStatusName;
+    ArrayList<FormSettingsFragment.ShipmentStatus> shipmentStatusList = new ArrayList<>();
+    ArrayList<FormSettingsFragment.ShipmentStatus> shipmentStatusList1 = new ArrayList<>();
+
 
     private Calendar calendar;
     private final SimpleDateFormat sdfToShow = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
@@ -114,6 +121,8 @@ public class FormSettingsFragment extends Fragment {
     private List<Long> currentUsers = new ArrayList<>();
     private List<Long> currentGroups = new ArrayList<>();
 
+    private int status,map,email;
+
     private boolean isUsersReceived = true, isGroupsReceived = true, isEssentialDataReceived = true;
 
     @Nullable
@@ -126,6 +135,96 @@ public class FormSettingsFragment extends Fragment {
 
         binding.etFormTitle.setText(LanguageExtension.setText("untitled_form", getString(R.string.untitled_form)));
         setText();
+
+        shipmentStatusList.add(new FormSettingsFragment.ShipmentStatus("Yes"));
+        shipmentStatusList.add(new FormSettingsFragment.ShipmentStatus("No"));
+        shipmentStatusList1.add(new FormSettingsFragment.ShipmentStatus("Publish"));
+        shipmentStatusList1.add(new FormSettingsFragment.ShipmentStatus("Not Publish"));
+
+
+        SeeReferenceAdapter adapter = new SeeReferenceAdapter(getContext(), shipmentStatusList);
+        binding.spnSeeReference.setAdapter(adapter);
+
+        binding.spnSeeReference.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                FormSettingsFragment.ShipmentStatus selectedStatus = (FormSettingsFragment.ShipmentStatus) parent.getItemAtPosition(position);
+                spinnerStatusName = selectedStatus.getStatusName();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
+        SeeReferenceAdapter adapter1 = new SeeReferenceAdapter(getContext(), shipmentStatusList);
+        binding.spnSeeOnMap.setAdapter(adapter1);
+
+        binding.spnSeeOnMap.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                FormSettingsFragment.ShipmentStatus selectedStatus = (FormSettingsFragment.ShipmentStatus) parent.getItemAtPosition(position);
+                spinnerStatusName = selectedStatus.getStatusName();
+                if(Objects.equals(spinnerStatusName, "Yes")){
+                    map = 1;
+                }else{
+                    map = 0;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
+        SeeReferenceAdapter adapter2 = new SeeReferenceAdapter(getContext(), shipmentStatusList);
+        binding.spnEmailResponse.setAdapter(adapter2);
+
+        binding.spnEmailResponse.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                FormSettingsFragment.ShipmentStatus selectedStatus = (FormSettingsFragment.ShipmentStatus) parent.getItemAtPosition(position);
+                spinnerStatusName = selectedStatus.getStatusName();
+
+                if(Objects.equals(spinnerStatusName, "Yes")){
+                    email = 1;
+                }else{
+                    email = 0;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
+
+//        SeeReferenceAdapter adapter3 = new SeeReferenceAdapter(getContext(), shipmentStatusList1);
+//        binding.spnStatus.setAdapter(adapter3);
+//
+//        binding.spnStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                FormSettingsFragment.ShipmentStatus selectedStatus = (FormSettingsFragment.ShipmentStatus) parent.getItemAtPosition(position);
+//                spinnerStatusName = selectedStatus.getStatusName();
+//
+//                if(Objects.equals(spinnerStatusName, "Publish")){
+//                    status = 1;
+//                }else{
+//                    status = 0;
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//                // Do nothing
+//            }
+//        });
+
 
         calendar = Calendar.getInstance();
         calendar.setTimeInMillis(calendar.getTimeInMillis() + (24 * 60 * 60 * 1000L));
@@ -288,7 +387,7 @@ public class FormSettingsFragment extends Fragment {
     }
 
     private void setText() {
-        binding.tvFormTitleHeading.setText(LanguageExtension.setText("form_title_mandatory", getString(R.string.form_title_mandatory)));
+        binding.tvFormTitleHeading.setText(LanguageExtension.setText("form_name_mandatory", getString(R.string.form_name_mandatory)));
         binding.tvFormLanguageHeading.setText(LanguageExtension.setText("language", getString(R.string.language)));
         binding.tvFormTypeHeading.setText(LanguageExtension.setText("form_type", getString(R.string.form_type)));
         binding.tvTotalMarksHeading.setText(LanguageExtension.setText("form_mcq_marks", getString(R.string.form_mcq_marks)));
@@ -434,6 +533,11 @@ public class FormSettingsFragment extends Fragment {
         hashMap.put("form_title", binding.etFormTitle.getText() != null ? binding.etFormTitle.getText().toString() : "");
         hashMap.put("form_type_id", String.valueOf(formTypeId));
         hashMap.put("form_visibility_id", String.valueOf(formVisibilityId));
+//        hashMap.put("form_status", String.valueOf(status));
+        hashMap.put("form_reference", String.valueOf(spinnerStatusName));
+        hashMap.put("form_map", String.valueOf(map));
+        hashMap.put("form_response", String.valueOf(email));
+        System.out.println("DATA:- "+ spinnerStatusName + " " + map + " " + email );
         hashMap.put("language_id", String.valueOf(selectedLanguageId));
         if (binding.etExpiryDate.getText() != null && !binding.etExpiryDate.getText().toString().isEmpty())
             hashMap.put("expiry_date", sdfForServer.format(new Date(calendar.getTimeInMillis())));
@@ -483,8 +587,8 @@ public class FormSettingsFragment extends Fragment {
         binding.etTotalMarks.setText(String.valueOf(CreateForm.totalMarks));
 
         isEssentialDataReceived = true;
-        if(isUsersReceived && isGroupsReceived)
-        LoadingDialogExtension.hideLoading();
+        if (isUsersReceived && isGroupsReceived)
+            LoadingDialogExtension.hideLoading();
 //        dialogL.dismiss();
 
         if (ConnectivityReceiver.isConnected()) {
@@ -897,5 +1001,17 @@ public class FormSettingsFragment extends Fragment {
         super.onDetach();
         mActivity = null;
         EventBus.getDefault().unregister(this);
+    }
+
+    public class ShipmentStatus {
+        private String statusName;
+
+        public ShipmentStatus(String statusName) {
+            this.statusName = statusName;
+        }
+
+        public String getStatusName() {
+            return statusName;
+        }
     }
 }

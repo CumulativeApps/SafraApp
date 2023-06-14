@@ -247,6 +247,10 @@ public class Common {
 
     public static final String HEALTH_RECORD_OVERVIEW_LIST = "get-overview";
 
+
+    public static final String HEALTH_RECORD_REPORT_LIST = "get-report-types";
+    public static final String HEALTH_RECORD_REPORT_DATA_LIST = "get-reports";
+
     public static final String HEALTH_RECORD_ACTIVE_VISIT_ADD = "add-visit";
     public static final String HEALTH_RECORD_ACTIVE_VISIT_DELETE = "delete-visit";
 

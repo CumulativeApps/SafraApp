@@ -1137,20 +1137,20 @@ public class SyncData {
                                     for (int i = 0; i < templates.length(); i++) {
                                         JSONObject template = templates.getJSONObject(i);
                                         TemplateItem templateItem = new TemplateItem();
-                                        templateItem.setTemplateId(template.getInt("template_id"));
-                                        templateItem.setTemplateUniqueId(template.getString("template_unique_id"));
-                                        templateItem.setTemplateName(template.getString("template_name"));
-                                        templateItem.setTemplateType(template.getInt("template_type"));
-                                        templateItem.setTemplateLanguageId(template.getLong("template_language_id"));
-
-                                        templateItem.setTemplateJson(new JSONArray(template.getString("template_json")).toString());
-
-                                        templateItem.setTemplateImage(template.getString("template_image_url"));
+//                                        templateItem.setTemplateId(template.getInt("template_id"));
+//                                        templateItem.setTemplateUniqueId(template.getString("template_unique_id"));
+//                                        templateItem.setTemplateName(template.getString("template_name"));
+//                                        templateItem.setTemplateType(template.getInt("template_type"));
+//                                        templateItem.setTemplateLanguageId(template.getLong("template_language_id"));
+//
+//                                        templateItem.setTemplateJson(new JSONArray(template.getString("template_json")).toString());
+//
+//                                        templateItem.setTemplateImage(template.getString("template_image_url"));
 
                                         templateList.add(templateItem);
                                     }
 
-                                    dbHandler.addTemplates(templateList);
+//                                    dbHandler.addTemplates(templateList);
                                     EventBus.getDefault().post(new TemplateListSyncEvent(templateList));
                                 }
 

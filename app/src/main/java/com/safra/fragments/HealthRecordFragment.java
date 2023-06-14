@@ -5,19 +5,17 @@ import static com.safra.utilities.UserSessionManager.userSessionManager;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import com.safra.Dashboard;
 import com.safra.R;
 import com.safra.databinding.FragmentHealthRecordBinding;
-import com.safra.databinding.FragmentPlannerBinding;
 import com.safra.events.ConnectivityChangedEvent;
 import com.safra.events.LanguageChangedEvent;
 import com.safra.extensions.LanguageExtension;
@@ -60,12 +58,8 @@ public class HealthRecordFragment extends Fragment {
 
 
         languageList.clear();
+
         languageList.addAll(dbHandler.getLanguages());
-
-
-
-
-
 
         binding.mcvTotalPatient.setOnClickListener(v ->
                 ((Dashboard) mActivity).changeHealthFragment(new PatientFragment(), PatientFragment.TAG));
@@ -95,8 +89,6 @@ public class HealthRecordFragment extends Fragment {
     }
 
     private void setText() {
-
-
         binding.tvTotalPatients.setText(LanguageExtension.setText("total_patient", getString(R.string.total_patient)));
         binding.tvTotalActiveVisits.setText(LanguageExtension.setText("active_visits", getString(R.string.active_visits)));
         binding.tvTotalAppointmentSchedules.setText(LanguageExtension.setText("appointment", getString(R.string.appointment)));

@@ -20,6 +20,7 @@
     <string name="telephone_field">Telephone Field</string>
     <string name="month_field">Month Field</string>
     <string name="week_field">Week Field</string>
+    <string name="date_time">DateTime</string>
     <string name="time_field">Time Field</string>
     <string name="location_field">Location Field</string>
     <string name="date_field">Date Field</string>
@@ -288,7 +289,9 @@
     <string name="time">Time</string>
     <string name="week">Week</string>
     <string name="month">Month</string>
+    <string name="day">Day</string>
     <string name="radio">Radio</string>
+    <string name="survey">Survey</string>
     <string name="checkbox">Checkbox</string>
     <string name="dropdown">Dropdown</string>
     <string name="file">File</string>
@@ -298,6 +301,7 @@
     <string name="achieved_unit">Achieved Unit</string>
     <string name="unit_price">Unit Price</string>
     <string name="form_title_mandatory">Form Title *</string>
+    <string name="form_name_mandatory">Form Name *</string>
     <string name="untitled_form">Untitled Form</string>
     <string name="form_type">Form Type</string>
     <string name="expiry_date">Expiry Date</string>
@@ -453,6 +457,22 @@
     <string name="edit_medication">Edit Medication</string>
     <string name="medication">Medication</string>
     <string name="no_active_visit">No Active Visit</string>
+    <string name="no_action_plan">No Action Plan</string>
+    <string name="no_project_found">No Project Found</string>
+    <string name="no_patient_found">No Patient Found</string>
+    <string name="no_appointment_found">No Appointment Found</string>
+    <string name="no_capture_vitals">No Capture Vitals</string>
+    <string name="no_diagnostics_found">No Diagnostics Found</string>
+    <string name="no_allergies_found">No Allergies Found</string>
+    <string name="no_provider_found">No Provider Found</string>
+    <string name="no_medicine_found">No Medicine Found</string>
+    <string name="no_medication_found">No Medication Found</string>
+    <string name="last_vitals">Last Vitals</string>
+    <string name="select_boxes">SelectBoxes</string>
+    <string name="select_boxes_field">SelectBoxes Field</string>
+    <string name="see_reference">See Reference</string>
+    <string name="see_on_map">See on map</string>
+    <string name="email_response">Email Response</string>
 
 
 </resources>

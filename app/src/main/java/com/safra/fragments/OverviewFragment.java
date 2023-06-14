@@ -65,8 +65,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class OverviewFragment extends DialogFragment {
 
@@ -78,7 +83,7 @@ public class OverviewFragment extends DialogFragment {
     private OverviewDiagnosticsListAdapter adapter;
     private OverviewActiveVisitsRecyclerAdapter visitsAdapter;
     private AllergiesListRecyclerAdapter allergiesAdapter;
-    private CaptureVitalListRecyclerAdapter vitalsAdapter;
+
     private boolean isRemembered;
     private long patientId = -1;
 
@@ -399,6 +404,34 @@ public class OverviewFragment extends DialogFragment {
 //                                OverviewDataModel.Data.Vital userItem = new OverviewDataModel.Data.Vital();
                                 OverviewDataModel.Data.Vital userItem = new Gson().fromJson(vital.toString(), OverviewDataModel.Data.Vital.class);
 
+
+                                String inputDate1 = String.valueOf(userItem.getCreated_at());
+                                String inputFormat1 = "EEE MMM dd HH:mm:ss 'GMT'Z yyyy";
+                                String outputFormat1 = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
+
+                                SimpleDateFormat inputDateFormat1 = new SimpleDateFormat(inputFormat1, Locale.US);
+                                SimpleDateFormat outputDateFormat1 = new SimpleDateFormat(outputFormat1, Locale.US);
+                                outputDateFormat1.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                                try {
+                                    Date date1 = inputDateFormat1.parse(inputDate1);
+                                    String outputDate1 = outputDateFormat1.format(date1);
+                                    String inputDate2 = outputDate1;
+                                    String inputFormat2 = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
+                                    String outputFormat2 = "yyyy-MM-dd HH:mm:ss";
+
+                                    SimpleDateFormat inputDateFormat2 = new SimpleDateFormat(inputFormat2, Locale.US);
+                                    SimpleDateFormat outputDateFormat2 = new SimpleDateFormat(outputFormat2, Locale.US);
+
+                                    Date date2 = inputDateFormat2.parse(inputDate2);
+                                    String outputDate2 = outputDateFormat2.format(date2);
+
+                                    binding.tvLastVitals.setText(outputDate2);
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
+
                                 binding.tvHeight.setText(String.valueOf(userItem.getHeight() + " cm"));
                                 binding.tvWeight.setText(String.valueOf(userItem.getWeight() + " kg"));
                                 binding.tvBMI.setText(String.valueOf(String.valueOf(userItem.getbMI())));
@@ -408,22 +441,6 @@ public class OverviewFragment extends DialogFragment {
                                 binding.tvBloodPressure.setText(String.valueOf(userItem.getBlood_pressure()));
                                 binding.tvBloodOxygen.setText(String.valueOf(userItem.getBlood_oxygen_saturation() + " %"));
 
-
-
-//                                if (visits.length() > 0) {
-//                                    for (int i = 0; i < visits.length(); i++) {
-//                                        JSONObject user = visits.getJSONObject(i);
-//
-//                                        userItem1.setStart_date(user.getString("start_date"));
-//                                        userItem1.setStart_time(user.getString("start_time"));
-//                                        System.out.println("userItem1.getStart_date():-" +userItem1.getStart_date());
-//
-//
-//
-//                                        vitalsList.add(userItem1);
-////
-//                                    }
-//                                }
                                 if (visits.length() > 0) {
                                     List<OverviewDataModel.Data.Visit> uList = new ArrayList<>();
 
@@ -433,37 +450,10 @@ public class OverviewFragment extends DialogFragment {
                                         uList.add(visit);
                                         System.out.println("USER-" + user);
 
-
-
-
                                     }
                                     visitsList.addAll(uList);
                                     visitsAdapter.addUserList(uList);
                                 }
-
-
-//                                if (currentPage == PAGE_START) {
-//                                    visitsList.clear();
-//                                    visitsAdapter.clearLists();
-////                                    pPosition = -1;
-//                                }
-
-
-//                                if (users.length() > 0) {
-//                                    List<AllergiesListModel.Data.Patient.Allergy> uList = new ArrayList<>();
-//                                    for (int i = 0; i < users.length(); i++) {
-//                                        JSONObject user = users.getJSONObject(i);
-////                                        AllergiesListModel.Data.Patient.Allergy userItem = new AllergiesListModel.Data.Patient.Allergy();
-//                                        AllergiesListModel.Data.Patient.Allergy userItem = new Gson().fromJson(user.toString(), AllergiesListModel.Data.Patient.Allergy.class);
-//
-//
-//                                        uList.add(userItem);
-////                                        dbHandler.AddAllergies(userItem);
-//                                    }
-//
-//                                    allergiesList.addAll(uList);
-//                                    allergiesAdapter.addUserList(uList);
-//                                }
 
                                 if (pPosition > 1 && pPosition <= visitsList.size() - 1) {
                                     visitsList.remove(pPosition);

@@ -166,7 +166,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
                             android:gravity="center"
-                            android:text="@string/no_user_found"
+                            android:text="@string/no_allergies_found"
                             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"

@@ -46,7 +46,7 @@ import static com.safra.utilities.Common.PAGE_START;
 import static com.safra.utilities.FormElements.TYPE_ACHIEVED_UNIT;
 import static com.safra.utilities.FormElements.TYPE_CASCADING;
 import static com.safra.utilities.FormElements.TYPE_CASCADING_SELECT;
-import static com.safra.utilities.FormElements.TYPE_CHECKBOX_GROUP;
+import static com.safra.utilities.FormElements.TYPE_SELECT_BOXES_GROUP;
 import static com.safra.utilities.FormElements.TYPE_DATE;
 import static com.safra.utilities.FormElements.TYPE_EMAIL;
 import static com.safra.utilities.FormElements.TYPE_FILE;
@@ -63,12 +63,15 @@ import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT_POINT;
 import static com.safra.utilities.FormElements.TYPE_RADIO_GROUP;
 import static com.safra.utilities.FormElements.TYPE_SELECT;
 import static com.safra.utilities.FormElements.TYPE_SEPARATOR;
+import static com.safra.utilities.FormElements.TYPE_SURVEY;
 import static com.safra.utilities.FormElements.TYPE_TEL;
 import static com.safra.utilities.FormElements.TYPE_TEXT;
+import static com.safra.utilities.FormElements.TYPE_CHECKBOX;
 import static com.safra.utilities.FormElements.TYPE_TEXT_AREA;
 import static com.safra.utilities.FormElements.TYPE_TIME;
 import static com.safra.utilities.FormElements.TYPE_UNIT_PRICE;
-import static com.safra.utilities.FormElements.TYPE_WEEK;
+import static com.safra.utilities.FormElements.TYPE_URL;
+import static com.safra.utilities.FormElements.TYPE_DATETIME;
 import static com.safra.utilities.UserSessionManager.userSessionManager;
 
 public class FieldPropertiesFragment extends DialogFragment {
@@ -333,6 +336,12 @@ public class FieldPropertiesFragment extends DialogFragment {
             case TYPE_TEXT:
                 binding.tvSelectFieldHeading.setText(LanguageExtension.setText("text_field", getString(R.string.text_field)));
                 break;
+           case TYPE_CHECKBOX:
+                binding.tvSelectFieldHeading.setText(LanguageExtension.setText("checkbox_field", getString(R.string.checkbox_field)));
+                break;
+            case TYPE_URL:
+                binding.tvSelectFieldHeading.setText(LanguageExtension.setText("url_or_link", getString(R.string.url_or_link)));
+                break;
             case TYPE_EMAIL:
                 binding.tvSelectFieldHeading.setText(LanguageExtension.setText("email_field", getString(R.string.email_field)));
                 break;
@@ -345,8 +354,8 @@ public class FieldPropertiesFragment extends DialogFragment {
             case TYPE_MONTH:
                 binding.tvSelectFieldHeading.setText(LanguageExtension.setText("month_field", getString(R.string.month_field)));
                 break;
-            case TYPE_WEEK:
-                binding.tvSelectFieldHeading.setText(LanguageExtension.setText("week_field", getString(R.string.week_field)));
+            case TYPE_DATETIME:
+                binding.tvSelectFieldHeading.setText(LanguageExtension.setText("date_time", getString(R.string.date_time)));
                 break;
             case TYPE_TIME:
                 binding.tvSelectFieldHeading.setText(LanguageExtension.setText("time_field", getString(R.string.time_field)));
@@ -372,10 +381,13 @@ public class FieldPropertiesFragment extends DialogFragment {
             case TYPE_UNIT_PRICE:
                 binding.tvSelectFieldHeading.setText(LanguageExtension.setText("unit_price_field", getString(R.string.unit_price_field)));
                 break;
-            case TYPE_CHECKBOX_GROUP:
-                binding.tvSelectFieldHeading.setText(LanguageExtension.setText("checkbox_field", getString(R.string.checkbox_field)));
+            case TYPE_SELECT_BOXES_GROUP:
+                binding.tvSelectFieldHeading.setText(LanguageExtension.setText("select_boxes_field", getString(R.string.select_boxes_field)));
                 break;
             case TYPE_RADIO_GROUP:
+                binding.tvSelectFieldHeading.setText(LanguageExtension.setText("radio_button_field", getString(R.string.radio_button_field)));
+                break;
+            case TYPE_SURVEY:
                 binding.tvSelectFieldHeading.setText(LanguageExtension.setText("radio_button_field", getString(R.string.radio_button_field)));
                 break;
             case TYPE_SELECT:
@@ -419,11 +431,13 @@ public class FieldPropertiesFragment extends DialogFragment {
                 binding.clMcqOptions.setVisibility(View.GONE);
                 break;
             case TYPE_TEXT:
+            case TYPE_CHECKBOX:
+            case TYPE_URL:
             case TYPE_EMAIL:
             case TYPE_PASSWORD:
             case TYPE_TEL:
             case TYPE_MONTH:
-            case TYPE_WEEK:
+            case TYPE_DATETIME:
             case TYPE_TIME:
             case TYPE_LOCATION:
             case TYPE_DATE:
@@ -461,7 +475,7 @@ public class FieldPropertiesFragment extends DialogFragment {
                 binding.clOptions.setVisibility(View.GONE);
                 binding.clMcqOptions.setVisibility(View.GONE);
                 break;
-            case TYPE_CHECKBOX_GROUP:
+            case TYPE_SELECT_BOXES_GROUP:
                 adapterO.setMultipleAllowed(true);
                 if (b.getParcelableArrayList("option_list").size() > 0) {
                     optionList.addAll(b.getParcelableArrayList("option_list"));
@@ -476,6 +490,7 @@ public class FieldPropertiesFragment extends DialogFragment {
                 binding.clMcqOptions.setVisibility(View.GONE);
                 break;
             case TYPE_RADIO_GROUP:
+            case TYPE_SURVEY:
             case TYPE_SELECT:
             case TYPE_PLACE_TARGET:
                 adapterO.setMultipleAllowed(false);
@@ -634,7 +649,7 @@ public class FieldPropertiesFragment extends DialogFragment {
         if (type != TYPE_SEPARATOR && l.isEmpty()) {
             binding.etLabel.setError(LanguageExtension.setText("enter_label", getString(R.string.enter_label)));
             binding.etLabel.requestFocus();
-        } else if((type == TYPE_RADIO_GROUP || type == TYPE_CHECKBOX_GROUP || type == TYPE_SELECT
+        } else if((type == TYPE_RADIO_GROUP || type == TYPE_SURVEY || type == TYPE_SELECT_BOXES_GROUP || type == TYPE_SELECT
                 || type == TYPE_PLACE_TARGET) && optionList.isEmpty()) {
             Toast.makeText(mActivity, LanguageExtension.setText("please_enter_atleast_1_option",
                     getString(R.string.please_enter_atleast_1_option)), Toast.LENGTH_SHORT).show();

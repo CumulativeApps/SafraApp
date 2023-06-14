@@ -19,6 +19,7 @@ public class BaseFormElement implements Cloneable {
 
     private boolean haveError;
 
+
     private String max, min;
     private int maxLength, rows, step;
 
@@ -29,6 +30,7 @@ public class BaseFormElement implements Cloneable {
     private boolean isRequired;
 
     private List<OptionItem> options;
+
 
     private List<String> userData;
 
@@ -104,6 +106,7 @@ public class BaseFormElement implements Cloneable {
     public List<OptionItem> getOptions() {
         return (this.options == null) ? new ArrayList<>() : this.options;
     }
+
 
     public List<String> getUserData() {
         return userData;
@@ -210,6 +213,7 @@ public class BaseFormElement implements Cloneable {
         return this;
     }
 
+
     public BaseFormElement setUserData(List<String> userData) {
         this.userData = userData;
         return this;
@@ -254,7 +258,7 @@ public class BaseFormElement implements Cloneable {
                 ", isHaveAccess=" + isHaveAccess +
                 ", role=" + Arrays.toString(role) +
                 ", isRequired=" + isRequired +
-                ", options=" + (options!=null ? options.get(0).isSelected() : "null") +
+                ", options=" + (options != null ? options.get(0).isSelected() : "null") +
                 '}';
     }
 
@@ -264,8 +268,6 @@ public class BaseFormElement implements Cloneable {
         return (BaseFormElement) super.clone();
     }
 }
-
-
 
 
 //package com.safra.models.formElements;

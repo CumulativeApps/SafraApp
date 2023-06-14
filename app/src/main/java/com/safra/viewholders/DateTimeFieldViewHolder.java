@@ -2,17 +2,15 @@ package com.safra.viewholders;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.safra.R;
 import com.safra.databinding.FormElementWeekBinding;
 import com.safra.extensions.LanguageExtension;
@@ -26,24 +24,22 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
 
-import static com.safra.utilities.Common.WEEK_FORMAT;
-
-public class WeekFieldViewHolder extends BaseFieldViewHolder {
+public class DateTimeFieldViewHolder extends BaseFieldViewHolder {
 
     FormElementWeekBinding binding;
 
     private DatePickerDialog datePickerDialog;
-    private Calendar currentWeek;
-    private SimpleDateFormat sdfWeek;
+    private TimePickerDialog timePickerDialog;
+    private Calendar currentDateTime;
+    private SimpleDateFormat sdfDateTime;
 
     private final ReloadListener reloadListener;
     private final HandlerClickListener handlerClickListener;
     private final boolean isPreview;
     private final boolean isReadOnly;
 
-    public WeekFieldViewHolder(@NonNull FormElementWeekBinding binding, ReloadListener reloadListener,
-                               HandlerClickListener handleListener,
-                               boolean isPreview, boolean isReadOnly) {
+    public DateTimeFieldViewHolder(@NonNull FormElementWeekBinding binding, ReloadListener reloadListener,
+                                   HandlerClickListener handleListener, boolean isPreview, boolean isReadOnly) {
         super(binding.getRoot());
 
         this.binding = binding;
@@ -53,22 +49,23 @@ public class WeekFieldViewHolder extends BaseFieldViewHolder {
         this.isReadOnly = isReadOnly;
 
         if (isPreview) {
-            this.binding.layoutHandlers.clHandlers.setVisibility(View.GONE);
-            this.binding.mcvWeekElement.setCardElevation(0f);
+            binding.layoutHandlers.clHandlers.setVisibility(View.GONE);
+            binding.mcvWeekElement.setCardElevation(0f);
         } else
-            this.binding.layoutHandlers.clHandlers.setVisibility(View.VISIBLE);
+            binding.layoutHandlers.clHandlers.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void bind(Activity context, BaseFormElement baseFormElement) {
-        sdfWeek = new SimpleDateFormat(WEEK_FORMAT, Locale.getDefault());
-        currentWeek = Calendar.getInstance();
+        sdfDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        currentDateTime = Calendar.getInstance();
         if (baseFormElement.getFieldValue() != null) {
             try {
-                currentWeek.setTime(Objects.requireNonNull(sdfWeek.parse(baseFormElement.getFieldValue())));
+                String fieldValue = baseFormElement.getFieldValue();
+                currentDateTime.setTime(Objects.requireNonNull(sdfDateTime.parse(fieldValue)));
             } catch (ParseException e) {
                 e.printStackTrace();
-                Log.e("WeekField", "bind: " + e.getLocalizedMessage());
+                Log.e("DateField", "bind: " + e.getLocalizedMessage());
             }
         }
 
@@ -79,7 +76,7 @@ public class WeekFieldViewHolder extends BaseFieldViewHolder {
         binding.tvLabel.setText(Html.fromHtml(l));
 
         if (baseFormElement.getFieldValue() != null)
-            binding.etField.setText(Html.fromHtml(baseFormElement.getFieldValue()));
+            binding.etField.setText(Html.fromHtml(sdfDateTime.format(currentDateTime.getTime())));
 
         binding.etField.setFocusableInTouchMode(false);
 
@@ -123,8 +120,7 @@ public class WeekFieldViewHolder extends BaseFieldViewHolder {
                 if (isPreview && baseFormElement.isRequired()) {
                     if (s.toString().isEmpty()) {
                         binding.tilField.setErrorEnabled(true);
-                        binding.tilField.setError(LanguageExtension.setText("please_fill_this_field",
-                                context.getString(R.string.please_fill_this_field)));
+                        binding.tilField.setError("Please fill this field");
                         baseFormElement.setHaveError(true);
                     } else {
                         binding.tilField.setErrorEnabled(false);
@@ -136,25 +132,31 @@ public class WeekFieldViewHolder extends BaseFieldViewHolder {
 
         datePickerDialog = new DatePickerDialog(context,
                 (view, year, month, dayOfMonth) -> {
-                    currentWeek.set(year, month, dayOfMonth);
-
-                    String currentValue = baseFormElement.getFieldValue();
-                    String newValue = sdfWeek.format(currentWeek.getTime());
-
-                    // trigger event only if the value is changed
-                    if (currentValue != null) {
-                        if (!currentValue.equals(newValue)) {
-                            reloadListener.updateValue(newValue, getAbsoluteAdapterPosition());
-                        }
-                    } else {
-                        reloadListener.updateValue(newValue, getAbsoluteAdapterPosition());
-                    }
+                    currentDateTime.set(Calendar.YEAR, year);
+                    currentDateTime.set(Calendar.MONTH, month);
+                    currentDateTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                    binding.etField.setText(Html.fromHtml(sdfDateTime.format(currentDateTime.getTime())));
                 },
-                currentWeek.get(Calendar.YEAR),
-                currentWeek.get(Calendar.MONTH),
-                currentWeek.get(Calendar.DAY_OF_MONTH));
+                currentDateTime.get(Calendar.YEAR),
+                currentDateTime.get(Calendar.MONTH),
+                currentDateTime.get(Calendar.DAY_OF_MONTH));
 
-        binding.etField.setOnClickListener(v -> datePickerDialog.show());
+        timePickerDialog = new TimePickerDialog(
+                context,
+                (view, hourOfDay, minute) -> {
+                    currentDateTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    currentDateTime.set(Calendar.MINUTE, minute);
+                    binding.etField.setText(Html.fromHtml(sdfDateTime.format(currentDateTime.getTime())));
+                },
+                currentDateTime.get(Calendar.HOUR_OF_DAY),
+                currentDateTime.get(Calendar.MINUTE),
+                false
+        );
+
+        binding.etField.setOnClickListener(v -> {
+            datePickerDialog.show();
+            timePickerDialog.show();
+        });
 
         binding.layoutHandlers.ivProperties.setOnClickListener(v -> handlerClickListener
                 .openProperties(baseFormElement, getAbsoluteAdapterPosition(), -1));

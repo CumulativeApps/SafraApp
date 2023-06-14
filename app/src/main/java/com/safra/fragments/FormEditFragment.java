@@ -7,7 +7,7 @@ import static com.safra.utilities.Common.REQUEST_SELECT_TEMPLATE;
 import static com.safra.utilities.FormElements.TYPE_ACHIEVED_UNIT;
 import static com.safra.utilities.FormElements.TYPE_CASCADING;
 import static com.safra.utilities.FormElements.TYPE_CASCADING_SELECT;
-import static com.safra.utilities.FormElements.TYPE_CHECKBOX_GROUP;
+import static com.safra.utilities.FormElements.TYPE_SELECT_BOXES_GROUP;
 import static com.safra.utilities.FormElements.TYPE_NUMBER;
 import static com.safra.utilities.FormElements.TYPE_PLACE_TARGET;
 import static com.safra.utilities.FormElements.TYPE_QUIZ_MCQ;
@@ -16,6 +16,7 @@ import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT_ANSWER;
 import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT_POINT;
 import static com.safra.utilities.FormElements.TYPE_RADIO_GROUP;
 import static com.safra.utilities.FormElements.TYPE_SELECT;
+import static com.safra.utilities.FormElements.TYPE_SURVEY;
 import static com.safra.utilities.FormElements.TYPE_TEXT_AREA;
 import static com.safra.utilities.FormElements.TYPE_UNIT_PRICE;
 import static com.safra.utilities.UserPermissions.TEMPLATE_USE;
@@ -52,6 +53,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -217,8 +219,9 @@ public class FormEditFragment extends Fragment
                     break;
                 case TYPE_SELECT:
                 case TYPE_PLACE_TARGET:
-                case TYPE_CHECKBOX_GROUP:
+                case TYPE_SELECT_BOXES_GROUP:
                 case TYPE_RADIO_GROUP:
+                case TYPE_SURVEY:
                 case TYPE_QUIZ_MCQ:
                 case TYPE_CASCADING_SELECT:
                     Log.e(TAG, "openPropertiesDialog: " + baseFormElement.getOptions().size());
@@ -263,18 +266,25 @@ public class FormEditFragment extends Fragment
             int start = i * maxLogSize;
             int end = (i + 1) * maxLogSize;
             end = Math.min(end, formFieldsJson.length());
-            Log.e(TAG, formFieldsJson.substring(start, end));
+            Log.e(TAG,"error" +formFieldsJson.substring(start, end));
         }
         formBuilder.clearFormElements();
         try {
-            JSONArray jsonArray = new JSONArray(formFieldsJson);
-            Log.e(TAG, "convertFieldsToList: " + jsonArray.length());
-            FormExtension.convertJSONToElement(formBuilder, jsonArray);
-//            if (jsonArray.length() > 0) {
-//                for (int i = 0; i < jsonArray.length(); i++) {
-//                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-//                }
-//            }
+            JSONObject jsonObject = new JSONObject(formFieldsJson);
+            // Process the jsonObject as needed
+            // ...
+
+            // Example: Accessing the "components" array from the jsonObject
+            JSONArray components = jsonObject.getJSONArray("components");
+            FormExtension.convertJSONToElement(formBuilder, components);
+
+            // Example: Iterating over the "components" array
+            for (int i = 0; i < components.length(); i++) {
+                JSONObject component = components.getJSONObject(i);
+                // Process each component as needed
+                // ...
+            }
+
         } catch (JSONException je) {
             Log.e(TAG, "convertFieldsToList: " + je.getLocalizedMessage());
         }

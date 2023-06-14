@@ -329,6 +329,43 @@
                         android:layout_marginBottom="8dp"
                         android:background="@android:color/darker_gray" />
 
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/clLastVitals"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="8dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:paddingBottom="5dp"
+                        app:layout_constraintTop_toBottomOf="@id/clUserId">
+
+                        <TextView
+                            android:id="@+id/tvLastVitalsTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/last_vitals"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                            android:textColor="@color/text_color"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tvLastVitals"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                            android:textColor="@color/text_color"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/tvLastVitalsTitle"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:text="LastVitals" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/clHeight"
                         android:layout_width="match_parent"
@@ -337,7 +374,7 @@
                         android:layout_marginStart="15dp"
                         android:layout_marginEnd="15dp"
                         android:paddingBottom="5dp"
-                        app:layout_constraintTop_toBottomOf="@id/clUserId">
+                        app:layout_constraintTop_toBottomOf="@id/clLastVitals">
 
                         <TextView
                             android:id="@+id/tvHeightTitle"

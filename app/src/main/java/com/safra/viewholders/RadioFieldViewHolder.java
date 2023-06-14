@@ -39,7 +39,7 @@ public class RadioFieldViewHolder extends BaseFieldViewHolder {
         this.isPreview = isPreview;
         this.isReadOnly = isReadOnly;
 
-        if(isPreview) {
+        if (isPreview) {
             binding.layoutHandlers.clHandlers.setVisibility(View.GONE);
             binding.mcvRadioGroupElement.setCardElevation(0f);
         } else
@@ -49,13 +49,13 @@ public class RadioFieldViewHolder extends BaseFieldViewHolder {
     @Override
     public void bind(Activity context, BaseFormElement baseFormElement) {
         String l = baseFormElement.getFieldLabel();
-        if(baseFormElement.isRequired()){
+        if (baseFormElement.isRequired()) {
             l = l + context.getString(R.string.mandatory_field);
         }
         binding.tvLabel.setText(Html.fromHtml(l));
 
-        if(baseFormElement.isHaveError()){
-            if(TextUtils.isEmpty(baseFormElement.getFieldValue())){
+        if (baseFormElement.isHaveError()) {
+            if (TextUtils.isEmpty(baseFormElement.getFieldValue())) {
                 binding.ivError.setVisibility(View.VISIBLE);
             }
         } else {
@@ -64,10 +64,10 @@ public class RadioFieldViewHolder extends BaseFieldViewHolder {
 
         List<OptionItem> options = baseFormElement.getOptions();
 
-        if(baseFormElement.getUserData() != null && baseFormElement.getUserData().size() > 0){
-            for(OptionItem oi : options){
+        if (baseFormElement.getUserData() != null && baseFormElement.getUserData().size() > 0) {
+            for (OptionItem oi : options) {
                 oi.setSelected(false);
-                if(baseFormElement.getUserData().contains(oi.getOptionValue())){
+                if (baseFormElement.getUserData().contains(oi.getOptionValue())) {
                     oi.setSelected(true);
                 }
             }

@@ -19,7 +19,7 @@ import com.safra.models.formElements.BaseFormElement;
 
 import java.util.List;
 
-public class CheckboxFieldViewHolder extends BaseFieldViewHolder {
+public class SelectBoxesFieldViewHolder extends BaseFieldViewHolder {
 
     FormElementCheckboxGroupBinding binding;
 
@@ -28,9 +28,9 @@ public class CheckboxFieldViewHolder extends BaseFieldViewHolder {
     private final boolean isPreview;
     private final boolean isReadOnly;
 
-    public CheckboxFieldViewHolder(@NonNull FormElementCheckboxGroupBinding binding, ReloadListener listener,
-                                   HandlerClickListener handleListener,
-                                   boolean isPreview, boolean isReadOnly) {
+    public SelectBoxesFieldViewHolder(@NonNull FormElementCheckboxGroupBinding binding, ReloadListener listener,
+                                      HandlerClickListener handleListener,
+                                      boolean isPreview, boolean isReadOnly) {
         super(binding.getRoot());
 
         this.binding = binding;

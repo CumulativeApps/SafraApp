@@ -13,7 +13,7 @@ public class MonthFormElement extends BaseFormElement {
         MonthFormElement monthFormElement = new MonthFormElement();
         monthFormElement
                 .setType(TYPE_MONTH)
-                .setFieldType("text")
+                .setFieldType("day")
                 .setFieldSubType("month")
                 .setClassName("form-control");
         return monthFormElement;

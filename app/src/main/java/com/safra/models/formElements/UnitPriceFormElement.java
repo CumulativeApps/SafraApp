@@ -11,7 +11,7 @@ public class UnitPriceFormElement extends BaseFormElement {
         UnitPriceFormElement numberFormElement = new UnitPriceFormElement();
         numberFormElement
                 .setType(TYPE_NUMBER)
-                .setFieldType("number")
+                .setFieldType("currency")
                 .setClassName("form-control unit_price");
         return numberFormElement;
     }

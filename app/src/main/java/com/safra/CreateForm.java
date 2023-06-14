@@ -235,6 +235,11 @@ public class CreateForm extends AppCompatActivity
                 hashMap.put("form_type", formSettingsHashMap.get("form_type_id"));
                 hashMap.put("form_language_id", formSettingsHashMap.get("language_id"));
                 hashMap.put("form_status", String.valueOf(status));
+
+                hashMap.put("form_reference", formSettingsHashMap.get("form_reference"));
+                hashMap.put("form_map", formSettingsHashMap.get("form_map"));
+                hashMap.put("form_email_response",formSettingsHashMap.get("form_response"));
+
                 if (formSettingsHashMap.containsKey("expiry_date"))
                     hashMap.put("form_expiry_date", formSettingsHashMap.get("expiry_date"));
                 if (!formSettingsHashMap.get("form_user_ids").isEmpty())
@@ -326,7 +331,8 @@ public class CreateForm extends AppCompatActivity
                                 if (!formData.isNull("form_description"))
                                     formItem.setFormDescription(formData.getString("form_description"));
 
-                                formItem.setFormJson(new JSONArray(formData.getString("form_json")).toString());
+                                formItem.setFormJson(formData.getString("form_json")); // Removed unnecessary conversion to JSONArray
+
 
                                 formItem.setFormExpiryDate(formData.getString("form_expiry_date"));
 
@@ -396,6 +402,7 @@ public class CreateForm extends AppCompatActivity
     }
 
     private void saveForm(HashMap<String, String> parameters) {
+        System.out.println("parameters:-" +parameters);
         LoadingDialogExtension.showLoading(this, LanguageExtension.setText("saving_form_progress", getString(R.string.saving_form_progress)));
 //        LoadingDialog dialogL = new LoadingDialog();
 //        dialogL.setCancelable(false);

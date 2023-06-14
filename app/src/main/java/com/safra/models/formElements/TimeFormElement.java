@@ -13,7 +13,7 @@ public class TimeFormElement extends BaseFormElement {
         TimeFormElement timeFormElement = new TimeFormElement();
         timeFormElement
                 .setType(TYPE_TIME)
-                .setFieldType("text")
+                .setFieldType("time")
                 .setFieldSubType("time")
                 .setClassName("form-control");
         return timeFormElement;

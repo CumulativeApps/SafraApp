@@ -11,8 +11,7 @@ public class PasswordFormElement extends BaseFormElement {
         PasswordFormElement passwordFormElement = new PasswordFormElement();
         passwordFormElement
                 .setType(TYPE_PASSWORD)
-                .setFieldType("text")
-                .setFieldSubType("password")
+                .setFieldType("password")
                 .setClassName("form-control");
         return passwordFormElement;
     }

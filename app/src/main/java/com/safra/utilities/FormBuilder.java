@@ -1,7 +1,7 @@
 package com.safra.utilities;
 
 import static com.safra.utilities.FormElements.TYPE_CASCADING;
-import static com.safra.utilities.FormElements.TYPE_CHECKBOX_GROUP;
+import static com.safra.utilities.FormElements.TYPE_SELECT_BOXES_GROUP;
 import static com.safra.utilities.FormElements.TYPE_DATE;
 import static com.safra.utilities.FormElements.TYPE_EMAIL;
 import static com.safra.utilities.FormElements.TYPE_FILE;
@@ -15,11 +15,14 @@ import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT;
 import static com.safra.utilities.FormElements.TYPE_RADIO_GROUP;
 import static com.safra.utilities.FormElements.TYPE_SELECT;
 import static com.safra.utilities.FormElements.TYPE_SEPARATOR;
+import static com.safra.utilities.FormElements.TYPE_SURVEY;
 import static com.safra.utilities.FormElements.TYPE_TEL;
 import static com.safra.utilities.FormElements.TYPE_TEXT;
+import static com.safra.utilities.FormElements.TYPE_CHECKBOX;
 import static com.safra.utilities.FormElements.TYPE_TEXT_AREA;
 import static com.safra.utilities.FormElements.TYPE_TIME;
-import static com.safra.utilities.FormElements.TYPE_WEEK;
+import static com.safra.utilities.FormElements.TYPE_URL;
+import static com.safra.utilities.FormElements.TYPE_DATETIME;
 
 import android.app.Activity;
 import android.text.TextUtils;
@@ -102,6 +105,8 @@ public class FormBuilder {
         recyclerView.setAdapter(formAdapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TEXT, 0);
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_CHECKBOX, 0);
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_URL, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TEXT_AREA, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_NUMBER, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_DATE, 0);
@@ -112,9 +117,10 @@ public class FormBuilder {
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_PASSWORD, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TEL, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TIME, 0);
-        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_WEEK, 0);
-        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_CHECKBOX_GROUP, 0);
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_DATETIME, 0);
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SELECT_BOXES_GROUP, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_RADIO_GROUP, 0);
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SURVEY, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SELECT, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_HEADER, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SEPARATOR, 0);
@@ -136,6 +142,8 @@ public class FormBuilder {
         recyclerView.setAdapter(formAdapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TEXT, 0);
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_CHECKBOX, 0);
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_URL, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TEXT_AREA, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_NUMBER, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_DATE, 0);
@@ -146,9 +154,10 @@ public class FormBuilder {
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_PASSWORD, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TEL, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TIME, 0);
-        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_WEEK, 0);
-        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_CHECKBOX_GROUP, 0);
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_DATETIME, 0);
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SELECT_BOXES_GROUP, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_RADIO_GROUP, 0);
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SURVEY, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SELECT, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_HEADER, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SEPARATOR, 0);

@@ -380,61 +380,61 @@ public class DBHandler extends SQLiteOpenHelper {
 
     }
 
-    public int addTemplates(List<TemplateItem> templateList) {
-        SQLiteDatabase db = getWritableDatabase();
-
-        int i = 0;
-        for (TemplateItem templateItem : templateList) {
-            ContentValues cv = new ContentValues();
-            cv.put(DBEntry.TEMPLATE_ID, templateItem.getTemplateId());
-            cv.put(DBEntry.TEMPLATE_UNIQUE_ID, templateItem.getTemplateUniqueId());
-            cv.put(DBEntry.TEMPLATE_LANGUAGE_ID, templateItem.getTemplateLanguageId());
-            cv.put(DBEntry.TEMPLATE_NAME, templateItem.getTemplateName());
-            cv.put(DBEntry.TEMPLATE_TYPE, templateItem.getTemplateType());
-//        cv.put(DBEntry.TEMPLATE_STATUS, templateItem.getTemplateStatus());
-            cv.put(DBEntry.TEMPLATE_JSON, templateItem.getTemplateJson());
-            cv.put(DBEntry.TEMPLATE_IMAGE, templateItem.getTemplateImage());
-            cv.put(DBEntry.IS_DELETE, 0);
-//        cv.put(DBEntry.CREATED_AT, templateItem.getCreatedAt());
-//        cv.put(DBEntry.UPDATED_AT, templateItem.getUpdatedAt());
-            if (checkIfAvailable(db, TYPE_TEMPLATE, templateItem.getTemplateId())) {
-                db.update(DBEntry.TABLE_TEMPLATE, cv, DBEntry.TEMPLATE_ID + "=?",
-                        new String[]{String.valueOf(templateItem.getTemplateId())});
-            } else {
-                db.insert(DBEntry.TABLE_TEMPLATE, null, cv);
-            }
-            i++;
-        }
-        db.close();
-
-        return i;
-    }
-
-    public void addTemplate(TemplateItem templateItem) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues cv = new ContentValues();
-
-        cv.put(DBEntry.TEMPLATE_ID, templateItem.getTemplateId());
-        cv.put(DBEntry.TEMPLATE_UNIQUE_ID, templateItem.getTemplateUniqueId());
-        cv.put(DBEntry.TEMPLATE_LANGUAGE_ID, templateItem.getTemplateLanguageId());
-        cv.put(DBEntry.TEMPLATE_NAME, templateItem.getTemplateName());
-        cv.put(DBEntry.TEMPLATE_TYPE, templateItem.getTemplateType());
-//        cv.put(DBEntry.TEMPLATE_STATUS, templateItem.getTemplateStatus());
-        cv.put(DBEntry.TEMPLATE_JSON, templateItem.getTemplateJson());
-        cv.put(DBEntry.TEMPLATE_IMAGE, templateItem.getTemplateImage());
-        cv.put(DBEntry.IS_DELETE, 0);
-//        cv.put(DBEntry.CREATED_AT, templateItem.getCreatedAt());
-//        cv.put(DBEntry.UPDATED_AT, templateItem.getUpdatedAt());
-        if (checkIfAvailable(db, TYPE_TEMPLATE, templateItem.getTemplateId())) {
-            db.update(DBEntry.TABLE_TEMPLATE, cv, DBEntry.TEMPLATE_ID + "=?",
-                    new String[]{String.valueOf(templateItem.getTemplateId())});
-        } else {
-            db.insert(DBEntry.TABLE_TEMPLATE, null, cv);
-        }
-
-        db.close();
-
-    }
+//    public int addTemplates(List<TemplateItem> templateList) {
+//        SQLiteDatabase db = getWritableDatabase();
+//
+//        int i = 0;
+//        for (TemplateItem templateItem : templateList) {
+//            ContentValues cv = new ContentValues();
+//            cv.put(DBEntry.TEMPLATE_ID, templateItem.getTemplateId());
+//            cv.put(DBEntry.TEMPLATE_UNIQUE_ID, templateItem.getTemplateUniqueId());
+//            cv.put(DBEntry.TEMPLATE_LANGUAGE_ID, templateItem.getTemplateLanguageId());
+//            cv.put(DBEntry.TEMPLATE_NAME, templateItem.getTemplateName());
+//            cv.put(DBEntry.TEMPLATE_TYPE, templateItem.getTemplateType());
+////        cv.put(DBEntry.TEMPLATE_STATUS, templateItem.getTemplateStatus());
+//            cv.put(DBEntry.TEMPLATE_JSON, templateItem.getTemplateJson());
+//            cv.put(DBEntry.TEMPLATE_IMAGE, templateItem.getTemplateImage());
+//            cv.put(DBEntry.IS_DELETE, 0);
+////        cv.put(DBEntry.CREATED_AT, templateItem.getCreatedAt());
+////        cv.put(DBEntry.UPDATED_AT, templateItem.getUpdatedAt());
+//            if (checkIfAvailable(db, TYPE_TEMPLATE, templateItem.getTemplateId())) {
+//                db.update(DBEntry.TABLE_TEMPLATE, cv, DBEntry.TEMPLATE_ID + "=?",
+//                        new String[]{String.valueOf(templateItem.getTemplateId())});
+//            } else {
+//                db.insert(DBEntry.TABLE_TEMPLATE, null, cv);
+//            }
+//            i++;
+//        }
+//        db.close();
+//
+//        return i;
+//    }
+//
+//    public void addTemplate(TemplateItem templateItem) {
+//        SQLiteDatabase db = getWritableDatabase();
+//        ContentValues cv = new ContentValues();
+//
+//        cv.put(DBEntry.TEMPLATE_ID, templateItem.getTemplateId());
+//        cv.put(DBEntry.TEMPLATE_UNIQUE_ID, templateItem.getTemplateUniqueId());
+//        cv.put(DBEntry.TEMPLATE_LANGUAGE_ID, templateItem.getTemplateLanguageId());
+//        cv.put(DBEntry.TEMPLATE_NAME, templateItem.getTemplateName());
+//        cv.put(DBEntry.TEMPLATE_TYPE, templateItem.getTemplateType());
+////        cv.put(DBEntry.TEMPLATE_STATUS, templateItem.getTemplateStatus());
+//        cv.put(DBEntry.TEMPLATE_JSON, templateItem.getTemplateJson());
+//        cv.put(DBEntry.TEMPLATE_IMAGE, templateItem.getTemplateImage());
+//        cv.put(DBEntry.IS_DELETE, 0);
+////        cv.put(DBEntry.CREATED_AT, templateItem.getCreatedAt());
+////        cv.put(DBEntry.UPDATED_AT, templateItem.getUpdatedAt());
+//        if (checkIfAvailable(db, TYPE_TEMPLATE, templateItem.getTemplateId())) {
+//            db.update(DBEntry.TABLE_TEMPLATE, cv, DBEntry.TEMPLATE_ID + "=?",
+//                    new String[]{String.valueOf(templateItem.getTemplateId())});
+//        } else {
+//            db.insert(DBEntry.TABLE_TEMPLATE, null, cv);
+//        }
+//
+//        db.close();
+//
+//    }
 
     public int addForms(List<FormItem> formList) {
         SQLiteDatabase db = getWritableDatabase();
@@ -971,30 +971,30 @@ public class DBHandler extends SQLiteOpenHelper {
         return permissions;
     }
 
-    public List<TemplateItem> getTemplates() {
-        List<TemplateItem> templates = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(DBEntry.GET_TEMPLATE_LIST, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                TemplateItem templateItem = new TemplateItem();
-                templateItem.setTemplateId(cursor.getLong(0));
-                templateItem.setTemplateUniqueId(cursor.getString(1));
-                templateItem.setTemplateLanguageId(cursor.getLong(2));
-                templateItem.setTemplateName(cursor.getString(3));
-                templateItem.setTemplateType(cursor.getInt(4));
-                templateItem.setTemplateJson(cursor.getString(5));
-                templateItem.setTemplateImage(cursor.getString(6));
-
-                templates.add(templateItem);
-            } while (cursor.moveToNext());
-
-            cursor.close();
-        }
-        db.close();
-
-        return templates;
-    }
+//    public List<TemplateItem> getTemplates() {
+//        List<TemplateItem> templates = new ArrayList<>();
+//        SQLiteDatabase db = getReadableDatabase();
+//        Cursor cursor = db.rawQuery(DBEntry.GET_TEMPLATE_LIST, null);
+//        if (cursor != null && cursor.moveToFirst()) {
+//            do {
+//                TemplateItem templateItem = new TemplateItem();
+//                templateItem.setTemplateId(cursor.getLong(0));
+//                templateItem.setTemplateUniqueId(cursor.getString(1));
+//                templateItem.setTemplateLanguageId(cursor.getLong(2));
+//                templateItem.setTemplateName(cursor.getString(3));
+//                templateItem.setTemplateType(cursor.getInt(4));
+//                templateItem.setTemplateJson(cursor.getString(5));
+//                templateItem.setTemplateImage(cursor.getString(6));
+//
+//                templates.add(templateItem);
+//            } while (cursor.moveToNext());
+//
+//            cursor.close();
+//        }
+//        db.close();
+//
+//        return templates;
+//    }
 
     public List<UserItem> getUnsyncedUsers() {
         List<UserItem> users = new ArrayList<>();

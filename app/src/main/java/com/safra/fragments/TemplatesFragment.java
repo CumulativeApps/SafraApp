@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.google.gson.Gson;
 import com.safra.R;
 import com.safra.Safra;
 import com.safra.adapters.TemplatesRecyclerAdapter;
@@ -25,6 +26,7 @@ import com.safra.databinding.FragmentTemplatesBinding;
 import com.safra.events.TemplateSelectedEvent;
 import com.safra.extensions.LanguageExtension;
 import com.safra.extensions.ViewExtension;
+import com.safra.models.AllergiesListModel;
 import com.safra.models.TemplateItem;
 import com.safra.utilities.ConnectivityReceiver;
 import com.safra.utilities.SpaceItemDecoration;
@@ -51,7 +53,7 @@ public class TemplatesFragment extends DialogFragment {
 
     private FragmentTemplatesBinding binding;
 
-    private final List<TemplateItem> templateList = new ArrayList<>();
+    private final List<TemplateItem.Data.TemplateList> templateList = new ArrayList<>();
     private TemplatesRecyclerAdapter adapter;
 
     private int currentPage = PAGE_START;
@@ -85,7 +87,7 @@ public class TemplatesFragment extends DialogFragment {
                 1, R.dimen.recycler_vertical_offset, R.dimen.recycler_horizontal_offset, true));
         adapter = new TemplatesRecyclerAdapter(mActivity, templateList, new TemplatesRecyclerAdapter.OnItemClickListener() {
             @Override
-            public void onClick(TemplateItem item, int position) {
+            public void onClick(TemplateItem.Data.TemplateList item, int position) {
 //                Intent intent = new Intent();
 //                Bundle bundle = new Bundle();
 //                bundle.putString("form_fields", item.getTemplateJson());
@@ -93,15 +95,15 @@ public class TemplatesFragment extends DialogFragment {
 //                intent.putExtras(bundle);
 //                if (getTargetFragment() != null)
 //                    getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_SUCCESS_SELECT_TEMPLATE, intent);
-                EventBus.getDefault().post(new TemplateSelectedEvent(item.getTemplateLanguageId(), item.getTemplateJson()));
+                EventBus.getDefault().post(new TemplateSelectedEvent(item.getTemplate_language_id(), item.getTemplate_json()));
                 dismiss();
             }
 
             @Override
-            public void showPreview(TemplateItem item, int position) {
+            public void showPreview(TemplateItem.Data.TemplateList item, int position) {
                 TemplatePreviewFragment dialogP = new TemplatePreviewFragment();
                 Bundle bundle = new Bundle();
-                bundle.putString("image_url", item.getTemplateImage());
+                bundle.putString("image_url", item.getTemplate_image_url());
                 dialogP.setArguments(bundle);
                 dialogP.show(getChildFragmentManager(), TemplatePreviewFragment.TAG);
             }
@@ -157,7 +159,7 @@ public class TemplatesFragment extends DialogFragment {
     private void getTemplatesFromDB() {
         templateList.clear();
 
-        templateList.addAll(dbHandler.getTemplates());
+//        templateList.addAll(dbHandler.getTemplates());
         Log.e(TAG, "getTemplatesFromDB: " + templateList.size());
 
         adapter.notifyDataSetChanged();
@@ -206,17 +208,19 @@ public class TemplatesFragment extends DialogFragment {
 
                                     for (int i = 0; i < templates.length(); i++) {
                                         JSONObject template = templates.getJSONObject(i);
-                                        TemplateItem templateItem = new TemplateItem();
-                                        templateItem.setTemplateId(template.getInt("template_id"));
-                                        templateItem.setTemplateUniqueId(template.getString("template_unique_id"));
-                                        templateItem.setTemplateName(template.getString("template_name"));
-                                        templateItem.setTemplateType(template.getInt("template_type"));
-                                        templateItem.setTemplateLanguageId(template.getLong("template_language_id"));
+                                        TemplateItem.Data.TemplateList templateItem = new Gson().fromJson(template.toString(), TemplateItem.Data.TemplateList.class);
 
-                                        Log.e(TAG, "onResponse: template_json -> " + new JSONArray(template.getString("template_json")));
-                                        templateItem.setTemplateJson(new JSONArray(template.getString("template_json")).toString());
-
-                                        templateItem.setTemplateImage(template.getString("template_image_url"));
+//                                        TemplateItem templateItem = new TemplateItem();
+//                                        templateItem.setTemplateId(template.getInt("template_id"));
+//                                        templateItem.setTemplateUniqueId(template.getString("template_unique_id"));
+//                                        templateItem.setTemplateName(template.getString("template_name"));
+//                                        templateItem.setTemplateType(template.getInt("template_type"));
+//                                        templateItem.setTemplateLanguageId(template.getLong("template_language_id"));
+//
+//                                        Log.e(TAG, "onResponse: template_json -> " + new JSONArray(template.getString("template_json")));
+//                                        templateItem.setTemplateJson(new JSONArray(template.getString("template_json")).toString());
+//
+//                                        templateItem.setTemplateImage(template.getString("template_image_url"));
 
 //                                        templateItem.setCreatedAt(template.getString("created_at"));
 //                                        templateItem.setDelete(template.getInt("is_delete") == 1);
@@ -232,7 +236,7 @@ public class TemplatesFragment extends DialogFragment {
 
                                         templateList.add(templateItem);
 
-                                        dbHandler.addTemplate(templateItem);
+//                                        dbHandler.addTemplate(templateItem);
                                     }
 
                                     if (currentPage == PAGE_START)
@@ -254,7 +258,7 @@ public class TemplatesFragment extends DialogFragment {
                                 Toast.makeText(mActivity, message, Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
-                            Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
+                            Log.e(TAG, "onResponse Error: " + e.getLocalizedMessage());
                         }
 
                         isNextPageCalled = false;

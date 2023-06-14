@@ -11,8 +11,7 @@ public class EmailFormElement extends BaseFormElement {
         EmailFormElement emailFormElement = new EmailFormElement();
         emailFormElement
                 .setType(TYPE_EMAIL)
-                .setFieldType("text")
-                .setFieldSubType("email")
+                .setFieldType("email")
                 .setClassName("form-control");
         return emailFormElement;
     }

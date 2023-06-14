@@ -4,6 +4,7 @@ public class FormElements {
 
     // type=text
     public static final int TYPE_TEXT = 1;
+
     // type=textarea
     public static final int TYPE_TEXT_AREA = 2;
     // type=number
@@ -13,7 +14,7 @@ public class FormElements {
     // type=select
     public static final int TYPE_SELECT = 5;
     // type=checkbox-group
-    public static final int TYPE_CHECKBOX_GROUP = 6;
+    public static final int TYPE_SELECT_BOXES_GROUP = 6;
     // type=radio-group
     public static final int TYPE_RADIO_GROUP = 7;
     // type=file
@@ -27,7 +28,7 @@ public class FormElements {
     // subtype=month
     public static final int TYPE_MONTH = 12;
     // subtype=week
-    public static final int TYPE_WEEK = 13;
+    public static final int TYPE_DATETIME = 13;
     // subtype=time
     public static final int TYPE_TIME = 14;
     // subtype=text
@@ -52,5 +53,12 @@ public class FormElements {
     public static final int TYPE_QUIZ_TEXT = 24;
     public static final int TYPE_QUIZ_TEXT_ANSWER = 25;
     public static final int TYPE_QUIZ_TEXT_POINT = 26;
-
+    public static final int SELECT_BOXES = 27;
+    public static final int SELECT = 28;
+    // type=url
+    public static final int TYPE_URL = 29;
+    // type=survey
+    public static final int TYPE_SURVEY = 30;
+    // type=checkbox
+    public static final int TYPE_CHECKBOX = 31;
 }

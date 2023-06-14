@@ -398,7 +398,7 @@ public class ProvidersListFragment extends DialogFragment {
 
     private void setText() {
 //        binding.etSearch.setHint(LanguageExtension.setText("search_the_user", getString(R.string.search_the_user)));
-        binding.tvEmptyState.setText(LanguageExtension.setText("no_user_found", getString(R.string.no_user_found)));
+        binding.tvEmptyState.setText(LanguageExtension.setText("no_provider_found", getString(R.string.no_provider_found)));
     }
 
 

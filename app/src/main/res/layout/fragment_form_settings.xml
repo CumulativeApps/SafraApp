@@ -29,7 +29,7 @@
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:text="@string/form_title_mandatory" />
+                android:text="@string/form_name_mandatory" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilFormTitle"
@@ -253,6 +253,130 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:id="@+id/clStatus"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="16dp"-->
+<!--            android:paddingStart="16dp"-->
+<!--            android:paddingEnd="16dp"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/clExpiryDate">-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/tvStatusTitle"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/status"-->
+<!--                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--            <androidx.appcompat.widget.AppCompatSpinner-->
+<!--                android:id="@+id/spnStatus"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:background="@drawable/bg_spinner"-->
+<!--                android:overlapAnchor="false"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/tvStatusTitle"-->
+<!--                tools:listitem="@layout/spinner_form_type" />-->
+
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clSeeReference"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            app:layout_constraintTop_toBottomOf="@id/clExpiryDate">
+
+            <TextView
+                android:id="@+id/tvSeeReferenceTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/see_reference"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spnSeeReference"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_spinner"
+                android:overlapAnchor="false"
+                app:layout_constraintTop_toBottomOf="@id/tvSeeReferenceTitle"
+                tools:listitem="@layout/spinner_form_type" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clSeeOnMap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            app:layout_constraintTop_toBottomOf="@id/clSeeReference">
+
+            <TextView
+                android:id="@+id/tvSeeOnMapTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/see_on_map"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spnSeeOnMap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_spinner"
+                android:overlapAnchor="false"
+                app:layout_constraintTop_toBottomOf="@id/tvSeeOnMapTitle"
+                tools:listitem="@layout/spinner_form_type" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clEmailResponse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            app:layout_constraintTop_toBottomOf="@id/clSeeOnMap">
+
+            <TextView
+                android:id="@+id/tvEmailResponseTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/email_response"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spnEmailResponse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_spinner"
+                android:overlapAnchor="false"
+                app:layout_constraintTop_toBottomOf="@id/tvEmailResponseTitle"
+                tools:listitem="@layout/spinner_form_type" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clFormDescription"
             android:layout_width="match_parent"
@@ -261,7 +385,7 @@
             android:paddingEnd="16dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            app:layout_constraintTop_toBottomOf="@id/clExpiryDate">
+            app:layout_constraintTop_toBottomOf="@id/clEmailResponse">
 
             <TextView
                 android:id="@+id/tvFormDescriptionHeading"
