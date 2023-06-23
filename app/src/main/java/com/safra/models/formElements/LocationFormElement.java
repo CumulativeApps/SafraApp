@@ -11,7 +11,7 @@ public class LocationFormElement extends BaseFormElement {
         LocationFormElement locationFormElement = new LocationFormElement();
         locationFormElement
                 .setType(TYPE_LOCATION)
-                .setFieldType("address")
+                .setFieldType("location")
                 .setFieldSubType("text")
                 .setClassName("form-control location");
         return locationFormElement;

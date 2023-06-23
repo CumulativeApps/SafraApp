@@ -16,6 +16,7 @@ public class BaseFormElement implements Cloneable {
     private String fieldType, fieldSubType;
     private String fieldLabel;
     private String fieldValue;
+    private String fieldContent;
 
     private boolean haveError;
 
@@ -61,6 +62,9 @@ public class BaseFormElement implements Cloneable {
 
     public String getFieldValue() {
         return fieldValue;
+    }
+    public String getFieldContent() {
+        return fieldContent;
     }
 
     public boolean isHaveError() {
@@ -157,6 +161,10 @@ public class BaseFormElement implements Cloneable {
         this.fieldValue = fieldValue;
         return this;
     }
+    public BaseFormElement setFieldContent(String fieldContent) {
+        this.fieldContent = fieldContent;
+        return this;
+    }
 
     public BaseFormElement setHaveError(boolean haveError) {
         this.haveError = haveError;
@@ -248,6 +256,7 @@ public class BaseFormElement implements Cloneable {
                 ", fieldSubType='" + fieldSubType + '\'' +
                 ", fieldLabel='" + fieldLabel + '\'' +
                 ", fieldValue='" + fieldValue + '\'' +
+                ", fieldContent='" + fieldContent + '\'' +
                 ", haveError=" + haveError +
                 ", max='" + max + '\'' +
                 ", min='" + min + '\'' +

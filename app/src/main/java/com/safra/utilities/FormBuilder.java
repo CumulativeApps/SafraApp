@@ -15,9 +15,12 @@ import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT;
 import static com.safra.utilities.FormElements.TYPE_RADIO_GROUP;
 import static com.safra.utilities.FormElements.TYPE_SELECT;
 import static com.safra.utilities.FormElements.TYPE_SEPARATOR;
-import static com.safra.utilities.FormElements.TYPE_SURVEY;
+//import static com.safra.utilities.FormElements.TYPE_SURVEY;
 import static com.safra.utilities.FormElements.TYPE_TEL;
 import static com.safra.utilities.FormElements.TYPE_TEXT;
+import static com.safra.utilities.FormElements.TYPE_ADDRESS;
+//import static com.safra.utilities.FormElements.TYPE_HTML_ELEMENT;
+//import static com.safra.utilities.FormElements.TYPE_SIGNATURE;
 import static com.safra.utilities.FormElements.TYPE_CHECKBOX;
 import static com.safra.utilities.FormElements.TYPE_TEXT_AREA;
 import static com.safra.utilities.FormElements.TYPE_TIME;
@@ -105,6 +108,7 @@ public class FormBuilder {
         recyclerView.setAdapter(formAdapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TEXT, 0);
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_ADDRESS, 0);
 
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_URL, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TEXT_AREA, 0);
@@ -120,7 +124,7 @@ public class FormBuilder {
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_DATETIME, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SELECT_BOXES_GROUP, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_RADIO_GROUP, 0);
-        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SURVEY, 0);
+//        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SURVEY, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SELECT, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_HEADER, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SEPARATOR, 0);
@@ -128,6 +132,8 @@ public class FormBuilder {
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_QUIZ_MCQ, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_QUIZ_TEXT, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_CHECKBOX, 0);
+//        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SIGNATURE, 0);
+//        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_HTML_ELEMENT, 0);
     }
 
     private void initializeFormBuilderHelper(Activity context,
@@ -143,6 +149,7 @@ public class FormBuilder {
         recyclerView.setAdapter(formAdapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TEXT, 0);
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_ADDRESS, 0);
 
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_URL, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_TEXT_AREA, 0);
@@ -158,7 +165,7 @@ public class FormBuilder {
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_DATETIME, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SELECT_BOXES_GROUP, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_RADIO_GROUP, 0);
-        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SURVEY, 0);
+//        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SURVEY, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SELECT, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_HEADER, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SEPARATOR, 0);
@@ -166,6 +173,8 @@ public class FormBuilder {
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_QUIZ_MCQ, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_QUIZ_TEXT, 0);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_CHECKBOX, 0);
+//        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_SIGNATURE, 0);
+//        recyclerView.getRecycledViewPool().setMaxRecycledViews(TYPE_HTML_ELEMENT, 0);
     }
 
     public void addFormElements(List<BaseFormElement> baseFormElements) {

@@ -1,5 +1,40 @@
 package com.safra.fragments.fieldPropeties;
 
+import static com.safra.db.DBHandler.dbHandler;
+import static com.safra.utilities.Common.BASE_URL;
+import static com.safra.utilities.Common.GROUP_LIST_API;
+import static com.safra.utilities.Common.PAGE_START;
+import static com.safra.utilities.FormElements.TYPE_ACHIEVED_UNIT;
+import static com.safra.utilities.FormElements.TYPE_ADDRESS;
+import static com.safra.utilities.FormElements.TYPE_CASCADING;
+import static com.safra.utilities.FormElements.TYPE_CASCADING_SELECT;
+import static com.safra.utilities.FormElements.TYPE_CHECKBOX;
+import static com.safra.utilities.FormElements.TYPE_DATE;
+import static com.safra.utilities.FormElements.TYPE_DATETIME;
+import static com.safra.utilities.FormElements.TYPE_EMAIL;
+import static com.safra.utilities.FormElements.TYPE_FILE;
+import static com.safra.utilities.FormElements.TYPE_HEADER;
+import static com.safra.utilities.FormElements.TYPE_LOCATION;
+import static com.safra.utilities.FormElements.TYPE_MONTH;
+import static com.safra.utilities.FormElements.TYPE_NUMBER;
+import static com.safra.utilities.FormElements.TYPE_PASSWORD;
+import static com.safra.utilities.FormElements.TYPE_PLACE_TARGET;
+import static com.safra.utilities.FormElements.TYPE_QUIZ_MCQ;
+import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT;
+import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT_ANSWER;
+import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT_POINT;
+import static com.safra.utilities.FormElements.TYPE_RADIO_GROUP;
+import static com.safra.utilities.FormElements.TYPE_SELECT;
+import static com.safra.utilities.FormElements.TYPE_SELECT_BOXES_GROUP;
+import static com.safra.utilities.FormElements.TYPE_SEPARATOR;
+import static com.safra.utilities.FormElements.TYPE_TEL;
+import static com.safra.utilities.FormElements.TYPE_TEXT;
+import static com.safra.utilities.FormElements.TYPE_TEXT_AREA;
+import static com.safra.utilities.FormElements.TYPE_TIME;
+import static com.safra.utilities.FormElements.TYPE_UNIT_PRICE;
+import static com.safra.utilities.FormElements.TYPE_URL;
+import static com.safra.utilities.UserSessionManager.userSessionManager;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -24,7 +59,6 @@ import com.safra.Safra;
 import com.safra.adapters.AccessRecyclerAdapter;
 import com.safra.adapters.OptionRecyclerAdapter;
 import com.safra.databinding.FragmentFieldPropertiesBinding;
-import com.safra.dialogs.LoadingDialog;
 import com.safra.extensions.LanguageExtension;
 import com.safra.extensions.LoadingDialogExtension;
 import com.safra.models.AccessItem;
@@ -38,41 +72,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.safra.db.DBHandler.dbHandler;
-import static com.safra.utilities.Common.BASE_URL;
-import static com.safra.utilities.Common.GROUP_LIST_API;
-import static com.safra.utilities.Common.PAGE_START;
-import static com.safra.utilities.FormElements.TYPE_ACHIEVED_UNIT;
-import static com.safra.utilities.FormElements.TYPE_CASCADING;
-import static com.safra.utilities.FormElements.TYPE_CASCADING_SELECT;
-import static com.safra.utilities.FormElements.TYPE_SELECT_BOXES_GROUP;
-import static com.safra.utilities.FormElements.TYPE_DATE;
-import static com.safra.utilities.FormElements.TYPE_EMAIL;
-import static com.safra.utilities.FormElements.TYPE_FILE;
-import static com.safra.utilities.FormElements.TYPE_HEADER;
-import static com.safra.utilities.FormElements.TYPE_LOCATION;
-import static com.safra.utilities.FormElements.TYPE_MONTH;
-import static com.safra.utilities.FormElements.TYPE_NUMBER;
-import static com.safra.utilities.FormElements.TYPE_PASSWORD;
-import static com.safra.utilities.FormElements.TYPE_PLACE_TARGET;
-import static com.safra.utilities.FormElements.TYPE_QUIZ_MCQ;
-import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT;
-import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT_ANSWER;
-import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT_POINT;
-import static com.safra.utilities.FormElements.TYPE_RADIO_GROUP;
-import static com.safra.utilities.FormElements.TYPE_SELECT;
-import static com.safra.utilities.FormElements.TYPE_SEPARATOR;
-import static com.safra.utilities.FormElements.TYPE_SURVEY;
-import static com.safra.utilities.FormElements.TYPE_TEL;
-import static com.safra.utilities.FormElements.TYPE_TEXT;
-import static com.safra.utilities.FormElements.TYPE_CHECKBOX;
-import static com.safra.utilities.FormElements.TYPE_TEXT_AREA;
-import static com.safra.utilities.FormElements.TYPE_TIME;
-import static com.safra.utilities.FormElements.TYPE_UNIT_PRICE;
-import static com.safra.utilities.FormElements.TYPE_URL;
-import static com.safra.utilities.FormElements.TYPE_DATETIME;
-import static com.safra.utilities.UserSessionManager.userSessionManager;
 
 public class FieldPropertiesFragment extends DialogFragment {
 
@@ -145,7 +144,7 @@ public class FieldPropertiesFragment extends DialogFragment {
             Bundle b = getArguments();
             requestKey = b.getString("request_key");
             position = b.getInt("position");
-            if(b.containsKey("child_position"))
+            if (b.containsKey("child_position"))
                 childPosition = b.getInt("child_position");
             type = b.getInt("type");
             setFieldData(type, b);
@@ -311,6 +310,7 @@ public class FieldPropertiesFragment extends DialogFragment {
         binding.btnSave.setText(LanguageExtension.setText("save", getString(R.string.save)));
     }
 
+
     private void setFieldData(int type, Bundle b) {
         name = b.getString("name");
         binding.switchRequired.setChecked(b.getBoolean("is_required"));
@@ -336,11 +336,20 @@ public class FieldPropertiesFragment extends DialogFragment {
             case TYPE_TEXT:
                 binding.tvSelectFieldHeading.setText(LanguageExtension.setText("text_field", getString(R.string.text_field)));
                 break;
-           case TYPE_CHECKBOX:
+            case TYPE_CHECKBOX:
                 binding.tvSelectFieldHeading.setText(LanguageExtension.setText("checkbox_field", getString(R.string.checkbox_field)));
                 break;
+            case TYPE_ADDRESS:
+                binding.tvSelectFieldHeading.setText(LanguageExtension.setText("address_field", getString(R.string.address_field)));
+                break;
+//            case TYPE_SIGNATURE:
+//                binding.tvSelectFieldHeading.setText(LanguageExtension.setText("signature_field", getString(R.string.signature_field)));
+//                break;
+//            case TYPE_HTML_ELEMENT:
+//                binding.tvSelectFieldHeading.setText(LanguageExtension.setText("html_element_field", getString(R.string.html_element_field)));
+//                break;
             case TYPE_URL:
-                binding.tvSelectFieldHeading.setText(LanguageExtension.setText("url_or_link", getString(R.string.url_or_link)));
+                binding.tvSelectFieldHeading.setText(LanguageExtension.setText("url", getString(R.string.url)));
                 break;
             case TYPE_EMAIL:
                 binding.tvSelectFieldHeading.setText(LanguageExtension.setText("email_field", getString(R.string.email_field)));
@@ -387,9 +396,9 @@ public class FieldPropertiesFragment extends DialogFragment {
             case TYPE_RADIO_GROUP:
                 binding.tvSelectFieldHeading.setText(LanguageExtension.setText("radio_button_field", getString(R.string.radio_button_field)));
                 break;
-            case TYPE_SURVEY:
-                binding.tvSelectFieldHeading.setText(LanguageExtension.setText("radio_button_field", getString(R.string.radio_button_field)));
-                break;
+//            case TYPE_SURVEY:
+//                binding.tvSelectFieldHeading.setText(LanguageExtension.setText("radio_button_field", getString(R.string.radio_button_field)));
+//                break;
             case TYPE_SELECT:
                 binding.tvSelectFieldHeading.setText(LanguageExtension.setText("dropdown_field", getString(R.string.dropdown_field)));
                 break;
@@ -432,6 +441,9 @@ public class FieldPropertiesFragment extends DialogFragment {
                 break;
             case TYPE_TEXT:
             case TYPE_CHECKBOX:
+            case TYPE_ADDRESS:
+//            case TYPE_SIGNATURE:
+//            case TYPE_HTML_ELEMENT:
             case TYPE_URL:
             case TYPE_EMAIL:
             case TYPE_PASSWORD:
@@ -490,7 +502,7 @@ public class FieldPropertiesFragment extends DialogFragment {
                 binding.clMcqOptions.setVisibility(View.GONE);
                 break;
             case TYPE_RADIO_GROUP:
-            case TYPE_SURVEY:
+//            case TYPE_SURVEY:
             case TYPE_SELECT:
             case TYPE_PLACE_TARGET:
                 adapterO.setMultipleAllowed(false);
@@ -649,11 +661,12 @@ public class FieldPropertiesFragment extends DialogFragment {
         if (type != TYPE_SEPARATOR && l.isEmpty()) {
             binding.etLabel.setError(LanguageExtension.setText("enter_label", getString(R.string.enter_label)));
             binding.etLabel.requestFocus();
-        } else if((type == TYPE_RADIO_GROUP || type == TYPE_SURVEY || type == TYPE_SELECT_BOXES_GROUP || type == TYPE_SELECT
+//        } else if ((type == TYPE_RADIO_GROUP || type == TYPE_SURVEY || type == TYPE_SELECT_BOXES_GROUP || type == TYPE_SELECT
+        } else if ((type == TYPE_RADIO_GROUP || type == TYPE_SELECT || type == TYPE_SELECT_BOXES_GROUP
                 || type == TYPE_PLACE_TARGET) && optionList.isEmpty()) {
             Toast.makeText(mActivity, LanguageExtension.setText("please_enter_atleast_1_option",
                     getString(R.string.please_enter_atleast_1_option)), Toast.LENGTH_SHORT).show();
-        } else if((type == TYPE_QUIZ_MCQ) && mcqOptionList.size() < 2) {
+        } else if ((type == TYPE_QUIZ_MCQ) && mcqOptionList.size() < 2) {
             Toast.makeText(mActivity, LanguageExtension.setText("please_enter_atleast_2_option",
                     getString(R.string.please_enter_atleast_2_option)), Toast.LENGTH_SHORT).show();
         } else {
@@ -684,7 +697,7 @@ public class FieldPropertiesFragment extends DialogFragment {
     private void createResponseBundle(String l, int ml, int r, int sp, String mn, String mx) {
         Bundle bundle = new Bundle();
         bundle.putInt("position", position);
-        if(childPosition > -1)
+        if (childPosition > -1)
             bundle.putInt("child_position", childPosition);
         bundle.putInt("type", type);
         bundle.putString("name", name);

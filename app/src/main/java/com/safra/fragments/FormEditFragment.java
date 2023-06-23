@@ -16,7 +16,7 @@ import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT_ANSWER;
 import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT_POINT;
 import static com.safra.utilities.FormElements.TYPE_RADIO_GROUP;
 import static com.safra.utilities.FormElements.TYPE_SELECT;
-import static com.safra.utilities.FormElements.TYPE_SURVEY;
+//import static com.safra.utilities.FormElements.TYPE_SURVEY;
 import static com.safra.utilities.FormElements.TYPE_TEXT_AREA;
 import static com.safra.utilities.FormElements.TYPE_UNIT_PRICE;
 import static com.safra.utilities.UserPermissions.TEMPLATE_USE;
@@ -221,7 +221,7 @@ public class FormEditFragment extends Fragment
                 case TYPE_PLACE_TARGET:
                 case TYPE_SELECT_BOXES_GROUP:
                 case TYPE_RADIO_GROUP:
-                case TYPE_SURVEY:
+//                case TYPE_SURVEY:
                 case TYPE_QUIZ_MCQ:
                 case TYPE_CASCADING_SELECT:
                     Log.e(TAG, "openPropertiesDialog: " + baseFormElement.getOptions().size());

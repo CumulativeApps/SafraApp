@@ -4,7 +4,6 @@ public class FormElements {
 
     // type=text
     public static final int TYPE_TEXT = 1;
-
     // type=textarea
     public static final int TYPE_TEXT_AREA = 2;
     // type=number
@@ -13,7 +12,7 @@ public class FormElements {
     public static final int TYPE_DATE = 4;
     // type=select
     public static final int TYPE_SELECT = 5;
-    // type=checkbox-group
+
     public static final int TYPE_SELECT_BOXES_GROUP = 6;
     // type=radio-group
     public static final int TYPE_RADIO_GROUP = 7;
@@ -57,8 +56,17 @@ public class FormElements {
     public static final int SELECT = 28;
     // type=url
     public static final int TYPE_URL = 29;
-    // type=survey
-    public static final int TYPE_SURVEY = 30;
+//    // type=survey
+//    public static final int TYPE_SURVEY = 30;
     // type=checkbox
     public static final int TYPE_CHECKBOX = 31;
+
+    // type=address
+    public static final int TYPE_ADDRESS = 32;
+//    // type=signature
+//    public static final int TYPE_SIGNATURE = 32;
+//    // type=htmlelement
+//    public static final int TYPE_HTML_ELEMENT = 33;
+
+
 }

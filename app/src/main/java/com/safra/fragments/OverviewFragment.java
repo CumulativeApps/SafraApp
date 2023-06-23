@@ -41,7 +41,6 @@ import com.safra.AddUser;
 import com.safra.R;
 import com.safra.Safra;
 import com.safra.adapters.AllergiesListRecyclerAdapter;
-import com.safra.adapters.CaptureVitalListRecyclerAdapter;
 import com.safra.adapters.OverviewActiveVisitsRecyclerAdapter;
 import com.safra.adapters.OverviewDiagnosticsListAdapter;
 import com.safra.databinding.FragmentOverviewBinding;
@@ -51,7 +50,6 @@ import com.safra.events.TaskAddedEvent;
 import com.safra.extensions.LanguageExtension;
 import com.safra.extensions.LoadingDialogExtension;
 import com.safra.extensions.ViewExtension;
-import com.safra.models.ActiveVisitsModel;
 import com.safra.models.AllergiesListModel;
 import com.safra.models.DiagnosticsListModel;
 import com.safra.models.OverviewDataModel;
@@ -138,7 +136,7 @@ public class OverviewFragment extends DialogFragment {
             public void onClick(View view) {
                 OverviewActiveVisitsFragment dialogD = new OverviewActiveVisitsFragment();
                 Bundle bundle = new Bundle();
-                bundle.putLong("patientId" , patientId);
+                bundle.putLong("patientId", patientId);
 
                 dialogD.setArguments(bundle);
                 dialogD.show(mActivity.getSupportFragmentManager(), OverviewActiveVisitsFragment.TAG);

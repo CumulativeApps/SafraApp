@@ -1,5 +1,34 @@
 package com.safra.adapters;
 
+import static com.safra.utilities.FormElements.TYPE_ACHIEVED_UNIT;
+import static com.safra.utilities.FormElements.TYPE_CASCADING;
+import static com.safra.utilities.FormElements.TYPE_CASCADING_SELECT;
+import static com.safra.utilities.FormElements.TYPE_CHECKBOX;
+import static com.safra.utilities.FormElements.TYPE_DATE;
+import static com.safra.utilities.FormElements.TYPE_DATETIME;
+import static com.safra.utilities.FormElements.TYPE_EMAIL;
+import static com.safra.utilities.FormElements.TYPE_FILE;
+import static com.safra.utilities.FormElements.TYPE_HEADER;
+import static com.safra.utilities.FormElements.TYPE_LOCATION;
+import static com.safra.utilities.FormElements.TYPE_MONTH;
+import static com.safra.utilities.FormElements.TYPE_NUMBER;
+import static com.safra.utilities.FormElements.TYPE_PASSWORD;
+import static com.safra.utilities.FormElements.TYPE_PLACE_TARGET;
+import static com.safra.utilities.FormElements.TYPE_QUIZ_MCQ;
+import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT;
+import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT_POINT;
+import static com.safra.utilities.FormElements.TYPE_RADIO_GROUP;
+import static com.safra.utilities.FormElements.TYPE_SELECT;
+import static com.safra.utilities.FormElements.TYPE_SELECT_BOXES_GROUP;
+import static com.safra.utilities.FormElements.TYPE_SEPARATOR;
+import static com.safra.utilities.FormElements.TYPE_TEL;
+import static com.safra.utilities.FormElements.TYPE_TEXT;
+import static com.safra.utilities.FormElements.TYPE_ADDRESS;
+import static com.safra.utilities.FormElements.TYPE_TEXT_AREA;
+import static com.safra.utilities.FormElements.TYPE_TIME;
+import static com.safra.utilities.FormElements.TYPE_UNIT_PRICE;
+import static com.safra.utilities.FormElements.TYPE_URL;
+
 import android.app.Activity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -41,8 +70,8 @@ import com.safra.models.formElements.BaseFormElement;
 import com.safra.viewholders.BaseFieldViewHolder;
 import com.safra.viewholders.CascadingFieldViewHolder;
 import com.safra.viewholders.CheckBoxFieldViewHolder;
-import com.safra.viewholders.SelectBoxesFieldViewHolder;
 import com.safra.viewholders.DateFieldViewHolder;
+import com.safra.viewholders.DateTimeFieldViewHolder;
 import com.safra.viewholders.EmailFieldViewHolder;
 import com.safra.viewholders.FileFieldViewHolder;
 import com.safra.viewholders.HeaderFieldViewHolder;
@@ -52,49 +81,20 @@ import com.safra.viewholders.NumberFieldViewHolder;
 import com.safra.viewholders.PasswordFieldViewHolder;
 import com.safra.viewholders.QuizTextViewHolder;
 import com.safra.viewholders.RadioFieldViewHolder;
+import com.safra.viewholders.SelectBoxesFieldViewHolder;
 import com.safra.viewholders.SelectFieldViewHolder;
 import com.safra.viewholders.SeparatorFieldViewHolder;
 import com.safra.viewholders.TelephoneFieldViewHolder;
 import com.safra.viewholders.TextAreaFieldViewHolder;
 import com.safra.viewholders.TextFieldViewHolder;
 import com.safra.viewholders.TimeFieldViewHolder;
-import com.safra.viewholders.DateTimeFieldViewHolder;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-
-import static com.safra.utilities.FormElements.TYPE_ACHIEVED_UNIT;
-import static com.safra.utilities.FormElements.TYPE_CASCADING;
-import static com.safra.utilities.FormElements.TYPE_CASCADING_SELECT;
-import static com.safra.utilities.FormElements.TYPE_SELECT_BOXES_GROUP;
-import static com.safra.utilities.FormElements.TYPE_DATE;
-import static com.safra.utilities.FormElements.TYPE_EMAIL;
-import static com.safra.utilities.FormElements.TYPE_FILE;
-import static com.safra.utilities.FormElements.TYPE_HEADER;
-import static com.safra.utilities.FormElements.TYPE_LOCATION;
-import static com.safra.utilities.FormElements.TYPE_QUIZ_MCQ;
-import static com.safra.utilities.FormElements.TYPE_MONTH;
-import static com.safra.utilities.FormElements.TYPE_NUMBER;
-import static com.safra.utilities.FormElements.TYPE_PASSWORD;
-import static com.safra.utilities.FormElements.TYPE_PLACE_TARGET;
-import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT;
-import static com.safra.utilities.FormElements.TYPE_QUIZ_TEXT_POINT;
-import static com.safra.utilities.FormElements.TYPE_RADIO_GROUP;
-import static com.safra.utilities.FormElements.TYPE_SELECT;
-import static com.safra.utilities.FormElements.TYPE_SEPARATOR;
-import static com.safra.utilities.FormElements.TYPE_SURVEY;
-import static com.safra.utilities.FormElements.TYPE_TEL;
-import static com.safra.utilities.FormElements.TYPE_TEXT;
-import static com.safra.utilities.FormElements.TYPE_CHECKBOX;
-import static com.safra.utilities.FormElements.TYPE_TEXT_AREA;
-import static com.safra.utilities.FormElements.TYPE_TIME;
-import static com.safra.utilities.FormElements.TYPE_UNIT_PRICE;
-import static com.safra.utilities.FormElements.TYPE_URL;
-import static com.safra.utilities.FormElements.TYPE_DATETIME;
-
-import org.greenrobot.eventbus.EventBus;
 
 public class FormAdapter
         extends RecyclerView.Adapter<BaseFieldViewHolder>
@@ -172,7 +172,7 @@ public class FormAdapter
         Log.e(TAG, "addElement: adding form element at " + position);
     }
 
-    public void clearElements(){
+    public void clearElements() {
         this.elementList.clear();
         notifyDataSetChanged();
     }
@@ -232,6 +232,12 @@ public class FormAdapter
             case TYPE_CHECKBOX:
                 FormElementCheckboxBinding checkboxBinding = FormElementCheckboxBinding.inflate(inflater, parent, false);
                 return new CheckBoxFieldViewHolder(checkboxBinding, this, isPreview, isReadOnly);
+//            case TYPE_SIGNATURE:
+//                FormElementSignatureBinding signatureBinding = FormElementSignatureBinding.inflate(inflater, parent, false);
+//                return new SignatureFieldViewHolder(signatureBinding, this, isPreview, isReadOnly);
+//            case TYPE_HTML_ELEMENT:
+//                FormHtmlElementBinding htmlElementBinding = FormHtmlElementBinding.inflate(inflater, parent, false);
+//                return new HtmlElementFieldViewHolder(htmlElementBinding, this, isPreview, isReadOnly);
             case TYPE_TEXT_AREA:
                 FormElementTextareaBinding textAreaBinding = FormElementTextareaBinding.inflate(inflater, parent, false);
                 return new TextAreaFieldViewHolder(textAreaBinding, this, isPreview, isReadOnly);
@@ -264,7 +270,7 @@ public class FormAdapter
                 FormElementMonthBinding monthBinding = FormElementMonthBinding.inflate(inflater, parent, false);
                 return new MonthFieldViewHolder(monthBinding, this, this, isPreview, isReadOnly);
             case TYPE_RADIO_GROUP:
-            case TYPE_SURVEY:
+//            case TYPE_SURVEY:
             case TYPE_QUIZ_MCQ:
                 FormElementRadioGroupBinding radioBinding = FormElementRadioGroupBinding.inflate(inflater, parent, false);
                 return new RadioFieldViewHolder(radioBinding, this, this, isPreview, isReadOnly);
@@ -294,7 +300,7 @@ public class FormAdapter
                 FormElementQuizTextBinding quizTextBinding = FormElementQuizTextBinding.inflate(inflater, parent, false);
                 return new QuizTextViewHolder(quizTextBinding, this, isPreview, isReadOnly);
             case TYPE_TEXT:
-
+            case TYPE_ADDRESS:
             case TYPE_URL:
             default:
                 FormElementTextBinding binding = FormElementTextBinding.inflate(inflater, parent, false);
@@ -342,7 +348,7 @@ public class FormAdapter
                 notifyItemChanged(position);
                 break;
             case TYPE_RADIO_GROUP:
-            case TYPE_SURVEY:
+//            case TYPE_SURVEY:
             case TYPE_QUIZ_MCQ:
             case TYPE_SELECT:
             case TYPE_CASCADING_SELECT:
@@ -353,6 +359,10 @@ public class FormAdapter
                 break;
             case TYPE_TEXT:
             case TYPE_CHECKBOX:
+            case TYPE_ADDRESS:
+
+//            case TYPE_SIGNATURE:
+//            case TYPE_HTML_ELEMENT:
             case TYPE_URL:
             case TYPE_TEXT_AREA:
             case TYPE_DATE:
@@ -418,10 +428,10 @@ public class FormAdapter
                 } else if (baseFormElement1.getType() == TYPE_QUIZ_TEXT) {
                     String newClassName = "form-control mcq mcq-text mcq_" + currentTime;
                     List<BaseFormElement> newElementList = new ArrayList<>();
-                    for(BaseFormElement bfeOld : baseFormElement.getElementList()){
+                    for (BaseFormElement bfeOld : baseFormElement.getElementList()) {
                         BaseFormElement bfeChild = bfeOld.clone();
                         bfeChild.setClassName(newClassName);
-                        bfeChild.setFieldName(bfeOld.getFieldName().substring(0, bfeOld.getFieldName().lastIndexOf("-")+1)
+                        bfeChild.setFieldName(bfeOld.getFieldName().substring(0, bfeOld.getFieldName().lastIndexOf("-") + 1)
                                 + Calendar.getInstance().getTimeInMillis());
                         newElementList.add(bfeChild);
                     }
@@ -466,21 +476,21 @@ public class FormAdapter
         }
     }
 
-    public int getTotalMarks(){
+    public int getTotalMarks() {
         int totalMarks = 0;
-        for(BaseFormElement bfe : elementList){
-            if(bfe.getType() == TYPE_QUIZ_MCQ){
+        for (BaseFormElement bfe : elementList) {
+            if (bfe.getType() == TYPE_QUIZ_MCQ) {
                 int maxMark = 0;
-                for(OptionItem oi : bfe.getOptions()){
-                    if(Integer.parseInt(oi.getOptionValue()) > maxMark)
+                for (OptionItem oi : bfe.getOptions()) {
+                    if (Integer.parseInt(oi.getOptionValue()) > maxMark)
                         maxMark = Integer.parseInt(oi.getOptionValue());
                 }
 
                 totalMarks += maxMark;
-            } else if(bfe.getType() == TYPE_QUIZ_TEXT){
+            } else if (bfe.getType() == TYPE_QUIZ_TEXT) {
                 List<BaseFormElement> elementList = bfe.getElementList();
-                for(BaseFormElement childBfe : elementList){
-                    if(childBfe.getType() == TYPE_QUIZ_TEXT_POINT)
+                for (BaseFormElement childBfe : elementList) {
+                    if (childBfe.getType() == TYPE_QUIZ_TEXT_POINT)
                         totalMarks += Integer.parseInt(childBfe.getMax());
                 }
             }

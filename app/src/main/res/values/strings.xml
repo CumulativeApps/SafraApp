@@ -28,6 +28,7 @@
     <string name="text_area_field">Textarea Field</string>
     <string name="number_field">Number Field</string>
     <string name="checkbox_field">Checkbox Field</string>
+    <string name="address_field">Address Field</string>
     <string name="radio_button_field">Radio Button Field</string>
     <string name="dropdown_field">Dropdown Field</string>
 
@@ -295,10 +296,12 @@
     <string name="checkbox">Checkbox</string>
     <string name="dropdown">Dropdown</string>
     <string name="file">File</string>
-    <string name="place_target">Place - Target</string>
-    <string name="url_or_link">URL or Link</string>
+<!--    <string name="place_target">Place - Target</string>-->
+    <string name="place_goal">Place-Goal</string>
+    <string name="url">Url</string>
     <string name="location">Location</string>
-    <string name="achieved_unit">Achieved Unit</string>
+<!--    <string name="achieved_unit">Achieved Unit</string>-->
+    <string name="unit_achieved">Unit Achieved</string>
     <string name="unit_price">Unit Price</string>
     <string name="form_title_mandatory">Form Title *</string>
     <string name="form_name_mandatory">Form Name *</string>
@@ -352,7 +355,8 @@
     <string name="enter_answer">Enter Answer</string>
     <string name="enter_marks">Enter Marks</string>
     <string name="question">Question</string>
-    <string name="question_with_marks">Question with Marks</string>
+<!--    <string name="question_with_marks">Question with Marks</string>-->
+    <string name="question_with_point">Question with Point</string>
     <string name="please_enter_atleast_1_option">Please enter at least 1 option</string>
     <string name="please_enter_atleast_2_option">Please enter at least 2 options</string>
     <string name="max_point_1">Points (Max</string>
@@ -473,6 +477,11 @@
     <string name="see_reference">See Reference</string>
     <string name="see_on_map">See on map</string>
     <string name="email_response">Email Response</string>
+    <string name="signature_field">Signature Field</string>
+    <string name="html_element_field">HTML Element Field</string>
+    <string name="html_element">HTML Element</string>
+    <string name="signature">Signature</string>
+    <string name="content">Content</string>
 
 
 </resources>
