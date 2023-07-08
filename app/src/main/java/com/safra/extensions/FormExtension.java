@@ -61,7 +61,6 @@ import com.safra.models.formElements.RadioGroupFormElement;
 import com.safra.models.formElements.SelectBoxesGroupFormElement;
 import com.safra.models.formElements.SelectFormElement;
 import com.safra.models.formElements.SeparatorFormElement;
-import com.safra.models.formElements.SignatureFormElement;
 import com.safra.models.formElements.TelephoneFormElement;
 import com.safra.models.formElements.TextAreaFormElement;
 import com.safra.models.formElements.TextFormElement;
@@ -221,6 +220,7 @@ public class FormExtension {
                         .setFieldName("checkbox-group-" + (Calendar.getInstance().getTimeInMillis()))
                         .setOptions(optionsC));
                 break;
+
             case TYPE_SELECT:
                 List<OptionItem> optionS = new ArrayList<>();
                 String oS = LanguageExtension.setText(languageId, "option", context.getString(R.string.option));
@@ -233,6 +233,7 @@ public class FormExtension {
                         .setFieldName("select-" + (Calendar.getInstance().getTimeInMillis()))
                         .setOptions(optionS));
                 break;
+
             case TYPE_PLACE_TARGET:
                 List<OptionItem> optionP = new ArrayList<>();
                 String oP = LanguageExtension.setText(languageId, "place", context.getString(R.string.place));
@@ -245,15 +246,18 @@ public class FormExtension {
                         .setFieldName("select-" + (Calendar.getInstance().getTimeInMillis()))
                         .setOptions(optionP));
                 break;
+
             case TYPE_HEADER:
                 formBuilder.addFormElement(HeaderFormElement.createInstance()
                         .setFieldLabel(bundle.getString("label"))
                         .setFieldSubType("h1"));
                 break;
+
             case TYPE_SEPARATOR:
                 formBuilder.addFormElement(SeparatorFormElement.createInstance()
                         .setFieldName("break-" + (Calendar.getInstance().getTimeInMillis())));
                 break;
+
             case TYPE_QUIZ_MCQ:
                 List<OptionItem> optionsM = new ArrayList<>();
                 String oM = LanguageExtension.setText(languageId, "answer", context.getString(R.string.answer));
@@ -792,7 +796,6 @@ public class FormExtension {
 
             switch (baseFormElement.getType()) {
                 case TYPE_TEXT:
-
                 case TYPE_CHECKBOX:
                 case TYPE_ADDRESS:
 //                case TYPE_SIGNATURE:
@@ -1039,14 +1042,26 @@ public class FormExtension {
                             formBuilder.addFormElement(pfe);
                             break;
                         case "textfield":
-                            TextFormElement tfe = TextFormElement.createInstance()
-                                    .setFieldLabel(label)
-                                    .setFieldName(name)
-                                    .setRequired(isRequired)
-                                    .setFieldValue(value)
-                                    .setHaveAccess(haveAccess)
-                                    .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
-                            formBuilder.addFormElement(tfe);
+                            if (label.contains("Text Field")) {
+
+                                TextFormElement tfe = TextFormElement.createInstance()
+                                        .setFieldLabel(label)
+                                        .setFieldName(name)
+                                        .setRequired(isRequired)
+                                        .setFieldValue(value)
+                                        .setHaveAccess(haveAccess)
+                                        .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
+                                formBuilder.addFormElement(tfe);
+                            }else {
+                                LocationFormElement lfe = LocationFormElement.createInstance()
+                                        .setFieldLabel(label)
+                                        .setFieldName(name)
+                                        .setRequired(isRequired)
+                                        .setFieldValue(value)
+                                        .setHaveAccess(haveAccess)
+                                        .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
+                                formBuilder.addFormElement(lfe);
+                            }
                             break;
                         case "address":
                             AddressFormElement tfea = AddressFormElement.createInstance()
@@ -1068,16 +1083,16 @@ public class FormExtension {
                                     .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
                             formBuilder.addFormElement(tfeh);
                             break;
-                        case "signature":
-                            SignatureFormElement tfes = SignatureFormElement.createInstance()
-                                    .setFieldLabel(label)
-                                    .setFieldName(name)
-                                    .setRequired(isRequired)
-                                    .setFieldValue(value)
-                                    .setHaveAccess(haveAccess)
-                                    .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
-                            formBuilder.addFormElement(tfes);
-                            break;
+//                        case "signature":
+//                            SignatureFormElement tfes = SignatureFormElement.createInstance()
+//                                    .setFieldLabel(label)
+//                                    .setFieldName(name)
+//                                    .setRequired(isRequired)
+//                                    .setFieldValue(value)
+//                                    .setHaveAccess(haveAccess)
+//                                    .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
+//                            formBuilder.addFormElement(tfes);
+//                            break;
                         case "checkbox":
                             CheckBoxFormElement tfee = CheckBoxFormElement.createInstance()
                                     .setFieldLabel(label)
@@ -1088,7 +1103,6 @@ public class FormExtension {
                                     .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
                             formBuilder.addFormElement(tfee);
                             break;
-
                         case "radio":
                             RadioGroupFormElement rgfe = RadioGroupFormElement.createInstance()
                                     .setFieldLabel(label)
@@ -1112,19 +1126,19 @@ public class FormExtension {
                             formBuilder.addFormElement(url);
                             break;
 
-                        case "location":
-
-//                            if (className.contains("location")) {
-                            LocationFormElement lfe = LocationFormElement.createInstance()
-                                    .setFieldLabel(label)
-                                    .setFieldName(name)
-                                    .setRequired(isRequired)
-                                    .setFieldValue(value)
-                                    .setHaveAccess(haveAccess)
-                                    .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
-                            formBuilder.addFormElement(lfe);
-                            break;
-//                            }
+//                        case "location":
+//
+////                            if (className.contains("location")) {
+//                            LocationFormElement lfe = LocationFormElement.createInstance()
+//                                    .setFieldLabel(label)
+//                                    .setFieldName(name)
+//                                    .setRequired(isRequired)
+//                                    .setFieldValue(value)
+//                                    .setHaveAccess(haveAccess)
+//                                    .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
+//                            formBuilder.addFormElement(lfe);
+//                            break;
+////                            }
                         case "phoneNumber":
                             TelephoneFormElement tlfe = TelephoneFormElement.createInstance()
                                     .setFieldLabel(label)
@@ -1183,7 +1197,6 @@ public class FormExtension {
                             switch (subType) {
 //                                case "text":
 
-
                             }
                             break;
                         case "header":
@@ -1212,19 +1225,19 @@ public class FormExtension {
                             formBuilder.addFormElement(tafe);
                             break;
                         case "number":
-                            if (className.contains("achieved_unit")) {
-                                AchievedUnitFormElement aufe = AchievedUnitFormElement.createInstance()
-                                        .setFieldLabel(label)
-                                        .setFieldName(name)
-                                        .setRequired(isRequired)
-                                        .setMin(min)
-                                        .setMax(max)
-                                        .setStep(step)
-                                        .setFieldValue(value)
-                                        .setHaveAccess(haveAccess)
-                                        .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
-                                formBuilder.addFormElement(aufe);
-                            } else {
+//                            if (className.contains("achieved_unit")) {
+//                                AchievedUnitFormElement aufe = AchievedUnitFormElement.createInstance()
+//                                        .setFieldLabel(label)
+//                                        .setFieldName(name)
+//                                        .setRequired(isRequired)
+//                                        .setMin(min)
+//                                        .setMax(max)
+//                                        .setStep(step)
+//                                        .setFieldValue(value)
+//                                        .setHaveAccess(haveAccess)
+//                                        .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
+//                                formBuilder.addFormElement(aufe);
+//                            } else {
                                 NumberFormElement nfe = NumberFormElement.createInstance()
                                         .setFieldLabel(label)
                                         .setFieldName(name)
@@ -1236,7 +1249,7 @@ public class FormExtension {
                                         .setHaveAccess(haveAccess)
                                         .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
                                 formBuilder.addFormElement(nfe);
-                            }
+//                            }
                             break;
                         case "date":
                             DateFormElement dfe = DateFormElement.createInstance()
@@ -1271,7 +1284,6 @@ public class FormExtension {
                                 formBuilder.addFormElement(mfee);
 
                             }
-
                         case "selectboxes":
                             SelectBoxesGroupFormElement cgfe = SelectBoxesGroupFormElement.createInstance()
                                     .setFieldLabel(label)
@@ -1285,41 +1297,54 @@ public class FormExtension {
                             break;
 
                         case "select":
-                            PlaceTargetFormElement ptfep = PlaceTargetFormElement.createInstance()
-                                    .setFieldLabel("Place-Goal")
-                                    .setFieldName(name)
-                                    .setRequired(isRequired)
-                                    .setOptions(values.length() > 0 ? getOptionList(values) : new ArrayList<>())
-                                    .setFieldValue(value)
-                                    .setHaveAccess(haveAccess)
-                                    .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
-                            formBuilder.addFormElement(ptfep);
+//                            if (label.contains("Place-Goal")) {
+//
+//                                PlaceTargetFormElement ptfep = PlaceTargetFormElement.createInstance()
+//                                        .setFieldLabel("Place-Goal")
+//                                        .setFieldName(name)
+//                                        .setRequired(isRequired)
+//                                        .setOptions(values.length() > 0 ? getOptionList(values) : new ArrayList<>())
+//                                        .setFieldValue(value)
+//                                        .setHaveAccess(haveAccess)
+//                                        .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
+//                                formBuilder.addFormElement(ptfep);
+//                            } else {
+                                SelectFormElement sfe = SelectFormElement.createInstance()
+                                        .setFieldLabel(label)
+                                        .setFieldName(name)
+                                        .setRequired(isRequired)
+                                        .setOptions(values.length() > 0 ? getOptionList(values) : new ArrayList<>())
+                                        .setFieldValue(value)
+                                        .setHaveAccess(haveAccess)
+                                        .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
+                                formBuilder.addFormElement(sfe);
+
+//                            }
                             break;
-                        case "fieldset":
-
-                            PlaceTargetFormElement ptfe = PlaceTargetFormElement.createInstance()
-                                    .setFieldLabel("Place-Goal")
-                                    .setFieldName(name)
-                                    .setRequired(isRequired)
-                                    .setOptions(values.length() > 0 ? getOptionList(values) : new ArrayList<>())
-                                    .setFieldValue(value)
-                                    .setHaveAccess(haveAccess)
-                                    .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
-                            formBuilder.addFormElement(ptfe);
-
-                            AchievedUnitFormElement aufe = AchievedUnitFormElement.createInstance()
-                                    .setFieldLabel("Unit Achieved")
-                                    .setFieldName(name)
-                                    .setRequired(isRequired)
-                                    .setMin(min)
-                                    .setMax(max)
-                                    .setStep(step)
-                                    .setFieldValue(value)
-                                    .setHaveAccess(haveAccess)
-                                    .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
-                            formBuilder.addFormElement(aufe);
-
-                            break;
+//                        case "fieldset":
+//                            PlaceTargetFormElement ptfe = PlaceTargetFormElement.createInstance()
+//                                    .setFieldLabel("Place-Goal")
+//                                    .setFieldName(name)
+//                                    .setRequired(isRequired)
+//                                    .setOptions(values.length() > 0 ? getOptionList(values) : new ArrayList<>())
+//                                    .setFieldValue(value)
+//                                    .setHaveAccess(haveAccess)
+//                                    .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
+//                            formBuilder.addFormElement(ptfe);
+//
+//                            AchievedUnitFormElement aufe = AchievedUnitFormElement.createInstance()
+//                                    .setFieldLabel("Unit Achieved")
+//                                    .setFieldName(name)
+//                                    .setRequired(isRequired)
+//                                    .setMin(min)
+//                                    .setMax(max)
+//                                    .setStep(step)
+//                                    .setFieldValue(value)
+//                                    .setHaveAccess(haveAccess)
+//                                    .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
+//                            formBuilder.addFormElement(aufe);
+//
+//                            break;
 
                         case "container":
 
@@ -1334,7 +1359,7 @@ public class FormExtension {
                                     .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
                             formBuilder.addFormElement(ptfeq);
 
-                            QuizTextPointFormElement nfe = QuizTextPointFormElement.createInstance()
+                            QuizTextPointFormElement nfeq = QuizTextPointFormElement.createInstance()
                                     .setFieldLabel("Points")
                                     .setFieldName(name)
                                     .setRequired(isRequired)
@@ -1344,7 +1369,7 @@ public class FormExtension {
                                     .setFieldValue(value)
                                     .setHaveAccess(haveAccess)
                                     .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
-                            formBuilder.addFormElement(nfe);
+                            formBuilder.addFormElement(nfeq);
                             break;
 
 
@@ -1444,16 +1469,16 @@ public class FormExtension {
                                     .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
                             elementList.add(tfeh);
                             break;
-                        case "signature":
-                            SignatureFormElement tfes = SignatureFormElement.createInstance()
-                                    .setFieldLabel(label)
-                                    .setFieldName(name)
-                                    .setRequired(isRequired)
-                                    .setFieldValue(value)
-                                    .setHaveAccess(haveAccess)
-                                    .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
-                            elementList.add(tfes);
-                            break;
+//                        case "signature":
+//                            SignatureFormElement tfes = SignatureFormElement.createInstance()
+//                                    .setFieldLabel(label)
+//                                    .setFieldName(name)
+//                                    .setRequired(isRequired)
+//                                    .setFieldValue(value)
+//                                    .setHaveAccess(haveAccess)
+//                                    .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
+//                            elementList.add(tfes);
+//                            break;
                         case "checkbox":
                             CheckBoxFormElement tfee = CheckBoxFormElement.createInstance()
                                     .setFieldLabel(label)
@@ -1604,6 +1629,7 @@ public class FormExtension {
                                 elementList.add(nfe);
                             }
                             break;
+
                         case "date":
                             DateFormElement dfe = DateFormElement.createInstance()
                                     .setFieldLabel(label)
@@ -1786,17 +1812,17 @@ public class FormExtension {
                             tfeh.setUserData(GeneralExtension.convertJsonToList(jsonObject.getJSONArray("userData")));
                             formBuilder.addFormElement(tfeh);
                             break;
-                        case "signature":
-                            SignatureFormElement tfes = SignatureFormElement.createInstance()
-                                    .setFieldLabel(label)
-                                    .setFieldName(name)
-                                    .setRequired(isRequired)
-                                    .setFieldValue(value)
-                                    .setHaveAccess(haveAccess)
-                                    .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
-                            tfes.setUserData(GeneralExtension.convertJsonToList(jsonObject.getJSONArray("userData")));
-                            formBuilder.addFormElement(tfes);
-                            break;
+//                        case "signature":
+//                            SignatureFormElement tfes = SignatureFormElement.createInstance()
+//                                    .setFieldLabel(label)
+//                                    .setFieldName(name)
+//                                    .setRequired(isRequired)
+//                                    .setFieldValue(value)
+//                                    .setHaveAccess(haveAccess)
+//                                    .setRole(!role.isEmpty() ? GeneralExtension.toLongArray(role, ",") : new Long[0]);
+//                            tfes.setUserData(GeneralExtension.convertJsonToList(jsonObject.getJSONArray("userData")));
+//                            formBuilder.addFormElement(tfes);
+//                            break;
                         case "checkbox":
                             CheckBoxFormElement tfee = CheckBoxFormElement.createInstance()
                                     .setFieldLabel(label)
@@ -1835,6 +1861,7 @@ public class FormExtension {
                                     efe.setUserData(GeneralExtension.convertJsonToList(jsonObject.getJSONArray("userData")));
                                     formBuilder.addFormElement(efe);
                                     break;
+
                                 case "password":
                                     PasswordFormElement pfe = PasswordFormElement.createInstance()
                                             .setFieldLabel(label)
@@ -1846,6 +1873,7 @@ public class FormExtension {
                                     pfe.setUserData(GeneralExtension.convertJsonToList(jsonObject.getJSONArray("userData")));
                                     formBuilder.addFormElement(pfe);
                                     break;
+
                                 case "tel":
                                     TelephoneFormElement tlfe = TelephoneFormElement.createInstance()
                                             .setFieldLabel(label)
@@ -1857,6 +1885,7 @@ public class FormExtension {
                                     tlfe.setUserData(GeneralExtension.convertJsonToList(jsonObject.getJSONArray("userData")));
                                     formBuilder.addFormElement(tlfe);
                                     break;
+
                                 case "month":
                                     MonthFormElement mfe = MonthFormElement.createInstance()
                                             .setFieldLabel(label)
@@ -1868,6 +1897,7 @@ public class FormExtension {
                                     mfe.setUserData(GeneralExtension.convertJsonToList(jsonObject.getJSONArray("userData")));
                                     formBuilder.addFormElement(mfe);
                                     break;
+
                                 case "week":
                                     WeekFormElement wfe = WeekFormElement.createInstance()
                                             .setFieldLabel(label)
@@ -1879,6 +1909,7 @@ public class FormExtension {
                                     wfe.setUserData(GeneralExtension.convertJsonToList(jsonObject.getJSONArray("userData")));
                                     formBuilder.addFormElement(wfe);
                                     break;
+
                                 case "time":
                                     TimeFormElement time = TimeFormElement.createInstance()
                                             .setFieldLabel(label)
@@ -1892,6 +1923,7 @@ public class FormExtension {
                                     break;
                             }
                             break;
+
                         case "header":
                             HeaderFormElement hfe = HeaderFormElement.createInstance()
                                     .setFieldLabel(label)
@@ -1899,12 +1931,14 @@ public class FormExtension {
                                     .setFieldSubType(subType);
                             formBuilder.addFormElement(hfe);
                             break;
+
                         case "break":
                             SeparatorFormElement spfe = SeparatorFormElement.createInstance()
                                     .setFieldName(name)
                                     .setFieldLabel(label);
                             formBuilder.addFormElement(spfe);
                             break;
+
                         case "textarea":
                             TextAreaFormElement tafe = TextAreaFormElement.createInstance()
                                     .setFieldLabel(label)
@@ -1918,6 +1952,7 @@ public class FormExtension {
                             tafe.setUserData(GeneralExtension.convertJsonToList(jsonObject.getJSONArray("userData")));
                             formBuilder.addFormElement(tafe);
                             break;
+
                         case "number":
                             if (className.contains("achieved_unit")) {
                                 AchievedUnitFormElement aufe = AchievedUnitFormElement.createInstance()

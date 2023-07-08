@@ -12,7 +12,7 @@ public class FormElements {
     public static final int TYPE_DATE = 4;
     // type=select
     public static final int TYPE_SELECT = 5;
-
+    // type=selectboxes
     public static final int TYPE_SELECT_BOXES_GROUP = 6;
     // type=radio-group
     public static final int TYPE_RADIO_GROUP = 7;

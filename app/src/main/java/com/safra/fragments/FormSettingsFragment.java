@@ -24,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -121,7 +120,7 @@ public class FormSettingsFragment extends Fragment {
     private List<Long> currentUsers = new ArrayList<>();
     private List<Long> currentGroups = new ArrayList<>();
 
-    private int status,map,email;
+    private int status, map, email;
 
     private boolean isUsersReceived = true, isGroupsReceived = true, isEssentialDataReceived = true;
 
@@ -166,9 +165,9 @@ public class FormSettingsFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 FormSettingsFragment.ShipmentStatus selectedStatus = (FormSettingsFragment.ShipmentStatus) parent.getItemAtPosition(position);
                 spinnerStatusName = selectedStatus.getStatusName();
-                if(Objects.equals(spinnerStatusName, "Yes")){
+                if (Objects.equals(spinnerStatusName, "Yes")) {
                     map = 1;
-                }else{
+                } else {
                     map = 0;
                 }
             }
@@ -188,9 +187,9 @@ public class FormSettingsFragment extends Fragment {
                 FormSettingsFragment.ShipmentStatus selectedStatus = (FormSettingsFragment.ShipmentStatus) parent.getItemAtPosition(position);
                 spinnerStatusName = selectedStatus.getStatusName();
 
-                if(Objects.equals(spinnerStatusName, "Yes")){
+                if (Objects.equals(spinnerStatusName, "Yes")) {
                     email = 1;
-                }else{
+                } else {
                     email = 0;
                 }
             }
@@ -537,7 +536,7 @@ public class FormSettingsFragment extends Fragment {
         hashMap.put("form_reference", String.valueOf(spinnerStatusName));
         hashMap.put("form_map", String.valueOf(map));
         hashMap.put("form_response", String.valueOf(email));
-        System.out.println("DATA:- "+ spinnerStatusName + " " + map + " " + email );
+        System.out.println("DATA:- " + spinnerStatusName + " " + map + " " + email);
         hashMap.put("language_id", String.valueOf(selectedLanguageId));
         if (binding.etExpiryDate.getText() != null && !binding.etExpiryDate.getText().toString().isEmpty())
             hashMap.put("expiry_date", sdfForServer.format(new Date(calendar.getTimeInMillis())));

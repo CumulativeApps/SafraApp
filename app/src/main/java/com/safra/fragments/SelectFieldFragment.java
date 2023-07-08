@@ -114,13 +114,13 @@ public class SelectFieldFragment extends DialogFragment {
         fieldList.add(new FieldItem(TYPE_MONTH, LanguageExtension.setText("day", getString(R.string.day)), R.drawable.ic_month));
         fieldList.add(new FieldItem(TYPE_RADIO_GROUP, LanguageExtension.setText("radio", getString(R.string.radio)), R.drawable.ic_radio_button));
 //        fieldList.add(new FieldItem(TYPE_SURVEY, LanguageExtension.setText("survey", getString(R.string.survey)), R.drawable.ic_radio_button));
-         fieldList.add(new FieldItem(TYPE_SELECT_BOXES_GROUP, LanguageExtension.setText("select_boxes", getString(R.string.select_boxes)), R.drawable.ic_check_box));
+        fieldList.add(new FieldItem(TYPE_SELECT_BOXES_GROUP, LanguageExtension.setText("select_boxes", getString(R.string.select_boxes)), R.drawable.ic_check_box));
         fieldList.add(new FieldItem(TYPE_SELECT, LanguageExtension.setText("select", getString(R.string.select)), R.drawable.ic_multiple_choice));
         fieldList.add(new FieldItem(TYPE_FILE, LanguageExtension.setText("file", getString(R.string.file)), R.drawable.ic_file_upload));
-        fieldList.add(new FieldItem(TYPE_PLACE_TARGET, LanguageExtension.setText("place_goal", getString(R.string.place_goal)), R.drawable.ic_place_target));
+//        fieldList.add(new FieldItem(TYPE_PLACE_TARGET, LanguageExtension.setText("place_goal", getString(R.string.place_goal)), R.drawable.ic_place_target));
         fieldList.add(new FieldItem(TYPE_URL, LanguageExtension.setText("url", getString(R.string.url)), R.drawable.ic_url));
         fieldList.add(new FieldItem(TYPE_LOCATION, LanguageExtension.setText("location", getString(R.string.location)), R.drawable.ic_address));
-        fieldList.add(new FieldItem(TYPE_ACHIEVED_UNIT, LanguageExtension.setText("unit_achieved", getString(R.string.unit_achieved)), R.drawable.ic_achieved_unit));
+//        fieldList.add(new FieldItem(TYPE_ACHIEVED_UNIT, LanguageExtension.setText("unit_achieved", getString(R.string.unit_achieved)), R.drawable.ic_achieved_unit));
         fieldList.add(new FieldItem(TYPE_UNIT_PRICE, LanguageExtension.setText("currency", getString(R.string.currency)), R.drawable.ic_unit_price));
 //        fieldList.add(new FieldItem(TYPE_HEADER, LanguageExtension.setText("header", getString(R.string.header)), R.drawable.ic_header));
 //        fieldList.add(new FieldItem(TYPE_SEPARATOR, LanguageExtension.setText("separator", getString(R.string.separator)), R.drawable.ic_separator));
